@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Менеджер 220</string>
+
+    <!-- Fonts -->
+    <string name="roboto_regular">sans-serif</string>
+    <string name="roboto_light">sans-serif-light</string>
+    <string name="roboto_condensed">sans-serif-condensed</string>
+    <string name="roboto_black">sans-serif-black</string>
+    <string name="roboto_thin">sans-serif-thin</string>
+    <string name="roboto_medium">sans-serif-medium</string>
+
+
+    <string name="error_message">Ошибка приложения</string>
+</resources>
