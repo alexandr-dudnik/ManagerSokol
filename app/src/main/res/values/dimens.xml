@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="splash_logo_margin">48dp</dimen>
+    <dimen name="login_form_margin">48dp</dimen>
+    <dimen name="login_form_corners">15dp</dimen>
+    <dimen name="login_form_elevation">10dp</dimen>
+    <dimen name="login_form_padding">8dp</dimen>
 </resources>

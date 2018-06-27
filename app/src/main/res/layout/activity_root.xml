@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:background="@color/color_gray_light"
         android:fitsSystemWindows="true"
-        android:layout_above="@+id/bottom_bar"
         >
 
         <android.support.design.widget.AppBarLayout

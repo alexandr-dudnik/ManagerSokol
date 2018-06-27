@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Менеджер 220</string>
+    <string name="app_name">Менеджер Sokol</string>
 
     <!-- Fonts -->
     <string name="roboto_regular">sans-serif</string>
@@ -11,4 +11,11 @@
 
 
     <string name="error_message">Ошибка приложения</string>
+    <string name="error_empty_login">Вы забыли ввести логин!</string>
+    <string name="error_bad_password">Длина пароля меньше 8 символов!</string>
+    <string name="error_auth_error">Ошибка аутентификации! Проверьте ваш логин и пароль!</string>
+    <string name="login_form_caption">Ваши учетные данные</string>
+    <string name="user_name_hint">Логин</string>
+    <string name="user_password_hint">Пароль</string>
+    <string name="login_button_text">Авторизация</string>
 </resources>

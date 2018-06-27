@@ -1,0 +1,67 @@
+package com.sokolua.manager.data.managers;
+
+import com.sokolua.manager.di.DaggerService;
+import com.sokolua.manager.di.components.DaggerDataManagerComponent;
+import com.sokolua.manager.di.components.DataManagerComponent;
+import com.sokolua.manager.di.modules.LocalModule;
+import com.sokolua.manager.di.modules.NetworkModule;
+import com.sokolua.manager.utils.App;
+
+import javax.inject.Inject;
+
+public class DataManager {
+    private static DataManager ourInstance;
+    private boolean userAuth=false;
+
+    @Inject
+    PreferencesManager mPreferencesManager;
+
+
+    private DataManager() {
+        DataManagerComponent dmComponent = DaggerService.getComponent(DataManagerComponent.class);
+        if (dmComponent==null){
+            dmComponent = DaggerDataManagerComponent.builder()
+                    .appComponent(App.getAppComponent())
+                    .localModule(new LocalModule())
+                    .networkModule(new NetworkModule())
+                    .build();
+            DaggerService.registerComponent(DataManagerComponent.class, dmComponent);
+        }
+        dmComponent.inject(this);
+
+        //updateLocalDataWithTimer();
+    }
+
+    public static DataManager getInstance() {
+        if (ourInstance == null) {
+            ourInstance = new DataManager();
+        }
+        return ourInstance;
+    }
+
+
+    //region ===================== UserInfo =========================
+
+    public boolean isUserAuth() {
+        //TODO check auth token in shared preferences
+        // TODO: 20.06.2018 send check auth String
+        return userAuth;
+    }
+
+    public void setUserAuth(boolean state){
+        userAuth = state;
+    }
+    //endregion ================== UserInfo =========================
+
+
+    //region ===================== Getters =========================
+
+
+    public PreferencesManager getPreferencesManager() {
+        return mPreferencesManager;
+    }
+
+    //endregion ================== Getters =========================
+
+}
+

@@ -19,4 +19,6 @@
 
     <color name="bottom_bar_active">#ff00aaff</color>
     <color name="bottom_bar_inactive">#ff666666</color>
+
+    <color name="login_background">#FFF9C4</color>
 </resources>
