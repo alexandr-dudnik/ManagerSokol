@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.tm220.manager">
+          package="com.sokolua.manager">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.tm220.manager.ui.activities.RootActivity"
+        <activity android:name="com.sokolua.manager.ui.activities.RootActivity"
                   android:theme="@style/AppTheme.NoActionBar"
                   android:screenOrientation="portrait"/>
 
