@@ -40,15 +40,15 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <!--android.support.design.widget.BottomNavigationView
+    <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_bar"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/color_white"
-        app:itemIconTint="@color/bottom_menu_item_color_selector"
-        app:itemTextColor="@color/bottom_menu_item_color_selector"
-        app:menu="@menu/bottom_bar_menu"
-        /-->
+        android:background="@color/color_white"/>
+        <!--app:itemIconTint="@color/bottom_menu_item_color_selector"-->
+        <!--app:itemTextColor="@color/bottom_menu_item_color_selector"-->
+        <!--app:menu="@menu/bottom_bar_menu"-->
+        <!--/>-->
 
 </RelativeLayout>
