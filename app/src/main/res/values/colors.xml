@@ -8,10 +8,10 @@
     <color name="color_gray">#5d5d5d</color>
     <color name="color_gray_light">#9c9c9c</color>
     <color name="color_gray_background">#454545</color>
-
     <color name="color_black">#000000</color>
     <color name="color_white">#ffffff</color>
     <color name="color_red">#e74b3c</color>
+    <color name="color_green">#4CAF50</color>
 
     <color name="black_overlay">#66000000</color>
 
@@ -19,6 +19,7 @@
 
     <color name="bottom_bar_active">#ff00aaff</color>
     <color name="bottom_bar_inactive">#ff666666</color>
+
 
     <color name="login_background">#FFF9C4</color>
 </resources>
