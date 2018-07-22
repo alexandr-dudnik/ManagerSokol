@@ -27,21 +27,21 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
 //        super.onEnterScope(scope);
 //        initDagger(scope);
 //    }
-//
-//    @Override
-//    protected void onLoad(Bundle savedInstanceState) {
-//        super.onLoad(savedInstanceState);
-//        mCompSubs = new CompositeSubscription();
-//        initActionBar();
-//    }
 
-//    @Override
-//    public void dropView(V view) {
-////        if (mCompSubs.hasSubscriptions()){
-////            mCompSubs.unsubscribe();
-////        }
-//        super.dropView(view);
-//    }
+    @Override
+    protected void onLoad(Bundle savedInstanceState) {
+        super.onLoad(savedInstanceState);
+        //mCompSubs = new CompositeSubscription();
+        initActionBar();
+    }
+
+    @Override
+    public void dropView(V view) {
+//        if (mCompSubs.hasSubscriptions()){
+//            mCompSubs.unsubscribe();
+//        }
+        super.dropView(view);
+    }
 
 //    protected abstract void initDagger(MortarScope scope);
 

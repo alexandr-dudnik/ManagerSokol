@@ -2,6 +2,7 @@ package com.sokolua.manager.utils;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.v4.content.res.ResourcesCompat;
 
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
@@ -83,4 +84,9 @@ public class App extends Application {
     public static String getStringRes(int res_id){
        return sContext.getResources().getString(res_id);
     }
+
+    public static int getColorRes(int res_id){
+        return ResourcesCompat.getColor(sContext.getResources(), res_id, sContext.getTheme());
+    }
+
 }

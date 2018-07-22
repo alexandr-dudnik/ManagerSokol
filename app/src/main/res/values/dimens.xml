@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="splash_logo_margin">48dp</dimen>
+    <dimen name="bottom_bar_height">40dp</dimen>
     <!-- Login  -->
     <dimen name="login_form_margin">48dp</dimen>
     <dimen name="login_form_corners">15dp</dimen>
@@ -12,4 +13,8 @@
     <dimen name="cust_list_item_height">40dp</dimen>
     <dimen name="cust_list_item_fontSize">16sp</dimen>
     <dimen name="cust_list_header_fontSize">20sp</dimen>
+    <dimen name="cust_list_item_icon">24dp</dimen>
+
+    <dimen name="main_page_image_margin">8dp</dimen>
+    <dimen name="main_page_text_size">20sp</dimen>
 </resources>

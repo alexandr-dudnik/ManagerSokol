@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single" android:enabled="true">
+        <item
+            android:id="@+id/bottomBarMainScreen"
+            android:icon="@drawable/ic_home"
+            android:actionLayout="@layout/screen_cust_list"
+            android:title="@string/menu_home"/>
+        <item
+            android:id="@+id/bottomBarCustomers"
+            android:icon="@drawable/ic_customers"
+            android:title="@string/menu_customers" />
+        <item
+            android:id="@+id/bottomBarOrders"
+            android:icon="@drawable/ic_orders"
+            android:title="@string/menu_orders" />
+        <item
+            android:id="@+id/bottomBarGoods"
+            android:icon="@drawable/ic_goods"
+            android:title="@string/menu_goods" />
+        <item
+            android:id="@+id/bottomBarRoute"
+            android:icon="@drawable/ic_map"
+            android:title="@string/menu_route" />
+    </group>
+</menu>

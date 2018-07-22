@@ -9,6 +9,7 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
     </style>
 
     <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
@@ -42,4 +43,22 @@
     </style>
 
 
+    <style name="MainScreen">
+        <item name="android:background">@color/color_gray_light</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+    <style name="MainScreen.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:padding">@dimen/main_page_image_margin</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:textSize">@dimen/main_page_text_size</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:background">@color/color_gray_lighter</item>
+    </style>
+
+    <color name="color_gray_lighter">#F5F5F5</color>
 </resources>

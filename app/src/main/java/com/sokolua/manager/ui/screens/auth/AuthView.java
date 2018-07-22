@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
+import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 
 import javax.inject.Inject;
@@ -20,11 +21,7 @@ import butterknife.OnClick;
 import flow.Flow;
 
 
-public class AuthView extends RelativeLayout implements IAuthView {
-    @Inject
-    AuthScreen.AuthPresenter mPresenter;
-
-    private AuthScreen mScreen;
+public class AuthView extends AbstractView<AuthScreen.AuthPresenter> implements IAuthView {
 
     @BindView(R.id.login_btn)
     Button mLoginBtn;
@@ -38,8 +35,11 @@ public class AuthView extends RelativeLayout implements IAuthView {
 
     public AuthView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected void initDagger(Context context) {
         if (!isInEditMode()) {
-            mScreen = Flow.getKey(this);
             DaggerService.<AuthScreen.Component>getDaggerComponent(context).inject(this);
         }
     }
@@ -49,31 +49,6 @@ public class AuthView extends RelativeLayout implements IAuthView {
         mLoginBtn.startAnimation(shake);
     }
 
-    //region ===================== Life Cycle =========================
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (!isInEditMode()) {
-            mPresenter.takeView(this);
-        }
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        ButterKnife.bind(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (!isInEditMode()) {
-            mPresenter.dropView(this);
-        }
-    }
-
-    //endregion ================== Life Cycle =========================
 
 
     //region ===================== Events =========================

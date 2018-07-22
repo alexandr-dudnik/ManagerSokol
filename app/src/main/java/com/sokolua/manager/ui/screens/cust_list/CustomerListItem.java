@@ -1,6 +1,7 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 class CustomerListItem {
@@ -24,7 +25,7 @@ class CustomerListItem {
         header = false;
     }
 
-    private CustomerListItem(String customerName) {
+    public CustomerListItem(String customerName) {
         header = true;
         this.customerName = getHeader(customerName);
     }
@@ -53,8 +54,17 @@ class CustomerListItem {
         return customerName.substring(0,1);
     }
 
-    public static List<CustomerListItem> prepareList(List<CustomerListItem> list, boolean insertHeaders){
-        return list;
+    public static List<CustomerListItem> addHeaders(List<CustomerListItem> list){
+        String curHeader = "";
+        List<CustomerListItem> res = new ArrayList<>();
+        for (CustomerListItem cust:res) {
+            String tmpHeader = getHeader(cust.getCustomerName());
+            if (!tmpHeader.equals(curHeader)){
+                res.add(new CustomerListItem(cust.getCustomerName()));
+            }
+            res.add(cust);
+        }
+        return res;
     }
 
     //endregion ============================= Static ==================================

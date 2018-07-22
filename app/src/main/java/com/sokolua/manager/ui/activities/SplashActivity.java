@@ -114,6 +114,16 @@ public class SplashActivity extends AppCompatActivity implements IRootView {
     public void hideLoad() {
     }
 
+    @Override
+    public void showBottomBar() {
+
+    }
+
+    @Override
+    public void hideBottomBar() {
+
+    }
+
     @Nullable
     @Override
     public IView getCurrentScreen() {

@@ -9,16 +9,20 @@ import com.sokolua.manager.di.scopes.AuthScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.AuthModel;
+import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
 
 import javax.inject.Inject;
 
 import dagger.Component;
 import dagger.Provides;
+import flow.Direction;
+import flow.Flow;
 import mortar.MortarScope;
 import mortar.ViewPresenter;
 
@@ -34,28 +38,15 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
 
 
-    @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
-    @AuthScope
-    public interface Component {
-        void inject(AuthPresenter presenter);
-
-        void inject(AuthView view);
-    }
-
 
     //region ===================== Presenter =========================
-    public static class AuthPresenter extends ViewPresenter<AuthView> implements IAuthPresenter {
+    public static class AuthPresenter extends AbstractPresenter<AuthView, AuthModel> implements IAuthPresenter {
         @Inject
         AuthModel mAuthModel;
         @Inject
         RootPresenter mRootPresenter;
 
 
-        //for test
-        public AuthPresenter(AuthModel authModel, RootPresenter rootPresenter) {
-            mAuthModel = authModel;
-            mRootPresenter = rootPresenter;
-        }
 
         public AuthPresenter() {
         }
@@ -65,13 +56,18 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             super.onEnterScope(scope);
 
             ((Component)scope.getService(DaggerService.SERVICE_NAME)).inject(this);
+
         }
+
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
             if (getView() != null) {
+                if (getRootView()!=null) {
+                    getRootView().hideBottomBar();
+                }
             } else {
                 if (getRootView() != null) {
                     getRootView().showError(new NullPointerException("Что-то пошло не так..."));
@@ -80,10 +76,21 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         }
 
-        @Nullable
-        private IRootView getRootView() {
-            return mRootPresenter.getRootView();
+        @Override
+        public void dropView(AuthView view) {
+            if (getRootView()!=null) {
+                getRootView().showBottomBar();
+            }
+            super.dropView(view);
         }
+
+        @Override
+        protected void initActionBar() {
+            mRootPresenter.newActionBarBuilder()
+                    .setVisible(false)
+                    .build();
+        }
+
 
         public boolean isUserNameValid(String userName) {
 
@@ -114,8 +121,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                             getView().getUserPassword());
 
                     if (mAuthModel.isUserAuth()) {
-                        getRootView().showMessage("Ура! Мы в программе");
-                        // TODO: 20.06.2018 Запуск основного экрана
+                        Flow.get(getView()).replaceHistory(new MainScreen(), Direction.REPLACE);
                     }else {
                         getView().login_error();
                         getRootView().showMessage(App.getStringRes(R.string.error_auth_error));
@@ -146,6 +152,14 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         AuthModel provideAuthModel() {
             return new AuthModel();
         }
+    }
+
+    @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
+    @AuthScope
+    public interface Component {
+        void inject(AuthPresenter presenter);
+
+        void inject(AuthView view);
     }
     //endregion ============================== DI ==================================
 

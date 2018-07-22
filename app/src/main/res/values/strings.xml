@@ -18,4 +18,9 @@
     <string name="user_name_hint">Логин</string>
     <string name="user_password_hint">Пароль</string>
     <string name="login_button_text">Авторизация</string>
+    <string name="menu_home">Главная</string>
+    <string name="menu_customers">Клиенты</string>
+    <string name="menu_orders">Заказы</string>
+    <string name="menu_goods">Товары</string>
+    <string name="menu_route">Маршрут</string>
 </resources>

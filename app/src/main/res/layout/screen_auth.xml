@@ -7,6 +7,10 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.NoActionBar"
     >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
 
     <ImageView
         android:layout_width="match_parent"
@@ -102,6 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/login_form"
+        android:layout_gravity="top"
         android:layout_margin="@dimen/login_form_padding"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_logo_bird"/>
@@ -114,5 +119,6 @@
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_logo_text"/>
 
+    </RelativeLayout>
 
 </com.sokolua.manager.ui.screens.auth.AuthView>

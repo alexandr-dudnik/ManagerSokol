@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sokolua.manager.ui.screens.main.MainView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                style="@style/MainScreen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+    >
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/goods_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/goods_text"
+                android:layout_margin="@dimen/main_page_image_margin"
+                android:scaleType="centerCrop"
+                android:src="@drawable/main_goods"/>
+
+            <TextView
+                android:id="@+id/goods_text"
+                style="@style/MainScreen.Text"
+                android:text="@string/menu_goods"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/customers_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/customers_text"
+                android:layout_margin="@dimen/main_page_image_margin"
+                android:scaleType="centerCrop"
+                android:src="@drawable/main_clients"/>
+
+            <TextView
+                style="@style/MainScreen.Text"
+                android:id="@+id/customers_text"
+                android:text="@string/menu_customers"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/route_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/route_text"
+                android:layout_margin="@dimen/main_page_image_margin"
+                android:scaleType="centerCrop"
+                android:src="@drawable/main_route"/>
+
+            <TextView
+                android:id="@+id/route_text"
+                style="@style/MainScreen.Text"
+                android:text="@string/menu_route"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/orders_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/orders_text"
+                android:layout_margin="@dimen/main_page_image_margin"
+                android:scaleType="centerCrop"
+                android:src="@drawable/main_orders"/>
+
+            <TextView
+                style="@style/MainScreen.Text"
+                android:id="@+id/orders_text"
+                android:text="@string/menu_orders"
+                />
+
+        </RelativeLayout>
+    </GridLayout>
+</com.sokolua.manager.ui.screens.main.MainView>
