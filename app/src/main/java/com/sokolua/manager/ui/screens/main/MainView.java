@@ -11,7 +11,7 @@ import com.sokolua.manager.mvp.views.IView;
 
 import butterknife.OnClick;
 
-public class MainView extends AbstractView<MainScreen.MainPresenter> implements IView {
+public class MainView extends AbstractView<MainScreen.Presenter> implements IView {
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

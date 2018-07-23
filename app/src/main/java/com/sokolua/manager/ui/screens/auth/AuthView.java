@@ -6,22 +6,17 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import flow.Flow;
 
 
-public class AuthView extends AbstractView<AuthScreen.AuthPresenter> implements IAuthView {
+public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAuthView {
 
     @BindView(R.id.login_btn)
     Button mLoginBtn;

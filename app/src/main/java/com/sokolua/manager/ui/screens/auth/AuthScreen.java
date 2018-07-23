@@ -1,7 +1,6 @@
 package com.sokolua.manager.ui.screens.auth;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
@@ -12,19 +11,16 @@ import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
-import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
 
 import javax.inject.Inject;
 
-import dagger.Component;
 import dagger.Provides;
 import flow.Direction;
 import flow.Flow;
 import mortar.MortarScope;
-import mortar.ViewPresenter;
 
 @Screen(R.layout.screen_auth)
 public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
@@ -40,7 +36,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
 
     //region ===================== Presenter =========================
-    public static class AuthPresenter extends AbstractPresenter<AuthView, AuthModel> implements IAuthPresenter {
+    public static class Presenter extends AbstractPresenter<AuthView, AuthModel> implements IAuthPresenter {
         @Inject
         AuthModel mAuthModel;
         @Inject
@@ -48,7 +44,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
 
 
-        public AuthPresenter() {
+        public Presenter() {
         }
 
         @Override
@@ -143,8 +139,8 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
     public class Module {
         @Provides
         @AuthScope
-        AuthScreen.AuthPresenter providePresenter() {
-            return new AuthScreen.AuthPresenter();
+        Presenter providePresenter() {
+            return new Presenter();
         }
 
         @Provides
@@ -157,7 +153,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @AuthScope
     public interface Component {
-        void inject(AuthPresenter presenter);
+        void inject(Presenter presenter);
 
         void inject(AuthView view);
     }

@@ -1,5 +1,6 @@
 package com.sokolua.manager.data.managers;
 
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.DaggerDataManagerComponent;
 import com.sokolua.manager.di.components.DataManagerComponent;
@@ -9,12 +10,17 @@ import com.sokolua.manager.utils.App;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+
 public class DataManager {
     private static DataManager ourInstance;
     private boolean userAuth=false;
 
     @Inject
     PreferencesManager mPreferencesManager;
+
+    @Inject
+    RealmManager mRealmManager;
 
 
     private DataManager() {
@@ -39,7 +45,16 @@ public class DataManager {
         return ourInstance;
     }
 
+    //region ===================== Getters =========================
 
+
+    public PreferencesManager getPreferencesManager() {
+        return mPreferencesManager;
+    }
+
+    //endregion ================== Getters =========================
+
+    
     //region ===================== UserInfo =========================
 
     public boolean isUserAuth() {
@@ -53,15 +68,14 @@ public class DataManager {
     }
     //endregion ================== UserInfo =========================
 
-
-    //region ===================== Getters =========================
-
-
-    public PreferencesManager getPreferencesManager() {
-        return mPreferencesManager;
+    
+    //region ===================== Customers =========================
+    public Observable<CustomerRealm> getProductFromRealm(String filter) {
+        return mRealmManager.getCustomersFromRealm(filter);
     }
 
-    //endregion ================== Getters =========================
+    //endregion ================== Customers =========================
+
 
 }
 

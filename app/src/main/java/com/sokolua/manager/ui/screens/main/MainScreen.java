@@ -1,7 +1,5 @@
 package com.sokolua.manager.ui.screens.main;
 
-import android.os.Bundle;
-
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
@@ -14,7 +12,6 @@ import com.sokolua.manager.ui.activities.RootActivity;
 
 import dagger.Provides;
 import mortar.MortarScope;
-import mortar.ViewPresenter;
 
 @Screen(R.layout.screen_main)
 public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
@@ -35,14 +32,14 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Provides
         @DaggerScope(MainScreen.class)
-        MainModel provideCatalogModel() {
+        MainModel provideMainModel() {
             return new MainModel();
         }
 
         @Provides
         @DaggerScope(MainScreen.class)
-        MainPresenter provideCatalogPresenter() {
-            return new MainPresenter();
+        Presenter provideMainPresenter() {
+            return new Presenter();
         }
 
     }
@@ -51,7 +48,7 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(MainScreen.class)
     public interface Component {
-        void inject(MainPresenter presenter);
+        void inject(Presenter presenter);
 
         void inject(MainView view);
 
@@ -60,9 +57,9 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
     //endregion ================== DI =========================
 
     //region ===================== Presenter =========================
-    public class MainPresenter extends AbstractPresenter<MainView, MainModel> {
+    public class Presenter extends AbstractPresenter<MainView, MainModel> {
 
-        public MainPresenter() {
+        public Presenter() {
         }
 
         @Override

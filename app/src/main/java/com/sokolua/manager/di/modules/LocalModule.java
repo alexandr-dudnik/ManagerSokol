@@ -4,6 +4,7 @@ import android.content.Context;
 
 
 import com.sokolua.manager.data.managers.PreferencesManager;
+import com.sokolua.manager.data.managers.RealmManager;
 
 import javax.inject.Singleton;
 
@@ -18,9 +19,9 @@ public class LocalModule {
         return new PreferencesManager(context);
     }
 
-//    @Provides
-//    @Singleton
-//    RealmManager provideRealmManager(Context context) {
-//        return new RealmManager();
-//    }
+    @Provides
+    @Singleton
+    RealmManager provideRealmManager(Context context) {
+        return new RealmManager();
+    }
 }
