@@ -60,5 +60,65 @@
         <item name="android:background">@color/color_gray_lighter</item>
     </style>
 
-    <color name="color_gray_lighter">#F5F5F5</color>
+    <!-- Customer List -->
+    <style name="customer_list_header">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_margin">@dimen/cust_list_item_margin</item>
+        <item name="android:fontFamily">@string/roboto_black</item>
+        <item name="android:textSize">@dimen/cust_list_header_fontSize</item>
+        <item name="android:textColor">@color/color_black</item>
+    </style>
+    <style name="customer_list_header_divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:background">@color/color_accent</item>
+    </style>
+
+    <style name="customer_list_item">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_margin">@dimen/cust_list_item_margin</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textSize">@dimen/cust_list_item_fontSize</item>
+        <item name="android:textColor">@color/color_gray_background</item>
+    </style>
+    <style name="customer_list_item_divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:background">@color/color_gray_light</item>
+    </style>
+
+    <style name="customer_list_icon">
+        <item name="android:layout_width">@dimen/cust_list_item_icon</item>
+        <item name="android:layout_height">@dimen/cust_list_item_icon</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="customer_list_icon.exclamation" parent="customer_list_icon">
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentStart" tools:targetApi="jelly_bean_mr1">true</item>
+        <item name="android:layout_marginLeft">@dimen/cust_list_item_margin</item>
+        <item name="android:layout_marginStart" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
+        <item name="android:tint">@color/color_orange</item>
+    </style>
+    <style name="customer_list_icon.call" parent="customer_list_icon">
+        <item name="android:layout_marginRight">@dimen/cust_list_item_margin</item>
+        <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
+        <item name="android:tint">@color/color_white</item>
+        <item name="android:background">@color/color_green</item>
+    </style>
+    <style name="customer_list_icon.map" parent="customer_list_icon">
+        <item name="android:layout_marginRight">@dimen/cust_list_item_margin</item>
+        <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
+        <item name="android:tint">@color/color_green</item>
+    </style>
+
 </resources>

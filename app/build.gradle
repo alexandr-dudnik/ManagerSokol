@@ -6,7 +6,7 @@ android {
     buildToolsVersion '28.0.1'
     
     defaultConfig {
-        applicationId "com.tm220.manager"
+        applicationId "com.sokolua.manager"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 2

@@ -7,18 +7,11 @@
 
     <TextView
         android:id="@+id/item_header_text"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/cust_list_item_margin"
-        android:layout_weight="1"
-        android:fontFamily="@string/roboto_black"
-        android:textSize="@dimen/cust_list_header_fontSize"
-        android:textColor="@color/color_black"
+        style="@style/customer_list_header"
         tools:text="А" />
 
     <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/color_gray_light" />
+
+        style="@style/customer_list_header_divider"
+         />
 </LinearLayout>
