@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/cust_list_item_height"
+                style="@style/customer_list_item"
     >
 
     <ImageView
@@ -28,7 +27,7 @@
         app:srcCompat="@drawable/ic_person_pin"/>
 
     <TextView
-        style="@style/customer_list_item"
+        style="@style/customer_list_item_text"
         android:id="@+id/customer_name_text"
         android:layout_toEndOf="@id/exclamation_img"
         android:layout_toLeftOf="@id/map_pin_img"

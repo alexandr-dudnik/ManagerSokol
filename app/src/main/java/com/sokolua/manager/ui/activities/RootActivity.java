@@ -22,24 +22,24 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.sokolua.manager.data.managers.DataManager;
-import com.sokolua.manager.di.modules.LocalModule;
-import com.sokolua.manager.mvp.presenters.MenuItemHolder;
-import com.sokolua.manager.mvp.views.IActionBarView;
-import com.sokolua.manager.ui.screens.auth.AuthScreen;
-import com.sokolua.manager.ui.screens.main.MainScreen;
-import com.squareup.picasso.Picasso;
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.modules.PicassoCacheModule;
 import com.sokolua.manager.di.modules.RootModule;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.TreeKeyDispatcher;
+import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
+import com.sokolua.manager.mvp.views.IActionBarView;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
+import com.sokolua.manager.ui.screens.auth.AuthScreen;
+import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
+import com.sokolua.manager.ui.screens.main.MainScreen;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -335,14 +335,9 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 case R.id.bottomBarMainScreen:
                     key = new MainScreen() ;
                     break;
-//                case R.id.bottomBarProfile:
-//                    // TODO: 08.06.2017 Проверить залогиненность иначе открыть auth_screen
-//                    key = new ProfileScreen();
-//                    break;
-//                case R.id.bottomBarUpload:
-//                    // TODO: 08.06.2017 Проверить залогиненность иначе открыть auth_screen
-//                    key = new PhotoEditorScreen();
-//                    break;
+                case R.id.bottomBarCustomers:
+                    key = new CustomerListScreen() ;
+                    break;
             }
 
             if (key != null) {

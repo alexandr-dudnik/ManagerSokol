@@ -1,6 +1,9 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Optional;
 
 public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapter.ViewHolder> {
     private List<CustomerListItem> mCustomerListItem = new ArrayList<>();
@@ -70,16 +75,12 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     public class ViewHolder extends RecyclerView.ViewHolder{
         private CustomerListItem mCustomerItem = null;
 
-        @BindView(R.id.exclamation_img)
-        ImageView mExclamationImg;
-        @BindView(R.id.map_pin_img)
-        ImageView mMapPinImg;
-        @BindView(R.id.call_img)
-        ImageView mCallImg;
-        @BindView(R.id.customer_name_text)
-        TextView mCustomerNameText;
-        @BindView(R.id.item_header_text)
-        TextView mItemHeaderText;
+
+        @Nullable @BindView(R.id.exclamation_img)   ImageView mExclamationImg;
+        @Nullable @BindView(R.id.map_pin_img)       ImageView mMapPinImg;
+        @Nullable @BindView(R.id.call_img)          ImageView mCallImg;
+        @Nullable @BindView(R.id.customer_name_text) TextView mCustomerNameText;
+        @Nullable @BindView(R.id.item_header_text)  TextView mItemHeaderText;
 
 
         public ViewHolder(View itemView) {
@@ -94,26 +95,56 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
         public void refreshInfo(){
             if (mCustomerItem != null) {
-                if (mCustomerItem.isHeader()){
+                if (mCustomerItem.isHeader() && mItemHeaderText != null){
                     mItemHeaderText.setText(mCustomerItem.getCustomerName());
                 }else {
-                    switch (mCustomerItem.getDebtType()){
-                        case CustomerListItem.DEBT_NORMAL:
-                            mExclamationImg.setColorFilter(App.getColorRes(R.color.color_orange), android.graphics.PorterDuff.Mode.SRC_IN);
-                            break;
-                        case CustomerListItem.DEBT_OUTDATED:
-                            mExclamationImg.setColorFilter(App.getColorRes(R.color.color_red), android.graphics.PorterDuff.Mode.SRC_IN);
-                            break;
-                        default:
-                            mExclamationImg.setVisibility(View.GONE);
+                    if (mExclamationImg != null) {
+                        switch (mCustomerItem.getDebtType()){
+                            case CustomerListItem.DEBT_NORMAL:
+                                mExclamationImg.setVisibility(View.VISIBLE);
+                                mExclamationImg.setColorFilter(App.getColorRes(R.color.color_orange), android.graphics.PorterDuff.Mode.SRC_IN);
+                                break;
+                            case CustomerListItem.DEBT_OUTDATED:
+                                mExclamationImg.setVisibility(View.VISIBLE);
+                                mExclamationImg.setColorFilter(App.getColorRes(R.color.color_red), android.graphics.PorterDuff.Mode.SRC_IN);
+                                break;
+                            default:
+                                mExclamationImg.setVisibility(View.INVISIBLE);
+                        }
                     }
-                    mCustomerNameText.setText(mCustomerItem.getCustomerName());
-                    mMapPinImg.setVisibility(mCustomerItem.getAddress().isEmpty()?View.GONE:View.VISIBLE);
-                    mCallImg.setVisibility(mCustomerItem.getPhone().isEmpty()?View.GONE:View.VISIBLE);
+                    if (mCustomerNameText != null) {
+                        mCustomerNameText.setText(mCustomerItem.getCustomerName());
+                    }
+                    if (mMapPinImg != null) {
+                        mMapPinImg.setVisibility(mCustomerItem.getAddress().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    }
+                    if (mCallImg != null) {
+                        mCallImg.setVisibility(mCustomerItem.getPhone().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    }
                 }
             }
         }
 
+        @Optional
+        @OnClick(R.id.map_pin_img)
+        public void onMapClick(View view){
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ Uri.encode(mCustomerItem.getAddress()));
+            Intent googleMaps = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            googleMaps.setPackage("com.google.android.apps.maps");
+            if (googleMaps.resolveActivity(App.getContext().getPackageManager()) != null) {
+                App.getContext().startActivity(googleMaps);
+            }
+        }
+
+        @Optional
+        @OnClick(R.id.call_img)
+        public void onCallClick(View view){
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:"+mCustomerItem.getPhone()));
+            if (intent.resolveActivity(App.getContext().getPackageManager()) != null) {
+                App.getContext().startActivity(intent);
+            }
+        }
     }
 
 }

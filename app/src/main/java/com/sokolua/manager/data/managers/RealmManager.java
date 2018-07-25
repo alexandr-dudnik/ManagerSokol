@@ -41,7 +41,7 @@ public class RealmManager {
         //--------------------------
 
         return Observable.fromIterable(managedCustomers)
-                    .filter(customerRealm -> filter.isEmpty() || customerRealm.getCustomerName().toLowerCase().contains(filter.toLowerCase()));
+                    .filter(customerRealm -> (filter == null) || (filter.isEmpty() || customerRealm.getCustomerName().toLowerCase().contains(filter.toLowerCase())));
 
 //        return managedProduct
 //                .asObservable()  //Получаем последовательность

@@ -1,7 +1,6 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
 
-import com.sokolua.manager.data.storage.dto.DebtDto;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 
@@ -52,16 +51,13 @@ class CustomerListItem {
     public CustomerListItem(String customerName) {
         header = true;
         this.customerName = getHeader(customerName);
+        this.customerId = "Header_"+getHeader(customerName);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this.header){
-            if (!((CustomerListItem)obj).isHeader()){
-                return false;
-            }else{
-                return ((CustomerListItem)obj).getCustomerName().equals(this.customerName);
-            }
+        if (obj == null){
+            return false;
         }else {
             return ((CustomerListItem) obj).getCustomerId().equals(this.customerId);
         }
