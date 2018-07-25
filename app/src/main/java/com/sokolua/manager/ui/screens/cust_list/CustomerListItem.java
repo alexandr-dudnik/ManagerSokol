@@ -1,6 +1,10 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
 
+import com.sokolua.manager.data.storage.dto.DebtDto;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.data.storage.realm.DebtRealm;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +26,28 @@ class CustomerListItem {
         this.debtType = debt<=0?DEBT_NO_DEBT:(debtOutdated<=0?DEBT_NORMAL:DEBT_OUTDATED);
         this.address = address;
         this.phone = phone;
-        header = false;
+        this.header = false;
     }
+
+    public CustomerListItem(CustomerRealm customerRealm) {
+        this.customerId = customerRealm.getCustomerId();
+        this.customerName = customerRealm.getCustomerName();
+        this.address = customerRealm.getAddress();
+        this.phone = customerRealm.getPhone();
+        this.header = false;
+
+        float debtUSD = 0;
+        float debtUSD_outd = 0;
+        for (DebtRealm debt :customerRealm.getDebt()){
+            if (debt.isOutdated()){
+                debtUSD_outd += debt.getAmountUSD();
+            }else{
+                debtUSD += debt.getAmountUSD();
+            }
+        }
+        this.debtType = (debtUSD+debtUSD_outd)<=0?DEBT_NO_DEBT:(debtUSD_outd<=0?DEBT_NORMAL:DEBT_OUTDATED);
+    }
+
 
     public CustomerListItem(String customerName) {
         header = true;

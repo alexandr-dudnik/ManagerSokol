@@ -62,6 +62,7 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
         public Presenter() {
         }
 
+
         @Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);

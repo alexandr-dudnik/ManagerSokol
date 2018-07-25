@@ -1,14 +1,10 @@
 package com.sokolua.manager.ui.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.sokolua.manager.BuildConfig;
@@ -18,19 +14,16 @@ import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
 
-
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import mortar.MortarScope;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
-import static com.sokolua.manager.ui.activities.RootActivity.mProgressDialog;
 
 public class SplashActivity extends AppCompatActivity implements IRootView {
 
@@ -68,7 +61,7 @@ public class SplashActivity extends AppCompatActivity implements IRootView {
         super.onStart();
 
         Observable
-                .timer( 3000, TimeUnit.MILLISECONDS )
+                .timer( 1000, TimeUnit.MILLISECONDS )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 //        .flatMap(aBoolean -> DataManager.getInstance().getPhotoCardsObsFromNetwork())

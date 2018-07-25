@@ -1,6 +1,7 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -11,17 +12,19 @@ import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 
 import dagger.Provides;
+import io.reactivex.disposables.Disposable;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_cust_list)
 public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponent>{
-        @Override
-        public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
-            return DaggerCustomerListScreen_Component.builder()
-                    .module(new Module())
-                    .rootComponent(parentComponent)
-                    .build();
-        }
+
+    @Override
+    public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
+        return DaggerCustomerListScreen_Component.builder()
+                .module(new Module())
+                .rootComponent(parentComponent)
+                .build();
+    }
 
 
     //region ===================== DI =========================
@@ -79,6 +82,38 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         }
 
 
+        private Disposable subscribeOnCustomersRealmObs() {
+
+            return subscribe(mModel.getCustomerList(getView().getCustomerFilter()), new RealmSubscriber());
+        }
+
+        private class RealmSubscriber extends ViewSubscriber<CustomerRealm> {
+            CustomerListAdapter mAdapter = getView().getAdapter();
+
+            @Override
+            public void onStart() {
+                super.onStart();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                if (getRootView() != null) {
+                    getRootView().showError(e);
+                }
+            }
+
+            @Override
+            public void onNext(CustomerRealm customerRealm) {
+                mAdapter.addItem(new CustomerListItem(customerRealm));
+            }
+        }
+
     }
     //endregion ================== Presenter =========================
+
 }

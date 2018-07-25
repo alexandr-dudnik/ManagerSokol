@@ -10,7 +10,7 @@ import com.sokolua.manager.utils.App;
 
 import javax.inject.Inject;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 public class DataManager {
     private static DataManager ourInstance;

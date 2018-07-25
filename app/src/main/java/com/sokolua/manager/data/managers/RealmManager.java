@@ -5,9 +5,7 @@ import com.sokolua.manager.data.storage.realm.DebtRealm;
 
 import java.util.ArrayList;
 
-import io.realm.RealmResults;
-import rx.Observable;
-import rx.functions.Func1;
+import io.reactivex.Observable;
 
 public class RealmManager {
 
@@ -42,8 +40,8 @@ public class RealmManager {
         managedCustomers.add(temp);
         //--------------------------
 
-        return Observable.from(managedCustomers)
-                    .filter(customerRealm -> filter.isEmpty() || customerRealm.getCustomerName().contains(filter));
+        return Observable.fromIterable(managedCustomers)
+                    .filter(customerRealm -> filter.isEmpty() || customerRealm.getCustomerName().toLowerCase().contains(filter.toLowerCase()));
 
 //        return managedProduct
 //                .asObservable()  //Получаем последовательность
