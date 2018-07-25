@@ -1,5 +1,7 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
+import android.os.Bundle;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
@@ -71,6 +73,13 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
         }
 
+        @Override
+        protected void onLoad(Bundle savedInstanceState) {
+            super.onLoad(savedInstanceState);
+            mCompSubs.add(subscribeOnCustomersRealmObs());
+
+            getView().showCustomerList();
+        }
 
         @Override
         protected void initActionBar() {
