@@ -7,7 +7,6 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.MainModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
-import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
 
@@ -55,12 +54,12 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         void inject(MainView view);
 
-        RootPresenter getRootPresenter();
     }
     //endregion ================== DI =========================
 
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<MainView, MainModel> {
+
 
         public Presenter() {
         }

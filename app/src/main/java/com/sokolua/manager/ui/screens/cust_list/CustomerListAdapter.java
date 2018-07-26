@@ -39,6 +39,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
     public CustomerListAdapter(CustomerListScreen.Presenter presenter, boolean withHeaders) {
         this.withHeaders = withHeaders;
+        this.mPresenter = presenter;
     }
 
     @Override
@@ -73,7 +74,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     //  Class View Holder
     public class ViewHolder extends RecyclerView.ViewHolder{
         private CustomerListItem mCustomerItem = null;
-        private CustomerListScreen.Presenter mPresenter;
+        private CustomerListScreen.Presenter mPresenter=null;
 
 
         @Nullable @BindView(R.id.exclamation_img)   ImageView mExclamationImg;

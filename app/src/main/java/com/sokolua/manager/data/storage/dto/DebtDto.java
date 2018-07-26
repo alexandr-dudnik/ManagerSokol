@@ -3,6 +3,8 @@ package com.sokolua.manager.data.storage.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.sokolua.manager.data.storage.realm.DebtRealm;
+
 public class DebtDto implements Parcelable {
     private String currency;
     private float amount;
@@ -18,6 +20,12 @@ public class DebtDto implements Parcelable {
         this.currency = in.readString();
         this.amount = in.readFloat();
         this.amountUSD = in.readFloat();
+    }
+
+    public DebtDto(DebtRealm debt) {
+        this.currency = debt.getCurrency();
+        this.amount = debt.getAmount();
+        this.amountUSD = debt.getAmountUSD();
     }
 
     //region ===================== Parcelable =========================

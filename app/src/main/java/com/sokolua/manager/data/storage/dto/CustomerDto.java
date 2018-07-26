@@ -3,6 +3,9 @@ package com.sokolua.manager.data.storage.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.data.storage.realm.DebtRealm;
+
 import java.util.ArrayList;
 
 public class CustomerDto implements Parcelable {
@@ -10,7 +13,7 @@ public class CustomerDto implements Parcelable {
     private String customerName;
     private String address;
     private String phone;
-    private ArrayList<DebtDto> debt;
+    private ArrayList<DebtDto> debt = new ArrayList<>();
 
     public CustomerDto(String customerId, String customerName, String address, String phone, ArrayList<DebtDto> debt) {
         this.customerId = customerId;
@@ -26,6 +29,16 @@ public class CustomerDto implements Parcelable {
         this.address = in.readString();
         this.phone = in.readString();
         this.debt = in.createTypedArrayList(DebtDto.CREATOR);
+    }
+
+    public CustomerDto(CustomerRealm customer){
+        this.customerId = customer.getCustomerId();
+        this.customerName = customer.getCustomerName();
+        this.address = customer.getAddress();
+        this.phone = customer.getPhone();
+        for (DebtRealm debt: customer.getDebt()) {
+            this.debt.add(new DebtDto(debt));
+        }
     }
 
     //region ===================== Parcelable =========================

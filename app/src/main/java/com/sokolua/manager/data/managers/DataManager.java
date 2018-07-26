@@ -74,6 +74,9 @@ public class DataManager {
         return mRealmManager.getCustomersFromRealm(filter);
     }
 
+    public CustomerRealm getCustomerById(String id){
+        return mRealmManager.getCustomerById(id);
+    }
     //endregion ================== Customers =========================
 
 

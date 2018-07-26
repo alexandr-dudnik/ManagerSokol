@@ -10,12 +10,9 @@ import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
-import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
-
-import javax.inject.Inject;
 
 import dagger.Provides;
 import flow.Direction;
@@ -37,11 +34,6 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     //region ===================== Presenter =========================
     public static class Presenter extends AbstractPresenter<AuthView, AuthModel> implements IAuthPresenter {
-        @Inject
-        AuthModel mAuthModel;
-        @Inject
-        RootPresenter mRootPresenter;
-
 
 
         public Presenter() {
@@ -113,10 +105,10 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                 }
 
                     //TODO auth user
-                    mAuthModel.loginUser(getView().getUserName(),
+                    mModel.loginUser(getView().getUserName(),
                             getView().getUserPassword());
 
-                    if (mAuthModel.isUserAuth()) {
+                    if (mModel.isUserAuth()) {
                         Flow.get(getView()).replaceHistory(new MainScreen(), Direction.REPLACE);
                     }else {
                         getView().login_error();
@@ -128,7 +120,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         public boolean checkUserAuth() {
-            return mAuthModel.isUserAuth();
+            return mModel.isUserAuth();
         }
 
     }
