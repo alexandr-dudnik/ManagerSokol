@@ -7,9 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.flow.AbstractScreen;
+import com.sokolua.manager.ui.screens.customer.info.CustomerInfoScreen;
+import com.sokolua.manager.ui.screens.customer.orders.CustomerOrdersScreen;
+import com.sokolua.manager.ui.screens.customer.tasks.CustomerTasksScreen;
+import com.sokolua.manager.utils.App;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,16 +23,14 @@ import mortar.MortarScope;
 
 public class CustomerPagerAdapter extends PagerAdapter {
     private List<String> mTitles;
-    private CustomerDto mCustomerDto;
 
-    public CustomerPagerAdapter(CustomerDto customer) {
-        mCustomerDto = customer;
-
+    public CustomerPagerAdapter() {
         mTitles = new ArrayList<>();
-        mTitles.add("Информация");
-        mTitles.add("Задачи");
-        mTitles.add("Заказы");
+        mTitles.add(App.getStringRes(R.string.customer_tab_info));
+        mTitles.add(App.getStringRes(R.string.customer_tab_tasks));
+        mTitles.add(App.getStringRes(R.string.customer_tab_orders));
     }
+
 
     @Override
     public int getCount() {
@@ -47,10 +50,13 @@ public class CustomerPagerAdapter extends PagerAdapter {
         AbstractScreen screen = null;
         switch (position){
             case 0:
-                //screen = new FindScreen();
+                screen = new CustomerInfoScreen();
                 break;
             case 1:
-                //screen = new FilterScreen();
+                screen = new CustomerTasksScreen();
+                break;
+            case 2:
+                screen = new CustomerOrdersScreen();
                 break;
         }
         if (screen != null) {

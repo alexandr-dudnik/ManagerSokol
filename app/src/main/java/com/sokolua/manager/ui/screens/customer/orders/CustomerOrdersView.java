@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.customer.info;
+package com.sokolua.manager.ui.screens.customer.orders;
 
 
 import android.content.Context;
@@ -13,25 +13,23 @@ import com.sokolua.manager.mvp.views.AbstractView;
 
 import butterknife.BindView;
 
-public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>{
+public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presenter>{
     @BindView(R.id.customer_name_text)
     TextView mCustomerNameText;
 
-    public CustomerInfoView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public CustomerOrdersView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     protected void initDagger(Context context) {
-        DaggerService.<CustomerInfoScreen.Component>getDaggerComponent(context).inject(this);
+        DaggerService.<CustomerOrdersScreen.Component>getDaggerComponent(context).inject(this);
     }
-
 
     @Override
     public boolean viewOnBackPressed() {
         return false;
     }
-
 
     @Override
     protected void onAttachedToWindow() {
@@ -39,6 +37,7 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
 
         mPresenter.updateFields();
     }
+
 
     public void setCustomerNameText(String name) {
         mCustomerNameText.setText(name);

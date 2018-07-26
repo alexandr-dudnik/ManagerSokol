@@ -354,5 +354,11 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     }
 
     //endregion ================== Events =========================
+
+
+    public void selectNavigationMenu(int menuItemId) {
+        mBottomBar.setSelectedItemId(menuItemId);
+    }
+
 }
 

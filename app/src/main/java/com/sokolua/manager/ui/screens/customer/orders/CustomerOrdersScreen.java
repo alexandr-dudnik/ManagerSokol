@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.customer.info;
+package com.sokolua.manager.ui.screens.customer.orders;
 
 import android.os.Bundle;
 
@@ -10,28 +10,27 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
-import com.sokolua.manager.mvp.presenters.RootPresenter;
-import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
+import com.sokolua.manager.ui.screens.customer.info.DaggerCustomerInfoScreen_Component;
 
 import javax.inject.Inject;
 
 import dagger.Provides;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_customer_info)
-public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component> {
+@Screen(R.layout.screen_customer_orders)
+public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Component> {
 
     @Override
     public Object createScreenComponent(CustomerScreen.Component parentComponent) {
-        return DaggerCustomerInfoScreen_Component
+        return DaggerCustomerOrdersScreen_Component
                 .builder()
                 .module(new Module())
                 .component(parentComponent)
                 .build();
     }
 
-    public CustomerInfoScreen() {
+    public CustomerOrdersScreen(){
     }
 
     //region ===================== DI =========================
@@ -40,13 +39,13 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
     class Module {
 
         @Provides
-        @DaggerScope(CustomerInfoScreen.class)
+        @DaggerScope(CustomerOrdersScreen.class)
         CustomerModel provideCustomerModel() {
             return new CustomerModel();
         }
 
         @Provides
-        @DaggerScope(CustomerInfoScreen.class)
+        @DaggerScope(CustomerOrdersScreen.class)
         Presenter providePresenter() {
             return new Presenter();
         }
@@ -54,16 +53,16 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
     }
 
     @dagger.Component(dependencies = CustomerScreen.Component.class, modules = Module.class)
-    @DaggerScope(CustomerInfoScreen.class)
+    @DaggerScope(CustomerOrdersScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
-        void inject(CustomerInfoView view);
+        void inject(CustomerOrdersView view);
     }
     //endregion ================== DI =========================
 
     //region ===================== Presenter =========================
-    public class Presenter extends AbstractPresenter<CustomerInfoView, CustomerModel> {
+    public class Presenter extends AbstractPresenter<CustomerOrdersView, CustomerModel> {
         @Inject
         protected CustomerDto mCustomerDto;
 
@@ -76,9 +75,8 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
 
+            getView().setCustomerNameText(mCustomerDto.getAddress());
         }
-
-
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
@@ -91,7 +89,8 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         }
 
         protected void updateFields(){
-            getView().setCustomerNameText(mCustomerDto.getCustomerName());
+            getView().setCustomerNameText(mCustomerDto.getPhone());
         }
+
     }
 }

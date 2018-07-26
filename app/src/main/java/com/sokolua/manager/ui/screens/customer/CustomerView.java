@@ -19,6 +19,8 @@ public class CustomerView extends AbstractView<CustomerScreen.Presenter> {
     @BindView(R.id.tabs_pager)
     ViewPager mViewPager;
 
+    private CustomerPagerAdapter mAdapter;
+
 
     @Inject
     CustomerScreen.Presenter mPresenter;
@@ -43,12 +45,16 @@ public class CustomerView extends AbstractView<CustomerScreen.Presenter> {
 
     @Override
     protected void onAttachedToWindow() {
-        CustomerPagerAdapter adapter = new CustomerPagerAdapter();
-        mViewPager.setAdapter(adapter);
+        mAdapter = new CustomerPagerAdapter();
+        mViewPager.setAdapter(mAdapter);
         super.onAttachedToWindow();
     }
 
     public ViewPager getViewPager() {
         return mViewPager;
+    }
+
+    public CustomerPagerAdapter getAdapter() {
+        return mAdapter;
     }
 }

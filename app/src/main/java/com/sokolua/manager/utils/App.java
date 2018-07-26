@@ -1,9 +1,19 @@
 package com.sokolua.manager.utils;
 
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.view.menu.MenuBuilder;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import android.widget.PopupMenu;
 
+import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.components.DaggerAppComponent;
@@ -84,6 +94,7 @@ public class App extends Application {
     public static String getStringRes(int res_id){
        return sContext.getResources().getString(res_id);
     }
+    
 
     public static int getColorRes(int res_id){
         return ResourcesCompat.getColor(sContext.getResources(), res_id, sContext.getTheme());

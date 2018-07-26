@@ -73,7 +73,7 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
 
     protected <T> Disposable subscribe(Observable<T> observable, ViewSubscriber<T> subscriber){
         return observable
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(subscriber);
     }

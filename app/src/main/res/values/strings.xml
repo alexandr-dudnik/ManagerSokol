@@ -27,7 +27,9 @@
     <string name="menu_orders">Заказы</string>
     <string name="menu_goods">Товары</string>
     <string name="menu_route">Маршрут</string>
-
+    <string name="customer_tab_info">Инфо</string>
+    <string name="customer_tab_tasks">Задачи</string>
+    <string name="customer_tab_orders">Закзазы</string>
 
 
 </resources>

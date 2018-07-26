@@ -9,6 +9,7 @@ import com.sokolua.manager.mvp.models.MainModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
+import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
 import flow.Direction;
@@ -84,24 +85,26 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
 
 
         void clickOnGoods(){
-            if (getRootView()!=null) {
-                getRootView().showMessage("Здесь будут товыры");
+            if (getRootView() != null) {
+                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarGoods);
             }
         }
 
         void clickOnCustomers(){
-            Flow.get(getView().getContext()).replaceHistory(new CustomerListScreen(), Direction.REPLACE);
+            if (getRootView() != null) {
+                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarCustomers);
+            }
         }
 
         void clickOnRoutes(){
-            if (getRootView()!=null) {
-                getRootView().showMessage("Здесь будут маршруты");
+            if (getRootView() != null) {
+                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarRoute);
             }
         }
 
         void clickOnOrders(){
-            if (getRootView()!=null) {
-                getRootView().showMessage("Здесь будут заказы");
+            if (getRootView() != null) {
+                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarOrders);
             }
         }
 

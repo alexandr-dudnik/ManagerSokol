@@ -12,6 +12,7 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
 
@@ -53,6 +54,11 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
             return new Presenter();
         }
 
+        @Provides
+        @DaggerScope(CustomerScreen.class)
+        CustomerDto provideCustomerDto() {
+            return mCustomerDto;
+        }
     }
 
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
@@ -62,6 +68,11 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
 
         void inject(CustomerView view);
 
+        void inject(CustomerDto customer);
+
+        RootPresenter getRootPresenter();
+
+        CustomerDto getCustomerDto();
     }
     //endregion ================== DI =========================
 
@@ -75,6 +86,9 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
+
+//            CustomerPagerAdapter adapter = getView().getAdapter();
+//            adapter.setCustomer(mCustomerDto);
         }
 
         @Override

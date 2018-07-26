@@ -8,20 +8,20 @@
             android:actionLayout="@layout/screen_cust_list"
             android:title="@string/menu_home"/>
         <item
-            android:id="@+id/bottomBarCustomers"
-            android:icon="@drawable/ic_customers"
-            android:title="@string/menu_customers" />
-        <item
-            android:id="@+id/bottomBarOrders"
-            android:icon="@drawable/ic_orders"
-            android:title="@string/menu_orders" />
-        <item
             android:id="@+id/bottomBarGoods"
             android:icon="@drawable/ic_goods"
             android:title="@string/menu_goods" />
         <item
+            android:id="@+id/bottomBarCustomers"
+            android:icon="@drawable/ic_customers"
+            android:title="@string/menu_customers" />
+        <item
             android:id="@+id/bottomBarRoute"
             android:icon="@drawable/ic_map"
             android:title="@string/menu_route" />
+        <item
+            android:id="@+id/bottomBarOrders"
+            android:icon="@drawable/ic_orders"
+            android:title="@string/menu_orders" />
     </group>
 </menu>
