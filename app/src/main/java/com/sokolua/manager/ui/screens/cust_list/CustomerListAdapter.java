@@ -1,7 +1,5 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +23,7 @@ import butterknife.Optional;
 public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapter.ViewHolder> {
     private List<CustomerListItem> mCustomerListItem = new ArrayList<>();
     private boolean withHeaders = false;
+    private CustomerListScreen.Presenter mPresenter;
 
     public void addItem(CustomerListItem item){
         if (!mCustomerListItem.contains(item)) {
@@ -38,7 +37,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
     }
 
-    public CustomerListAdapter(boolean withHeaders) {
+    public CustomerListAdapter(CustomerListScreen.Presenter presenter, boolean withHeaders) {
         this.withHeaders = withHeaders;
     }
 
@@ -62,7 +61,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CustomerListItem item = mCustomerListItem.get(position);
-        holder.bind(item);
+        holder.bind(item, mPresenter);
     }
 
     @Override
@@ -74,12 +73,13 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     //  Class View Holder
     public class ViewHolder extends RecyclerView.ViewHolder{
         private CustomerListItem mCustomerItem = null;
+        private CustomerListScreen.Presenter mPresenter;
 
 
         @Nullable @BindView(R.id.exclamation_img)   ImageView mExclamationImg;
         @Nullable @BindView(R.id.map_pin_img)       ImageView mMapPinImg;
         @Nullable @BindView(R.id.call_img)          ImageView mCallImg;
-        @Nullable @BindView(R.id.customer_name_text) TextView mCustomerNameText;
+        @Nullable @BindView(R.id.customer_name_text)TextView mCustomerNameText;
         @Nullable @BindView(R.id.item_header_text)  TextView mItemHeaderText;
 
 
@@ -88,8 +88,9 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(CustomerListItem item){
+        public void bind(CustomerListItem item, CustomerListScreen.Presenter presenter){
             mCustomerItem= item;
+            mPresenter = presenter;
             refreshInfo();
         }
 
@@ -128,22 +129,19 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
         @Optional
         @OnClick(R.id.map_pin_img)
         public void onMapClick(View view){
-            Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ Uri.encode(mCustomerItem.getAddress()));
-            Intent googleMaps = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            googleMaps.setPackage("com.google.android.apps.maps");
-            if (googleMaps.resolveActivity(App.getContext().getPackageManager()) != null) {
-                App.getContext().startActivity(googleMaps);
-            }
+            mPresenter.openCustomerMap(mCustomerItem);
         }
 
         @Optional
         @OnClick(R.id.call_img)
         public void onCallClick(View view){
-            Intent intent = new Intent(Intent.ACTION_DIAL);
-            intent.setData(Uri.parse("tel:"+mCustomerItem.getPhone()));
-            if (intent.resolveActivity(App.getContext().getPackageManager()) != null) {
-                App.getContext().startActivity(intent);
-            }
+            mPresenter.callToCustomer(mCustomerItem);
+        }
+
+        @Optional
+        @OnClick({R.id.exclamation_img, R.id.customer_name_text, R.id.customer_list_item})
+        public void onCustomerClick(View view){
+            mPresenter.openCustomerCard(mCustomerItem);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.sokolua.manager.R;
@@ -12,8 +14,10 @@ import com.sokolua.manager.mvp.models.CustomerListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import mortar.MortarScope;
 
@@ -122,6 +126,38 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
             }
         }
 
+
+        //List actions
+        public void openCustomerMap(@NonNull CustomerListItem customer){
+            Uri gmmIntentUri = Uri.parse("geo:0,0?q="+ Uri.encode(customer.getAddress()));
+            Intent googleMaps = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            googleMaps.setPackage("com.google.android.apps.maps");
+            if (googleMaps.resolveActivity(App.getContext().getPackageManager()) != null) {
+                App.getContext().startActivity(googleMaps);
+            }else{
+                if (getRootView()!= null){
+                    getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
+                }
+            }
+        }
+
+        public void callToCustomer(CustomerListItem customerItem) {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:"+customerItem.getPhone()));
+            if (intent.resolveActivity(App.getContext().getPackageManager()) != null) {
+                App.getContext().startActivity(intent);
+            }else{
+                if (getRootView()!= null){
+                    getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
+                }
+            }
+        }
+
+        public void openCustomerCard(CustomerListItem customerItem){
+            if (getRootView()!= null) {
+                getRootView().showMessage("Open customer");
+            }
+        }
     }
     //endregion ================== Presenter =========================
 

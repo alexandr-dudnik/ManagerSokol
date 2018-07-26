@@ -1,32 +1,38 @@
-package com.sokolua.manager.ui.screens.main;
+package com.sokolua.manager.ui.screens.customer;
+
+
+import android.os.Bundle;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
-import com.sokolua.manager.mvp.models.MainModel;
+import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
-import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
 
 import dagger.Provides;
-import flow.Direction;
-import flow.Flow;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_main)
-public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
+@Screen(R.layout.screen_cust_list)
+public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent> {
+    private CustomerDto mCustomerDto;
+
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
-        return DaggerMainScreen_Component.builder()
+        return DaggerCustomerScreen_Component.builder()
                 .module(new Module())
                 .rootComponent(parentComponent)
                 .build();
     }
 
+    public CustomerScreen(CustomerDto customerDto) {
+        mCustomerDto = customerDto;
+    }
 
     //region ===================== DI =========================
 
@@ -34,37 +40,35 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
     class Module {
 
         @Provides
-        @DaggerScope(MainScreen.class)
-        MainModel provideMainModel() {
-            return new MainModel();
+        @DaggerScope(CustomerScreen.class)
+        CustomerModel provideCustomerListModel() {
+            return new CustomerModel();
         }
 
         @Provides
-        @DaggerScope(MainScreen.class)
-        Presenter provideMainPresenter() {
+        @DaggerScope(CustomerScreen.class)
+        Presenter providePresenter() {
             return new Presenter();
         }
 
     }
 
-
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
-    @DaggerScope(MainScreen.class)
+    @DaggerScope(CustomerScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
-        void inject(MainView view);
+        void inject(CustomerView view);
 
         RootPresenter getRootPresenter();
     }
     //endregion ================== DI =========================
 
     //region ===================== Presenter =========================
-    public class Presenter extends AbstractPresenter<MainView, MainModel> {
+    public class Presenter extends AbstractPresenter<CustomerView, CustomerModel> {
 
         public Presenter() {
         }
-
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -72,40 +76,21 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
         }
 
+        @Override
+        protected void onLoad(Bundle savedInstanceState) {
+            super.onLoad(savedInstanceState);
+        }
 
         @Override
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
-                    .setTitle("Вася Пупкин") //TODO - Имя менеджера
+                    .setBackArrow(true)
+                    .setTitle(mCustomerDto.getCustomerName())
                     .build();
 
-            //mRootPresenter.hideFab();
         }
-
-
-        void clickOnGoods(){
-            if (getRootView()!=null) {
-                getRootView().showMessage("Здесь будут товыры");
-            }
-        }
-
-        void clickOnCustomers(){
-            Flow.get(getView().getContext()).replaceHistory(new CustomerListScreen(), Direction.REPLACE);
-        }
-
-        void clickOnRoutes(){
-            if (getRootView()!=null) {
-                getRootView().showMessage("Здесь будут маршруты");
-            }
-        }
-
-        void clickOnOrders(){
-            if (getRootView()!=null) {
-                getRootView().showMessage("Здесь будут заказы");
-            }
-        }
-
     }
     //endregion ================== Presenter =========================
+
 }

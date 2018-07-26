@@ -9,11 +9,15 @@
     <string name="roboto_thin">sans-serif-thin</string>
     <string name="roboto_medium">sans-serif-medium</string>
 
-
+    <!-- Errors -->
     <string name="error_message">Ошибка приложения</string>
     <string name="error_empty_login">Вы забыли ввести логин!</string>
     <string name="error_bad_password">Длина пароля меньше 8 символов!</string>
     <string name="error_auth_error">Ошибка аутентификации! Проверьте ваш логин и пароль!</string>
+    <string name="error_google_maps_not_found">Приложение "Карты Google" не установлены!</string>
+    <string name="error_phone_not_available">Не обнаружен телефон - совершить звонок не возможно!</string>
+
+
     <string name="login_form_caption">Ваши учетные данные</string>
     <string name="user_name_hint">Логин</string>
     <string name="user_password_hint">Пароль</string>
@@ -23,4 +27,7 @@
     <string name="menu_orders">Заказы</string>
     <string name="menu_goods">Товары</string>
     <string name="menu_route">Маршрут</string>
+
+
+
 </resources>
