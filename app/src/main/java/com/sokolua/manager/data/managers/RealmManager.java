@@ -1,5 +1,7 @@
 package com.sokolua.manager.data.managers;
 
+import android.support.annotation.Nullable;
+
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 
@@ -8,10 +10,7 @@ import java.util.ArrayList;
 import io.reactivex.Observable;
 
 public class RealmManager {
-
-    public Observable<CustomerRealm> getCustomersFromRealm(String filter){
-        //RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance().where(CustomerRealm.class).findAllAsync();
-
+    private ArrayList<CustomerRealm>  customers() {
         ArrayList<CustomerRealm> managedCustomers= new ArrayList<>();
 
         CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Днепр, пр. Кирова, 119", "123-23-12");
@@ -39,8 +38,15 @@ public class RealmManager {
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",250,9.50f,false));
         managedCustomers.add(temp);
         //--------------------------
+        return managedCustomers;
+    }
 
-        return Observable.fromIterable(managedCustomers)
+    public Observable<CustomerRealm> getCustomersFromRealm(String filter){
+        //RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance().where(CustomerRealm.class).findAllAsync();
+
+
+
+        return Observable.fromIterable(customers())
                     .filter(customerRealm -> (filter == null) || (filter.isEmpty() || customerRealm.getCustomerName().toLowerCase().contains(filter.toLowerCase())));
 
 //        return managedProduct
@@ -50,4 +56,13 @@ public class RealmManager {
 //                .flatMap(Observable::from); //преобразуем в Obs<ProductRealm>
     }
 
+    @Nullable
+    public CustomerRealm getCustomerById(String id) {
+        for (CustomerRealm st: customers()) {
+            if (st.getCustomerId().equals(id)) {
+                return st;
+            }
+        }
+        return null;
+    }
 }

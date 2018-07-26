@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.flow.AbstractScreen;
 
@@ -17,8 +18,11 @@ import mortar.MortarScope;
 
 public class CustomerPagerAdapter extends PagerAdapter {
     private List<String> mTitles;
+    private CustomerDto mCustomerDto;
 
-    public CustomerPagerAdapter() {
+    public CustomerPagerAdapter(CustomerDto customer) {
+        mCustomerDto = customer;
+
         mTitles = new ArrayList<>();
         mTitles.add("Информация");
         mTitles.add("Задачи");
@@ -31,7 +35,7 @@ public class CustomerPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
     }
 
@@ -69,7 +73,7 @@ public class CustomerPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         container.removeView((View) object);
     }
 

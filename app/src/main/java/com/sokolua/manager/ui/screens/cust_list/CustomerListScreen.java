@@ -12,11 +12,14 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
-import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.screens.customer.CustomerScreen;
 import com.sokolua.manager.utils.App;
 
+import javax.inject.Inject;
+
 import dagger.Provides;
+import flow.Flow;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import mortar.MortarScope;
@@ -60,13 +63,15 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
         void inject(CustomerListView view);
 
-        RootPresenter getRootPresenter();
     }
     //endregion ================== DI =========================
 
 
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<CustomerListView, CustomerListModel> {
+
+        @Inject
+        CustomerListModel mModel;
 
         public Presenter() {
         }
@@ -155,7 +160,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
         public void openCustomerCard(CustomerListItem customerItem){
             if (getRootView()!= null) {
-                getRootView().showMessage("Open customer");
+                Flow.get(getView().getContext()).set(new CustomerScreen(mModel.getCustomerDtoById(customerItem.getCustomerId())));
             }
         }
     }
