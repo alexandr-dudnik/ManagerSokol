@@ -10,9 +10,9 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
-import com.sokolua.manager.mvp.presenters.RootPresenter;
-import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
+import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.IntentStarter;
 
 import javax.inject.Inject;
 
@@ -59,6 +59,10 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         void inject(Presenter presenter);
 
         void inject(CustomerInfoView view);
+
+        void inject(CustomerInfoNoteAdapter noteAdapter);
+
+        void inject(CustomerInfoDataAdapter dataAdapter);
     }
     //endregion ================== DI =========================
 
@@ -90,8 +94,23 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
         }
 
-        protected void updateFields(){
-            getView().setCustomerNameText(mCustomerDto.getCustomerName());
+
+        public void callToCustomer(CustomerInfoDataItem mItem) {
+            if (!IntentStarter.openCaller(mItem.getActionData()) && getRootView() != null) {
+                getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
+            }
+        }
+
+        public void openMap(CustomerInfoDataItem mItem) {
+            if (!IntentStarter.openMap(mItem.getActionData()) && getRootView() != null) {
+                getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
+            }
+        }
+
+        public void sendEmail(CustomerInfoDataItem mItem) {
+            if (!IntentStarter.composeEmail(mItem.getActionData()) && getRootView() != null) {
+                getRootView().showMessage(App.getStringRes(R.string.error_email_not_available));
+            }
         }
     }
 }

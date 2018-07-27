@@ -35,7 +35,9 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        mPresenter.updateFields();
+        if (!isInEditMode()) {
+            mPresenter.updateFields();
+        }
     }
 
 

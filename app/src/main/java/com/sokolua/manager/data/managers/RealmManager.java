@@ -13,27 +13,27 @@ public class RealmManager {
     private ArrayList<CustomerRealm>  customers() {
         ArrayList<CustomerRealm> managedCustomers= new ArrayList<>();
 
-        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Днепр, пр. Кирова, 119", "123-23-12");
+        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net");
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",1250,1250,true));
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",2700,100,true));
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",3500,150,false));
         managedCustomers.add(temp);
         //--------------------------
-        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Каменское, пр. Аношкина, 21", "222-77-55");
+        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm");
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",500,18,false));
         managedCustomers.add(temp);
         //--------------------------
-        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Днепр, пр. Слобожанский, 77", "");
+        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
         managedCustomers.add(temp);
         //--------------------------
-        temp = new CustomerRealm("cust0004","Белый ЧП", "", "067-667-88-00");
+        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","");
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",2700,100,true));
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",150,150,false));
         managedCustomers.add(temp);
-        temp = new CustomerRealm("cust0005","Борода ООО", "Кривой Рог, ул.Ленина, 10", "");
+        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com");
         managedCustomers.add(temp);
         //--------------------------
-        temp = new CustomerRealm("cust0006","Владислав ЧП", "Днепр, пр. Богдана Хмельницкого, 150", "");
+        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","");
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",130,130,true));
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",250,9.50f,false));
         managedCustomers.add(temp);
