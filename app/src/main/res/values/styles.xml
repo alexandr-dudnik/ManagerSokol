@@ -64,7 +64,7 @@
     <style name="customer_list_header">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/color_white</item>
+        <item name="android:background">@color/main_background</item>
     </style>>
     <style name="customer_list_header_text">
         <item name="android:layout_width">match_parent</item>
@@ -85,7 +85,7 @@
     <style name="customer_list_item">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/cust_list_item_height</item>vv
-        <item name="android:background">@color/color_white</item>
+        <item name="android:background">@color/main_background</item>
     </style>>
     <style name="customer_list_item_text">
         <item name="android:layout_width">match_parent</item>
@@ -95,7 +95,7 @@
         <item name="android:layout_margin">@dimen/cust_list_item_margin</item>
         <item name="android:fontFamily">@string/roboto_medium</item>
         <item name="android:textSize">@dimen/cust_list_item_fontSize</item>
-        <item name="android:textColor">@color/color_gray_background</item>
+        <item name="android:textColor">@color/color_gray_dark</item>
     </style>
     <style name="customer_list_item_divider">
         <item name="android:layout_width">match_parent</item>
@@ -130,5 +130,55 @@
         <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
         <item name="android:tint">@color/color_green</item>
     </style>
+
+    <!-- Customer card info -->
+    <style name="customer_info_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+    </style>
+    <style name="customer_info_header" parent="customer_info_text">
+        <item name="android:textSize">@dimen/customer_info_header_fontSize</item>
+        <item name="android:textColor">@color/color_gray</item>
+    </style>
+    <style name="customer_info_item" parent="customer_info_text">
+        <item name="android:textSize">@dimen/customer_info_data_fontSize</item>
+        <item name="android:textColor">@color/color_black</item>
+    </style>
+    <style name="customer_info_divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/color_accent</item>
+        <item name="android:layout_marginBottom">@dimen/customer_info_margin</item>
+    </style>
+    <style name="customer_info_icon">
+        <item name="android:layout_width">@dimen/customer_info_icon</item>
+        <item name="android:layout_height">@dimen/customer_info_icon</item>
+    </style>
+
+    <!-- Customer card notes -->
+    <style name="customer_note_block">
+        <item name="android:layout_margin">@dimen/customer_info_margin</item>
+        <item name="android:padding">@dimen/customer_info_margin</item>
+        <item name="android:background">@drawable/rounded_corners_shape</item>
+        <item name="android:backgroundTint" tools:targetApi="lollipop">@color/color_gray_lighter</item>
+    </style>
+    <style name="customer_note_icon">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+    </style>
+    <style name="customer_note_date">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_gray_dark</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+    <style name="customer_note_data">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 
 </resources>

@@ -11,31 +11,39 @@ import java.util.ArrayList;
 public class CustomerDto implements Parcelable {
     private String customerId;
     private String customerName;
+    private String contactName;
     private String address;
     private String phone;
+    private String email;
     private ArrayList<DebtDto> debt = new ArrayList<>();
 
-    public CustomerDto(String customerId, String customerName, String address, String phone, ArrayList<DebtDto> debt) {
+    public CustomerDto(String customerId, String customerName, String contactName, String address, String phone, String email, ArrayList<DebtDto> debt) {
         this.customerId = customerId;
         this.customerName = customerName;
+        this.contactName = contactName;
         this.address = address;
         this.phone = phone;
+        this.email = email;
         this.debt = debt;
     }
 
     protected CustomerDto(Parcel in){
         this.customerId = in.readString();
         this.customerName = in.readString();
+        this.contactName = in.readString();
         this.address = in.readString();
         this.phone = in.readString();
+        this.email = in.readString();
         this.debt = in.createTypedArrayList(DebtDto.CREATOR);
     }
 
     public CustomerDto(CustomerRealm customer){
         this.customerId = customer.getCustomerId();
         this.customerName = customer.getCustomerName();
+        this.contactName = customer.getContactName();
         this.address = customer.getAddress();
         this.phone = customer.getPhone();
+        this.email = customer.getEmail();
         for (DebtRealm debt: customer.getDebt()) {
             this.debt.add(new DebtDto(debt));
         }
@@ -52,8 +60,10 @@ public class CustomerDto implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.customerId);
         dest.writeString(this.customerName);
+        dest.writeString(this.contactName);
         dest.writeString(this.address);
         dest.writeString(this.phone);
+        dest.writeString(this.email);
         dest.writeTypedList(this.debt);
     }
 
@@ -81,12 +91,19 @@ public class CustomerDto implements Parcelable {
         return customerName;
     }
 
+    public String getContactName() {
+        return contactName;
+    }
     public String getAddress() {
         return address;
     }
 
     public String getPhone() {
         return phone;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public ArrayList<DebtDto> getDebt() {
@@ -106,6 +123,10 @@ public class CustomerDto implements Parcelable {
         this.customerName = customerName;
     }
 
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -114,9 +135,15 @@ public class CustomerDto implements Parcelable {
         this.phone = phone;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public void setDebt(ArrayList<DebtDto> debt) {
         this.debt = debt;
     }
+
+
 
     //endregion ================== Setters =========================
 }

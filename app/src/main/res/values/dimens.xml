@@ -15,6 +15,13 @@
     <dimen name="cust_list_header_fontSize">20sp</dimen>
     <dimen name="cust_list_item_icon">24dp</dimen>
 
+    <!-- Customer card -->
+    <dimen name="customer_info_header_fontSize">12sp</dimen>
+    <dimen name="customer_info_data_fontSize">18sp</dimen>
+    <dimen name="customer_info_margin">8dp</dimen>
+    <dimen name="customer_info_icon">24dp</dimen>
+
+
     <dimen name="main_page_image_margin">8dp</dimen>
     <dimen name="main_page_text_size">20sp</dimen>
 </resources>

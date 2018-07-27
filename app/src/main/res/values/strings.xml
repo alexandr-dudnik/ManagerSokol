@@ -30,6 +30,11 @@
     <string name="customer_tab_info">Инфо</string>
     <string name="customer_tab_tasks">Задачи</string>
     <string name="customer_tab_orders">Закзазы</string>
+    <string name="customer_info_name_header">Название</string>
+    <string name="customer_info_contact_header">Контактное лицо</string>
+    <string name="customer_info_address_header">Адрес</string>
+    <string name="customer_info_notes">Заметки</string>
+    <string name="error_email_not_available">Почтовая программа не установлена</string>
 
 
 </resources>

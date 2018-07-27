@@ -34,8 +34,9 @@ public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presen
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
-        mPresenter.updateFields();
+        if (!isInEditMode()) {
+            mPresenter.updateFields();
+        }
     }
 
 
