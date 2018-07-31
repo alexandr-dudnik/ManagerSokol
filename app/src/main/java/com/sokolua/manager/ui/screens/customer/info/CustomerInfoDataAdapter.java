@@ -44,8 +44,10 @@ public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDa
 
     @Override
     public int getItemCount() {
-        return 0;
+        return items.size();
     }
+
+
 
     public void addItem(CustomerInfoDataItem item) {
         if (!items.contains(item)) {
@@ -98,7 +100,7 @@ public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDa
                     case CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP:
                         mCustomerInfoIcon.setImageDrawable(mapImage);
                         mCustomerInfoIcon.setColorFilter(App.getColorRes(R.color.color_green));
-                        mCustomerInfoIcon.setBackgroundColor(App.getColorRes(R.color.transparent));
+                        mCustomerInfoIcon.setBackgroundColor(App.getColorRes(R.color.color_white));
                         break;
                     case CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL:
                         mCustomerInfoIcon.setImageDrawable(mailImage);

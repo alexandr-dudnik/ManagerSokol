@@ -8,11 +8,11 @@ public class CustomerInfoDataItem {
     private String header;
     private String data;
     private int actionType = ACTION_TYPE_NO_ACTION;
-    private String actionData = "";
 
-    public CustomerInfoDataItem(String header, String data) {
+    public CustomerInfoDataItem(String header, String data, int actionType) {
         this.header = header;
         this.data = data;
+        this.actionType = actionType;
     }
 
     //region ================================ Getters ==================================
@@ -29,22 +29,8 @@ public class CustomerInfoDataItem {
         return actionType;
     }
 
-    public String getActionData() {
-        return actionData;
-    }
-
 
     //endregion ============================= Getters ==================================
 
 
-    //region ================================ Setter ==================================
-
-    public void setAction(int actionType, String actionData) {
-        this.actionType = actionType;
-        this.actionData = actionData;
-    }
-
-
-
-    //endregion ============================= Setter ==================================
 }

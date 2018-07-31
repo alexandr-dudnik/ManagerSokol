@@ -34,7 +34,7 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     protected void initDagger(Context context) {
         if (!isInEditMode()) {
             DaggerService.<CustomerListScreen.Component>getDaggerComponent(context).inject(this);
-            mAdapter = new CustomerListAdapter(mPresenter,true);
+            mAdapter = new CustomerListAdapter(true);
         }
 
 

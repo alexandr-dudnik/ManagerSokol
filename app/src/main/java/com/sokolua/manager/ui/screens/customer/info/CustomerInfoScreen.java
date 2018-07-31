@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.dto.CustomerDto;
+import com.sokolua.manager.data.storage.dto.NoteDto;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -87,6 +88,23 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
+
+
+            CustomerInfoDataAdapter mDataAdapter = getView().getDataAdapter();
+            CustomerInfoNoteAdapter mNotesAdapter = getView().getNoteAdapter();
+
+
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header),mCustomerDto.getCustomerName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header),mCustomerDto.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header),mCustomerDto.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header),mCustomerDto.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header),mCustomerDto.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL));
+
+            for (NoteDto note: mCustomerDto.getNotes()) {
+                mNotesAdapter.addItem(new CustomerInfoNoteItem(note.getNoteId(), note.getDate(), note.getData()));
+            }
+
+            getView().showData();
         }
 
         @Override
@@ -96,20 +114,26 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
 
         public void callToCustomer(CustomerInfoDataItem mItem) {
-            if (!IntentStarter.openCaller(mItem.getActionData()) && getRootView() != null) {
+            if (!IntentStarter.openCaller(mItem.getData()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
             }
         }
 
         public void openMap(CustomerInfoDataItem mItem) {
-            if (!IntentStarter.openMap(mItem.getActionData()) && getRootView() != null) {
+            if (!IntentStarter.openMap(mItem.getData()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
             }
         }
 
         public void sendEmail(CustomerInfoDataItem mItem) {
-            if (!IntentStarter.composeEmail(mItem.getActionData()) && getRootView() != null) {
+            if (!IntentStarter.composeEmail(mItem.getData()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_email_not_available));
+            }
+        }
+
+        public void deleteNote(CustomerInfoNoteItem note) {
+            if (getRootView() != null) {
+                getRootView().showMessage("Удаление заметки"); //TODO make realization of notes deletion
             }
         }
     }

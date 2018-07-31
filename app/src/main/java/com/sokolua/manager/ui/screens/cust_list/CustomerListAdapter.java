@@ -10,10 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.utils.App;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +27,8 @@ import butterknife.Optional;
 public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapter.ViewHolder> {
     private List<CustomerListItem> mCustomerListItem = new ArrayList<>();
     private boolean withHeaders = false;
-    private CustomerListScreen.Presenter mPresenter;
+    @Inject
+    protected CustomerListScreen.Presenter mPresenter;
 
     public void addItem(CustomerListItem item){
         if (!mCustomerListItem.contains(item)) {
@@ -37,10 +42,10 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
 
     }
 
-    public CustomerListAdapter(CustomerListScreen.Presenter presenter, boolean withHeaders) {
+    public CustomerListAdapter(boolean withHeaders) {
         this.withHeaders = withHeaders;
-        this.mPresenter = presenter;
     }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -50,6 +55,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        DaggerService.<CustomerListScreen.Component>getDaggerComponent(parent.getContext()).inject(this);
         View view;
         if (viewType == 0) {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_item, parent, false);
@@ -62,7 +68,7 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CustomerListItem item = mCustomerListItem.get(position);
-        holder.bind(item, mPresenter);
+        holder.bind(item);
     }
 
     @Override
@@ -74,8 +80,6 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
     //  Class View Holder
     public class ViewHolder extends RecyclerView.ViewHolder{
         private CustomerListItem mCustomerItem = null;
-        private CustomerListScreen.Presenter mPresenter=null;
-
 
         @Nullable @BindView(R.id.exclamation_img)   ImageView mExclamationImg;
         @Nullable @BindView(R.id.map_pin_img)       ImageView mMapPinImg;
@@ -89,9 +93,8 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(CustomerListItem item, CustomerListScreen.Presenter presenter){
+        public void bind(CustomerListItem item){
             mCustomerItem= item;
-            mPresenter = presenter;
             refreshInfo();
         }
 
@@ -102,13 +105,13 @@ public class CustomerListAdapter extends RecyclerView.Adapter<CustomerListAdapte
                 }else {
                     if (mExclamationImg != null) {
                         switch (mCustomerItem.getDebtType()){
-                            case CustomerListItem.DEBT_NORMAL:
+                            case ConstantManager.DEBT_TYPE_NORMAL:
                                 mExclamationImg.setVisibility(View.VISIBLE);
-                                mExclamationImg.setColorFilter(App.getColorRes(R.color.color_orange), android.graphics.PorterDuff.Mode.SRC_IN);
+                                mExclamationImg.setColorFilter(App.getColorRes(R.color.color_orange));
                                 break;
-                            case CustomerListItem.DEBT_OUTDATED:
+                            case ConstantManager.DEBT_TYPE_OUTDATED:
                                 mExclamationImg.setVisibility(View.VISIBLE);
-                                mExclamationImg.setColorFilter(App.getColorRes(R.color.color_red), android.graphics.PorterDuff.Mode.SRC_IN);
+                                mExclamationImg.setColorFilter(App.getColorRes(R.color.color_red));
                                 break;
                             default:
                                 mExclamationImg.setVisibility(View.INVISIBLE);

@@ -15,6 +15,8 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private String phone;
     private String email;
     private RealmList<DebtRealm> debt = new RealmList<>();
+    private RealmList<NoteRealm> notes = new RealmList<>();
+    private RealmList<TaskRealm> tasks = new RealmList<>();
 
     public CustomerRealm() {
     }
@@ -56,6 +58,14 @@ public class CustomerRealm extends RealmObject implements Serializable{
 
     public RealmList<DebtRealm> getDebt() {
         return debt;
+    }
+
+    public RealmList<NoteRealm> getNotes() {
+        return notes;
+    }
+
+    public RealmList<TaskRealm> getTasks() {
+        return tasks;
     }
 
     //endregion ================== Getters =========================

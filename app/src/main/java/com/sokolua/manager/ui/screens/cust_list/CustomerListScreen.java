@@ -62,6 +62,8 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
         void inject(CustomerListView view);
 
+        void inject(CustomerListAdapter adapter);
+
     }
     //endregion ================== DI =========================
 

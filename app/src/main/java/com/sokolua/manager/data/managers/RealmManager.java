@@ -4,6 +4,8 @@ import android.support.annotation.Nullable;
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
+import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.TaskRealm;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,12 @@ public class RealmManager {
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",1250,1250,true));
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",2700,100,true));
         temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",3500,150,false));
+        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0101","01.05.2018","Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
+        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0102","07.05.2018","Договорились о поставке крупной партии металлорукава"));
+        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH));
+        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH));
+        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL));
+        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm");
@@ -24,6 +32,8 @@ public class RealmManager {
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
+        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0301","15.06.2018","Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
+        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0302","01.07.2018","Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","");

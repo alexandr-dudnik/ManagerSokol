@@ -1,6 +1,7 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
 
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 
@@ -8,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class CustomerListItem {
-    public static final int DEBT_NO_DEBT  = 0;
-    public static final int DEBT_NORMAL   = 1;
-    public static final int DEBT_OUTDATED = 2;
     private String customerId;
     private String customerName;
     private int debtType;
@@ -22,7 +20,7 @@ class CustomerListItem {
     public CustomerListItem(String customerId, String customerName, double debt, double debtOutdated, String address, String phone) {
         this.customerId = customerId;
         this.customerName = customerName;
-        this.debtType = debt<=0?DEBT_NO_DEBT:(debtOutdated<=0?DEBT_NORMAL:DEBT_OUTDATED);
+        this.debtType = debt<=0? ConstantManager.DEBT_TYPE_NO_DEBT:(debtOutdated<=0?ConstantManager.DEBT_TYPE_NORMAL:ConstantManager.DEBT_TYPE_OUTDATED);
         this.address = address;
         this.phone = phone;
         this.header = false;
@@ -44,7 +42,7 @@ class CustomerListItem {
                 debtUSD += debt.getAmountUSD();
             }
         }
-        this.debtType = (debtUSD+debtUSD_outd)<=0?DEBT_NO_DEBT:(debtUSD_outd<=0?DEBT_NORMAL:DEBT_OUTDATED);
+        this.debtType = (debtUSD+debtUSD_outd)<=0?ConstantManager.DEBT_TYPE_NO_DEBT:(debtUSD_outd<=0?ConstantManager.DEBT_TYPE_NORMAL:ConstantManager.DEBT_TYPE_OUTDATED);
     }
 
 

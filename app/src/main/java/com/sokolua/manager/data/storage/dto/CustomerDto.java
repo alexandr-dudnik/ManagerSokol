@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
+import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.TaskRealm;
 
 import java.util.ArrayList;
 
@@ -16,15 +18,16 @@ public class CustomerDto implements Parcelable {
     private String phone;
     private String email;
     private ArrayList<DebtDto> debt = new ArrayList<>();
+    private ArrayList<NoteDto> notes = new ArrayList<>();
+    private ArrayList<TaskDto> tasks = new ArrayList<>();
 
-    public CustomerDto(String customerId, String customerName, String contactName, String address, String phone, String email, ArrayList<DebtDto> debt) {
+    public CustomerDto(String customerId, String customerName, String contactName, String address, String phone, String email) {
         this.customerId = customerId;
         this.customerName = customerName;
         this.contactName = contactName;
         this.address = address;
         this.phone = phone;
         this.email = email;
-        this.debt = debt;
     }
 
     protected CustomerDto(Parcel in){
@@ -35,6 +38,8 @@ public class CustomerDto implements Parcelable {
         this.phone = in.readString();
         this.email = in.readString();
         this.debt = in.createTypedArrayList(DebtDto.CREATOR);
+        this.notes = in.createTypedArrayList(NoteDto.CREATOR);
+        this.tasks = in.createTypedArrayList(TaskDto.CREATOR);
     }
 
     public CustomerDto(CustomerRealm customer){
@@ -46,6 +51,12 @@ public class CustomerDto implements Parcelable {
         this.email = customer.getEmail();
         for (DebtRealm debt: customer.getDebt()) {
             this.debt.add(new DebtDto(debt));
+        }
+        for (NoteRealm note: customer.getNotes()) {
+            this.notes.add(new NoteDto(note));
+        }
+        for (TaskRealm task: customer.getTasks()) {
+            this.tasks.add(new TaskDto(task));
         }
     }
 
@@ -65,6 +76,8 @@ public class CustomerDto implements Parcelable {
         dest.writeString(this.phone);
         dest.writeString(this.email);
         dest.writeTypedList(this.debt);
+        dest.writeTypedList(this.notes);
+        dest.writeTypedList(this.tasks);
     }
 
     public static final Creator<CustomerDto> CREATOR = new Creator<CustomerDto>() {
@@ -94,6 +107,7 @@ public class CustomerDto implements Parcelable {
     public String getContactName() {
         return contactName;
     }
+
     public String getAddress() {
         return address;
     }
@@ -108,6 +122,14 @@ public class CustomerDto implements Parcelable {
 
     public ArrayList<DebtDto> getDebt() {
         return debt;
+    }
+
+    public ArrayList<NoteDto> getNotes() {
+        return notes;
+    }
+
+    public ArrayList<TaskDto> getTasks() {
+        return tasks;
     }
 
     //endregion ================== Getters =========================
@@ -143,7 +165,13 @@ public class CustomerDto implements Parcelable {
         this.debt = debt;
     }
 
+    public void setNotes(ArrayList<NoteDto> notes) {
+        this.notes = notes;
+    }
 
+    public void setTasks(ArrayList<TaskDto> tasks) {
+        this.tasks = tasks;
+    }
 
     //endregion ================== Setters =========================
 }

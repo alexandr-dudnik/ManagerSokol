@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="@dimen/customer_debt_margin"
+              android:layout_marginRight="@dimen/customer_debt_margin"
+              android:background="@color/color_gray_tint"
+    >
+
+    <ImageView
+        android:id="@+id/debt_type_icon"
+        android:layout_width="@dimen/customer_debt_icon"
+        android:layout_height="@dimen/customer_debt_icon"
+        app:srcCompat="@drawable/ic_report_problem"
+        />
+    <TextView
+        android:id="@+id/debt_type_text"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        tools:text="@string/customer_debt_outdated"
+        android:textSize="18sp"
+        android:fontFamily="@string/roboto_medium"
+        />
+</LinearLayout>

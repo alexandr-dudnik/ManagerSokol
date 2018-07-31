@@ -1,10 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sokolua.manager.ui.screens.customer.tasks.CustomerTasksView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<com.sokolua.manager.ui.screens.customer.tasks.CustomerTasksView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_background">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/customer_debt_margin"
+            android:layout_marginRight="@dimen/customer_debt_margin"
+            android:fontFamily="@string/roboto_medium"
+            android:text="@string/customer_debt_header"
+            android:textColor="@color/color_gray_dark"
+            android:textSize="20sp"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/debt_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/customer_debt_margin"
+            />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/customer_name_text"/>
+        android:layout_marginLeft="@dimen/customer_debt_margin"
+        android:layout_marginRight="@dimen/customer_debt_margin"
+        android:fontFamily="@string/roboto_medium"
+        android:text="@string/customer_tasks_header"
+        android:textColor="@color/color_gray_dark"
+        android:textSize="20sp"
+        />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/tasks_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
 
 </com.sokolua.manager.ui.screens.customer.tasks.CustomerTasksView>

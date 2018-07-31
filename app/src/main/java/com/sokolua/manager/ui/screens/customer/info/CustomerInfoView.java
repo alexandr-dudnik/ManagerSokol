@@ -18,13 +18,16 @@ import javax.inject.Inject;
 import butterknife.BindView;
 
 public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>{
-    @BindView(R.id.customerList)
-    RecyclerView mCustomerList;
+    @BindView(R.id.customer_info_list)
+    RecyclerView mCustomerInfoList;
+    @BindView(R.id.customer_notes_list)
+    RecyclerView mCustomerNotesList;
 
     @Inject
     CustomerInfoScreen.Presenter mPresenter;
 
     private CustomerInfoDataAdapter mDataAdapter;
+    private CustomerInfoNoteAdapter mNoteAdapter;
 
     public CustomerInfoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -34,6 +37,7 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
     protected void initDagger(Context context) {
         DaggerService.<CustomerInfoScreen.Component>getDaggerComponent(context).inject(this);
         mDataAdapter = new CustomerInfoDataAdapter();
+        mNoteAdapter = new CustomerInfoNoteAdapter();
     }
 
 
@@ -43,18 +47,26 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
     }
 
 
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
     }
 
-    public CustomerInfoDataAdapter getmDataAdapter() {
+    public CustomerInfoDataAdapter getDataAdapter() {
         return mDataAdapter;
     }
 
-    public void showCustomerList() {
-        mCustomerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerList.setAdapter(mDataAdapter);
+    public CustomerInfoNoteAdapter getNoteAdapter() {
+        return mNoteAdapter;
+    }
+
+    public void showData() {
+        mCustomerInfoList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
+        mCustomerInfoList.setAdapter(mDataAdapter);
+
+        mCustomerNotesList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
+        mCustomerNotesList.setAdapter(mNoteAdapter);
     }
 
 }
