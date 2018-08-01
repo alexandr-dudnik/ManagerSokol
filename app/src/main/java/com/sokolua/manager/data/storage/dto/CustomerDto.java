@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class CustomerDto implements Parcelable {
     private ArrayList<DebtDto> debt = new ArrayList<>();
     private ArrayList<NoteDto> notes = new ArrayList<>();
     private ArrayList<TaskDto> tasks = new ArrayList<>();
+    private ArrayList<OrderPlanDto> plan = new ArrayList<>();
 
     public CustomerDto(String customerId, String customerName, String contactName, String address, String phone, String email) {
         this.customerId = customerId;
@@ -40,6 +42,7 @@ public class CustomerDto implements Parcelable {
         this.debt = in.createTypedArrayList(DebtDto.CREATOR);
         this.notes = in.createTypedArrayList(NoteDto.CREATOR);
         this.tasks = in.createTypedArrayList(TaskDto.CREATOR);
+        this.plan = in.createTypedArrayList(OrderPlanDto.CREATOR);
     }
 
     public CustomerDto(CustomerRealm customer){
@@ -57,6 +60,9 @@ public class CustomerDto implements Parcelable {
         }
         for (TaskRealm task: customer.getTasks()) {
             this.tasks.add(new TaskDto(task));
+        }
+        for (OrderPlanRealm plan: customer.getPlan()) {
+            this.plan.add(new OrderPlanDto(plan));
         }
     }
 
@@ -78,6 +84,7 @@ public class CustomerDto implements Parcelable {
         dest.writeTypedList(this.debt);
         dest.writeTypedList(this.notes);
         dest.writeTypedList(this.tasks);
+        dest.writeTypedList(this.plan);
     }
 
     public static final Creator<CustomerDto> CREATOR = new Creator<CustomerDto>() {
@@ -132,6 +139,10 @@ public class CustomerDto implements Parcelable {
         return tasks;
     }
 
+    public ArrayList<OrderPlanDto> getPlan() {
+        return plan;
+    }
+
     //endregion ================== Getters =========================
 
 
@@ -171,6 +182,10 @@ public class CustomerDto implements Parcelable {
 
     public void setTasks(ArrayList<TaskDto> tasks) {
         this.tasks = tasks;
+    }
+
+    public void setPlan(ArrayList<OrderPlanDto> plan) {
+        this.plan = plan;
     }
 
     //endregion ================== Setters =========================
