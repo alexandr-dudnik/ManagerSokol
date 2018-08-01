@@ -47,7 +47,7 @@ public class CustomerDto implements Parcelable {
 
     public CustomerDto(CustomerRealm customer){
         this.customerId = customer.getCustomerId();
-        this.customerName = customer.getCustomerName();
+        this.customerName = customer.getName();
         this.contactName = customer.getContactName();
         this.address = customer.getAddress();
         this.phone = customer.getPhone();

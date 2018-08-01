@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 public class NoteRealm extends RealmObject implements Serializable {
-    @Required
-    private String customerId;
+    @PrimaryKey
     @Required
     private String noteId;
+    private CustomerRealm customer ;
     @Required
     private String date;
     private String data;
@@ -18,8 +19,8 @@ public class NoteRealm extends RealmObject implements Serializable {
     public NoteRealm() {
     }
 
-    public NoteRealm(String customerId, String noteId, String date, String data) {
-        this.customerId = customerId;
+    public NoteRealm(CustomerRealm customer, String noteId, String date, String data) {
+        this.customer = customer;
         this.noteId = noteId;
         this.date = date;
         this.data = data;
@@ -39,8 +40,8 @@ public class NoteRealm extends RealmObject implements Serializable {
         return data;
     }
 
-    public String getCustomerId() {
-        return customerId;
+    public CustomerRealm getCustomer() {
+        return customer;
     }
 
     //endregion ================== Getters =========================

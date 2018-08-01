@@ -16,36 +16,36 @@ public class RealmManager {
         ArrayList<CustomerRealm> managedCustomers= new ArrayList<>();
 
         CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net");
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",1250,1250,true));
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",2700,100,true));
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",3500,150,false));
-        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0101","01.05.2018","Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
-        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0102","07.05.2018","Договорились о поставке крупной партии металлорукава"));
-        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH));
-        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH));
-        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL));
-        temp.getTasks().add(new TaskRealm(temp.getCustomerId(), "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL));
+        temp.getDebt().add(new DebtRealm(temp,"USD",1250,1250,true));
+        temp.getDebt().add(new DebtRealm(temp,"UAH",2700,100,true));
+        temp.getDebt().add(new DebtRealm(temp,"UAH",3500,150,false));
+        temp.getNotes().add(new NoteRealm(temp, "note0101","01.05.2018","Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
+        temp.getNotes().add(new NoteRealm(temp, "note0102","07.05.2018","Договорились о поставке крупной партии металлорукава"));
+        temp.getTasks().add(new TaskRealm(temp, "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH));
+        temp.getTasks().add(new TaskRealm(temp, "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH));
+        temp.getTasks().add(new TaskRealm(temp, "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL));
+        temp.getTasks().add(new TaskRealm(temp, "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm");
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",500,18,false));
+        temp.getDebt().add(new DebtRealm(temp,"UAH",500,18,false));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
-        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0301","15.06.2018","Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
-        temp.getNotes().add(new NoteRealm(temp.getCustomerId(), "note0302","01.07.2018","Обсудили условия поставки провода на объекты"));
+        temp.getNotes().add(new NoteRealm(temp, "note0301","15.06.2018","Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
+        temp.getNotes().add(new NoteRealm(temp, "note0302","01.07.2018","Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","");
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",2700,100,true));
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",150,150,false));
+        temp.getDebt().add(new DebtRealm(temp,"UAH",2700,100,true));
+        temp.getDebt().add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
         temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com");
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","");
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"USD",130,130,true));
-        temp.getDebt().add(new DebtRealm(temp.getCustomerId(),"UAH",250,9.50f,false));
+        temp.getDebt().add(new DebtRealm(temp,"USD",130,130,true));
+        temp.getDebt().add(new DebtRealm(temp,"UAH",250,9.50f,false));
         managedCustomers.add(temp);
         //--------------------------
         return managedCustomers;
@@ -57,7 +57,7 @@ public class RealmManager {
 
 
         return Observable.fromIterable(customers())
-                    .filter(customerRealm -> (filter == null) || (filter.isEmpty() || customerRealm.getCustomerName().toLowerCase().contains(filter.toLowerCase())));
+                    .filter(customerRealm -> (filter == null) || (filter.isEmpty() || customerRealm.getName().toLowerCase().contains(filter.toLowerCase())));
 
 //        return managedProduct
 //                .asObservable()  //Получаем последовательность

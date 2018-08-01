@@ -28,7 +28,7 @@ public class DebtDto implements Parcelable {
     }
 
     public DebtDto(DebtRealm debt) {
-        this.customerId = debt.getCustomerId();
+        this.customerId = debt.getCustomer().getCustomerId();
         this.currency = debt.getCurrency();
         this.amount = debt.getAmount();
         this.amountUSD = debt.getAmountUSD();

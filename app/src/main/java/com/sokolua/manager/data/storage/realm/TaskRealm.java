@@ -5,22 +5,25 @@ import com.sokolua.manager.data.managers.ConstantManager;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 public class TaskRealm extends RealmObject implements Serializable {
     @Required
-    private String customerId;
-    @Required
+    @PrimaryKey
     private String taskId;
+    private CustomerRealm customer;
     @Required
     private String text;
     private int taskType;
+    private boolean done = false;
+    private String result="";
 
     public TaskRealm() {
     }
 
-    public TaskRealm(String customerId, String taskId, String text, int taskType) {
-        this.customerId = customerId;
+    public TaskRealm(CustomerRealm customer, String taskId, String text, int taskType) {
+        this.customer = customer;
         this.taskId = taskId;
         this.text = text;
         this.taskType = taskType;
@@ -28,8 +31,8 @@ public class TaskRealm extends RealmObject implements Serializable {
 
     //region ===================== Getters =========================
 
-    public String getCustomerId() {
-        return customerId;
+    public CustomerRealm getCustomer() {
+        return customer;
     }
 
     public String getTaskId() {

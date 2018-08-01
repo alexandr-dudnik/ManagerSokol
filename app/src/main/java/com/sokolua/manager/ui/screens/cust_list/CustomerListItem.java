@@ -28,7 +28,7 @@ class CustomerListItem {
 
     public CustomerListItem(CustomerRealm customerRealm) {
         this.customerId = customerRealm.getCustomerId();
-        this.customerName = customerRealm.getCustomerName();
+        this.customerName = customerRealm.getName();
         this.address = customerRealm.getAddress();
         this.phone = customerRealm.getPhone();
         this.header = false;
@@ -54,11 +54,7 @@ class CustomerListItem {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null){
-            return false;
-        }else {
-            return ((CustomerListItem) obj).getCustomerId().equals(this.customerId);
-        }
+        return obj != null && ((CustomerListItem) obj).getCustomerId().equals(this.customerId);
     }
 
     @Override

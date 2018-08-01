@@ -23,8 +23,8 @@ public class OrderPlanDto implements Parcelable{
     }
 
     public OrderPlanDto(OrderPlanRealm plan) {
-        this.customerId = plan.getCustomerId();
-        this.category = new GoodsCategoryDto(plan.getGoodsCategory());
+        this.customerId = plan.getCustomer().getCustomerId();
+        this.category = new GoodsCategoryDto(plan.getCategory());
         this.amount = plan.getAmount();
     }
 

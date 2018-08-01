@@ -5,26 +5,30 @@ import java.io.Serializable;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class CustomerRealm extends RealmObject implements Serializable{
     @PrimaryKey
+    @Required
     private String customerId;
-    private String customerName;
-    private String contactName;
-    private String address;
-    private String phone;
-    private String email;
+    @Required
+    private String name;
+    private String contactName = "";
+    private String address = "";
+    private String phone = "";
+    private String email = "";
     private RealmList<DebtRealm> debt = new RealmList<>();
     private RealmList<NoteRealm> notes = new RealmList<>();
     private RealmList<TaskRealm> tasks = new RealmList<>();
     private RealmList<OrderPlanRealm> plan = new RealmList<>();
+    private RealmList<CustomerDiscountRealm> discounts = new RealmList<>();
 
     public CustomerRealm() {
     }
 
-    public CustomerRealm(String customerId, String customerName, String contactName, String address, String phone, String email) {
+    public CustomerRealm(String customerId, String name, String contactName, String address, String phone, String email) {
         this.customerId = customerId;
-        this.customerName = customerName;
+        this.name = name;
         this.contactName = contactName;
         this.address = address;
         this.phone = phone;
@@ -37,8 +41,8 @@ public class CustomerRealm extends RealmObject implements Serializable{
         return customerId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getName() {
+        return name;
     }
 
     public String getContactName() {
@@ -73,5 +77,9 @@ public class CustomerRealm extends RealmObject implements Serializable{
         return plan;
     }
 
-//endregion ================== Getters =========================
+    public RealmList<CustomerDiscountRealm> getDiscounts() {
+        return discounts;
+    }
+
+    //endregion ================== Getters =========================
 }

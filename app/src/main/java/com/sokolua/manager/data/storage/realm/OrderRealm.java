@@ -3,19 +3,27 @@ package com.sokolua.manager.data.storage.realm;
 import java.io.Serializable;
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
-public class OrdersRealm extends RealmObject implements Serializable{
+public class OrderRealm extends RealmObject implements Serializable{
+    @Required
+    @PrimaryKey
+    private String orderId;
+    @Required
     private Date date;
     private int status;
     private int payment;
+    private RealmList<OrderLineRealm> lines;
     private Float total;
     private String comments;
 
-    public OrdersRealm() {
+    public OrderRealm() {
     }
 
-    public OrdersRealm(Date date, int status, int payment, Float total, String comments) {
+    public OrderRealm(Date date, int status, int payment, Float total, String comments) {
         this.date = date;
         this.status = status;
         this.payment = payment;

@@ -23,8 +23,17 @@ android {
     dataBinding {
         enabled = true
     }
+
+    realm {
+        syncEnabled = true
+    }
+
     buildTypes {
        release {
+           minifyEnabled true
+           proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+       }
+       debug{
            minifyEnabled false
            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
        }
@@ -56,5 +65,8 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.17'
+
+    implementation 'com.minimize.android:rxrecycler-adapter:1.2.2'
+    implementation 'com.jakewharton.rxbinding:rxbinding:1.0.1'
 
 }

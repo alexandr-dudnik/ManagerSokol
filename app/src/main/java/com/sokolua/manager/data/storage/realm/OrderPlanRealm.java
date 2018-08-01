@@ -3,29 +3,34 @@ package com.sokolua.manager.data.storage.realm;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class OrderPlanRealm extends RealmObject implements Serializable{
-    private String customerId;
-    private GoodsCategoryRealm goodsCategory;
-    private Float amount;
+    @PrimaryKey
+    @Required
+    private String planId;
+    private CustomerRealm customer;
+    private GoodsCategoryRealm category;
+    private Float amount = 0f;
 
     public OrderPlanRealm() {
     }
 
-    public OrderPlanRealm(String customerId, GoodsCategoryRealm goodsCategory, Float amount) {
-        this.customerId = customerId;
-        this.goodsCategory = goodsCategory;
+    public OrderPlanRealm(CustomerRealm customer, GoodsCategoryRealm category, Float amount) {
+        this.customer = customer;
+        this.category = category;
         this.amount = amount;
     }
 
     //region ================================ Getter ==================================
 
-    public String getCustomerId() {
-        return customerId;
+    public CustomerRealm getCustomer() {
+        return customer;
     }
 
-    public GoodsCategoryRealm getGoodsCategory() {
-        return goodsCategory;
+    public GoodsCategoryRealm getCategory() {
+        return category;
     }
 
     public Float getAmount() {

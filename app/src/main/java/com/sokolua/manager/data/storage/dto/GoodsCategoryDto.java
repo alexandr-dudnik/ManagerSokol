@@ -26,7 +26,7 @@ public class GoodsCategoryDto implements Parcelable {
 
     public GoodsCategoryDto(GoodsCategoryRealm cat) {
         this.categoryId = cat.getCategoryId();
-        this.categoryName = cat.getCategoryName();
+        this.categoryName = cat.getName();
         this.imageUri = cat.getImageUri();
     }
 

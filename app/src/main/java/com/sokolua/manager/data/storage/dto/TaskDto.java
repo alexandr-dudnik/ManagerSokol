@@ -25,7 +25,7 @@ public class TaskDto implements Parcelable{
     }
 
     public TaskDto(TaskRealm realm) {
-        this.customerId = realm.getCustomerId();
+        this.customerId = realm.getCustomer().getCustomerId();
         this.taskId = realm.getTaskId();
         this.text = realm.getText();
         this.taskType = realm.getTaskType();

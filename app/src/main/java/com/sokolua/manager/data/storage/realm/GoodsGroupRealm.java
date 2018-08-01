@@ -3,10 +3,15 @@ package com.sokolua.manager.data.storage.realm;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class GoodsGroupRealm extends RealmObject implements Serializable {
+    @PrimaryKey
+    @Required
     private String groupId;
-    private String groupName;
+    @Required
+    private String name;
     private String imageURI;
 
 
@@ -15,7 +20,7 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
 
     public GoodsGroupRealm(String groupId, String groupName, String imageURI) {
         this.groupId = groupId;
-        this.groupName = groupName;
+        this.name = groupName;
         this.imageURI = imageURI;
     }
 
@@ -25,8 +30,8 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
         return groupId;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getName() {
+        return name;
     }
 
     public String getImageURI() {
