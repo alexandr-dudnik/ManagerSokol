@@ -27,6 +27,7 @@ public class IntentStarter {
 
     public static boolean composeEmail(String email){
         Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_APP_EMAIL);
         intent.setData(Uri.parse("mailto:"+email));
         if (intent.resolveActivity(App.getContext().getPackageManager()) != null) {
             App.getContext().startActivity(intent);

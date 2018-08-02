@@ -8,12 +8,19 @@ import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import io.realm.Case;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class RealmManager {
-    private ArrayList<CustomerRealm>  customers() {
-        ArrayList<CustomerRealm> managedCustomers= new ArrayList<>();
+    private RealmList<CustomerRealm>  customers() {
+        RealmList<CustomerRealm> managedCustomers= new RealmList<>();
 
         CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net");
         temp.getDebt().add(new DebtRealm(temp,"USD",1250,1250,true));
@@ -51,19 +58,23 @@ public class RealmManager {
         return managedCustomers;
     }
 
-    public Observable<CustomerRealm> getCustomersFromRealm(String filter){
+    public Observable<List<CustomerRealm>> getCustomersFromRealm(String filter){
         //RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance().where(CustomerRealm.class).findAllAsync();
 
 
 
-        return Observable.fromIterable(customers())
-                    .filter(customerRealm -> (filter == null) || (filter.isEmpty() || customerRealm.getName().toLowerCase().contains(filter.toLowerCase())));
 
-//        return managedProduct
-//                .asObservable()  //Получаем последовательность
-//                .filter(RealmResults::isLoaded) //получаем только загруженные
-//                //.first() //Если нужна холодная последовательность
-//                .flatMap(Observable::from); //преобразуем в Obs<ProductRealm>
+        RealmResults<CustomerRealm> managedCustomers =  customers()
+                .where()
+                .contains("name", filter == null ? "": filter, Case.INSENSITIVE)
+                .sort("name")
+                .findAllAsync();
+
+        return (Observable)(Observable.just(
+                managedCustomers
+                .asFlowable()  //Получаем последовательность
+                .filter(RealmResults::isLoaded) //получаем только загруженные
+                .filter(RealmResults::isValid)));
     }
 
     @Nullable
@@ -75,4 +86,12 @@ public class RealmManager {
         }
         return null;
     }
+
+    public int getCustomerDebtType(CustomerRealm cust){
+        if (cust.getDebt().size() == 0){
+            return ConstantManager.DEBT_TYPE_NO_DEBT;
+        }
+        return cust.getDebt().where().equalTo("outdated",true).findFirst() == null ? ConstantManager.DEBT_TYPE_NORMAL : ConstantManager.DEBT_TYPE_OUTDATED;
+    }
+
 }

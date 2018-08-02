@@ -1,6 +1,8 @@
 package com.sokolua.manager.ui.screens.cust_list;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
@@ -14,13 +16,13 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 
 import dagger.Provides;
 import flow.Flow;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_cust_list)
@@ -86,8 +88,18 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
-            mCompSubs.add(subscribeOnCustomersRealmObs());
+//            mCompSubs.add(subscribeOnCustomersRealmObs());
 
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerRealm> viewAndHolderFactory = (parent, pViewType) -> {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_item, parent, false);
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                        view,
+                        new CustomerViewHolder<>(view)
+                );
+            };
+            ReactiveRecyclerAdapter reactiveRecylerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerList(getView().getCustomerFilter()), viewAndHolderFactory);
+
+            getView().setAdapter(reactiveRecylerAdapter);
             getView().showCustomerList();
         }
 
@@ -101,36 +113,36 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         }
 
 
-        private Disposable subscribeOnCustomersRealmObs() {
-
-            return subscribe(mModel.getCustomerList(getView().getCustomerFilter()), new RealmSubscriber());
-        }
-
-        private class RealmSubscriber extends ViewSubscriber<CustomerRealm> {
-            CustomerListAdapter mAdapter = getView().getAdapter();
-
-            @Override
-            public void onStart() {
-                super.onStart();
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (getRootView() != null) {
-                    getRootView().showError(e);
-                }
-            }
-
-            @Override
-            public void onNext(CustomerRealm customerRealm) {
-                mAdapter.addItem(new CustomerListItem(customerRealm));
-            }
-        }
+//        private Disposable subscribeOnCustomersRealmObs() {
+//
+//            return subscribe(mModel.getCustomerList(getView().getCustomerFilter()), new RealmSubscriber());
+//        }
+//
+//        private class RealmSubscriber extends ViewSubscriber<CustomerRealm> {
+//            CustomerListAdapter mAdapter = getView().getAdapter();
+//
+//            @Override
+//            public void onStart() {
+//                super.onStart();
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                if (getRootView() != null) {
+//                    getRootView().showError(e);
+//                }
+//            }
+//
+//            @Override
+//            public void onNext(CustomerRealm customerRealm) {
+//                mAdapter.addItem(new CustomerListItem(customerRealm));
+//            }
+//        }
 
 
         //List actions

@@ -1,7 +1,12 @@
 package com.sokolua.manager.data.storage.realm;
 
+import com.sokolua.manager.data.managers.ConstantManager;
+
 import java.io.Serializable;
 
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;

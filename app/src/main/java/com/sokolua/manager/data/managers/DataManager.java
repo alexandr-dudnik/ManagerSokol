@@ -8,6 +8,8 @@ import com.sokolua.manager.di.modules.LocalModule;
 import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -70,12 +72,16 @@ public class DataManager {
 
     
     //region ===================== Customers =========================
-    public Observable<CustomerRealm> getProductFromRealm(String filter) {
+    public Observable<List<CustomerRealm>> getProductFromRealm(String filter) {
         return mRealmManager.getCustomersFromRealm(filter);
     }
 
     public CustomerRealm getCustomerById(String id){
         return mRealmManager.getCustomerById(id);
+    }
+
+    public int getCustomerDebtType(CustomerRealm customer){
+        return mRealmManager.getCustomerDebtType(customer);
     }
     //endregion ================== Customers =========================
 

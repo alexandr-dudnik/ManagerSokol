@@ -8,9 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 
@@ -23,7 +25,8 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     @Inject
     CustomerListScreen.Presenter mPresenter;
 
-    private CustomerListAdapter mAdapter;
+    //private CustomerListAdapter mAdapter;
+    private ReactiveRecyclerAdapter mAdapter;
 
 
     public CustomerListView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -34,7 +37,7 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     protected void initDagger(Context context) {
         if (!isInEditMode()) {
             DaggerService.<CustomerListScreen.Component>getDaggerComponent(context).inject(this);
-            mAdapter = new CustomerListAdapter(true);
+            //mAdapter = new CustomerListAdapter(true);
         }
 
 
@@ -49,8 +52,12 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
         return "";
     }
 
-    public CustomerListAdapter getAdapter(){
-        return mAdapter;
+//    public CustomerListAdapter getAdapter(){
+//        return mAdapter;
+//    }
+
+    public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
+        this.mAdapter = mAdapter;
     }
 
     public void showCustomerList() {
