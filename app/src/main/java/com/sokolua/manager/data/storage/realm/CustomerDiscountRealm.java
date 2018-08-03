@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.annotation.Nullable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 

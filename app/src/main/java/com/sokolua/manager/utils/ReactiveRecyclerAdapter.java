@@ -58,7 +58,7 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
     }
 
     public static abstract class ReactiveViewHolder<T> extends RecyclerView.ViewHolder {
-        private T currentItem;
+        protected T currentItem;
 
         public ReactiveViewHolder(View itemView) {
             super(itemView);

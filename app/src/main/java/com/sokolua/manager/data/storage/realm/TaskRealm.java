@@ -5,6 +5,7 @@ import com.sokolua.manager.data.managers.ConstantManager;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 

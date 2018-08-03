@@ -72,7 +72,7 @@ public class DataManager {
 
     
     //region ===================== Customers =========================
-    public Observable<List<CustomerRealm>> getProductFromRealm(String filter) {
+    public Observable<CustomerRealm> getCustomersFromRealm(String filter) {
         return mRealmManager.getCustomersFromRealm(filter);
     }
 
@@ -80,8 +80,8 @@ public class DataManager {
         return mRealmManager.getCustomerById(id);
     }
 
-    public int getCustomerDebtType(CustomerRealm customer){
-        return mRealmManager.getCustomerDebtType(customer);
+    public int getCustomerDebtType(String id){
+        return mRealmManager.getCustomerDebtType(id);
     }
     //endregion ================== Customers =========================
 

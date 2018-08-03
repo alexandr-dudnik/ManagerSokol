@@ -9,13 +9,18 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Optional;
 
-public class CustomerViewHolder<T> extends ReactiveRecyclerAdapter.ReactiveViewHolder<T> {
+public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<CustomerListItem> {
 
     @Nullable @BindView(R.id.exclamation_img)   ImageView mExclamationImg;
     @Nullable @BindView(R.id.map_pin_img)       ImageView mMapPinImg;
@@ -23,8 +28,12 @@ public class CustomerViewHolder<T> extends ReactiveRecyclerAdapter.ReactiveViewH
     @Nullable @BindView(R.id.customer_name_text)TextView mCustomerNameText;
     @Nullable @BindView(R.id.item_header_text)  TextView mItemHeaderText;
 
+    @Inject
+    CustomerListScreen.Presenter mPresenter;
+
     public CustomerViewHolder(View itemView) {
         super(itemView);
+        DaggerService.<CustomerListScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
     }
 
@@ -37,7 +46,7 @@ public class CustomerViewHolder<T> extends ReactiveRecyclerAdapter.ReactiveViewH
 //                mItemHeaderText.setText(currentItem.getCustomerName());
 //            }else {
                 if (mExclamationImg != null) {
-                    switch ( DataManager.getInstance().getCustomerDebtType((CustomerRealm)currentItem)){
+                    switch ( DataManager.getInstance().getCustomerDebtType(((CustomerRealm)currentItem).getCustomerId())){
                         case ConstantManager.DEBT_TYPE_NORMAL:
                             mExclamationImg.setVisibility(View.VISIBLE);
                             mExclamationImg.setColorFilter(App.getColorRes(R.color.color_orange));
@@ -62,6 +71,24 @@ public class CustomerViewHolder<T> extends ReactiveRecyclerAdapter.ReactiveViewH
 //            }
         }
 
+    }
+
+    @Optional
+    @OnClick(R.id.map_pin_img)
+    public void onMapClick(View view){
+        mPresenter.openCustomerMap((CustomerRealm)currentItem);
+    }
+
+    @Optional
+    @OnClick(R.id.call_img)
+    public void onCallClick(View view){
+        mPresenter.callToCustomer((CustomerRealm)currentItem);
+    }
+
+    @Optional
+    @OnClick({R.id.exclamation_img, R.id.customer_name_text, R.id.customer_list_item})
+    public void onCustomerClick(View view){
+        mPresenter.openCustomerCard((CustomerRealm)currentItem);
     }
 
 

@@ -13,7 +13,10 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.widget.PopupMenu;
 
+import com.facebook.stetho.Stetho;
+import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.DebugModule;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.components.DaggerAppComponent;
@@ -23,7 +26,9 @@ import com.sokolua.manager.di.modules.RootModule;
 import com.sokolua.manager.mortar.ScreenScoper;
 import com.sokolua.manager.ui.activities.DaggerRootActivity_RootComponent;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import io.realm.Realm;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
@@ -38,6 +43,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+
         createAppComponent();
         createRootActivityComponent();
         sContext = getApplicationContext();
@@ -49,6 +55,19 @@ public class App extends Application {
                 .withService(DaggerService.SERVICE_NAME, mRootActivityRootComponent)
                 .withService(BundleServiceRunner.SERVICE_NAME, new BundleServiceRunner())
                 .build(RootActivity.class.getName());
+
+
+        Realm.init(this);
+        if (BuildConfig.DEBUG) {
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                            .build());
+
+            DebugModule.mock_RealmDB();
+        }
+
 
         ScreenScoper.registerScope(mRootScope);
         ScreenScoper.registerScope(mRootActivityScope);

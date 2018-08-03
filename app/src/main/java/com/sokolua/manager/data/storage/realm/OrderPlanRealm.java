@@ -3,13 +3,12 @@ package com.sokolua.manager.data.storage.realm;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 import io.realm.annotations.Required;
 
 public class OrderPlanRealm extends RealmObject implements Serializable{
-    @PrimaryKey
-    @Required
-    private String planId;
     private CustomerRealm customer;
     private GoodsCategoryRealm category;
     private Float amount = 0f;

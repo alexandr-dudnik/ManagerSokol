@@ -64,8 +64,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
         void inject(CustomerListView view);
 
-        void inject(CustomerListAdapter adapter);
-
+        void inject(ReactiveRecyclerAdapter adapter);
     }
     //endregion ================== DI =========================
 
@@ -90,16 +89,16 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
             super.onLoad(savedInstanceState);
 //            mCompSubs.add(subscribeOnCustomersRealmObs());
 
-            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerRealm> viewAndHolderFactory = (parent, pViewType) -> {
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new CustomerViewHolder<>(view)
                 );
             };
-            ReactiveRecyclerAdapter reactiveRecylerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerList(getView().getCustomerFilter()), viewAndHolderFactory);
+            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerList(getView().getCustomerFilter()), viewAndHolderFactory);
 
-            getView().setAdapter(reactiveRecylerAdapter);
+            getView().setAdapter(reactiveRecyclerAdapter);
             getView().showCustomerList();
         }
 
@@ -146,19 +145,19 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
 
         //List actions
-        public void openCustomerMap(@NonNull CustomerListItem customer){
+        public void openCustomerMap(@NonNull CustomerRealm customer){
             if (!IntentStarter.openMap(customer.getAddress()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
             }
         }
 
-        public void callToCustomer(CustomerListItem customer) {
+        public void callToCustomer(CustomerRealm customer) {
                 if (!IntentStarter.openMap(customer.getPhone()) && getRootView()!= null){
                     getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
                 }
         }
 
-        public void openCustomerCard(CustomerListItem customer){
+        public void openCustomerCard(CustomerRealm customer){
             if (getRootView()!= null) {
                 Flow.get(getView().getContext()).set(new CustomerScreen(mModel.getCustomerDtoById(customer.getCustomerId())));
             }

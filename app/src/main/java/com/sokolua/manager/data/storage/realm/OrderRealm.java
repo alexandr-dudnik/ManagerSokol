@@ -14,9 +14,10 @@ public class OrderRealm extends RealmObject implements Serializable{
     private String orderId;
     @Required
     private Date date;
+    private CustomerRealm customer;
     private int status;
     private int payment;
-    private RealmList<OrderLineRealm> lines;
+    private RealmList<OrderLineRealm> lines = new RealmList<>();
     private Float total;
     private String comments;
 
