@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sokolua.manager.ui.screens.customer.CustomerView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <android.support.v4.view.ViewPager
         android:id="@+id/tabs_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/color_yellow"/>
+        app:tabBackground="@color/view_pager_tabs_background"/>
 </com.sokolua.manager.ui.screens.customer.CustomerView>

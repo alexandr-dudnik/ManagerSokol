@@ -29,4 +29,9 @@
     <color name="main_background">#ffffff</color>
     <color name="appbar_background">#FFFFFF</color>
     <color name="bottom_background">#FFFFFF</color>
+
+    <color name="tab_background_selected">#ff00aaff</color>
+    <color name="tab_background_unselected" >#FFF9C4</color>
+
+    <color name="menu_item_icon_color" >#5d5d5d</color>
 </resources>

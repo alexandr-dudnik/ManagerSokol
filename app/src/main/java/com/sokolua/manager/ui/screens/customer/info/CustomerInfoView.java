@@ -12,6 +12,7 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 
@@ -26,9 +27,6 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
     @Inject
     CustomerInfoScreen.Presenter mPresenter;
 
-    private CustomerInfoDataAdapter mDataAdapter;
-    private CustomerInfoNoteAdapter mNoteAdapter;
-
     public CustomerInfoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -36,8 +34,6 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
     @Override
     protected void initDagger(Context context) {
         DaggerService.<CustomerInfoScreen.Component>getDaggerComponent(context).inject(this);
-        mDataAdapter = new CustomerInfoDataAdapter();
-        mNoteAdapter = new CustomerInfoNoteAdapter();
     }
 
 
@@ -53,20 +49,16 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
         super.onAttachedToWindow();
     }
 
-    public CustomerInfoDataAdapter getDataAdapter() {
-        return mDataAdapter;
-    }
 
-    public CustomerInfoNoteAdapter getNoteAdapter() {
-        return mNoteAdapter;
-    }
-
-    public void showData() {
-        mCustomerInfoList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerInfoList.setAdapter(mDataAdapter);
-
+    public void setNoteAdapter(ReactiveRecyclerAdapter mNoteAdapter) {
         mCustomerNotesList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mCustomerNotesList.setAdapter(mNoteAdapter);
     }
+
+    public void setDataAdapter(CustomerInfoDataAdapter mDataAdapter) {
+        mCustomerInfoList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
+        mCustomerInfoList.setAdapter(mDataAdapter);
+    }
+
 
 }

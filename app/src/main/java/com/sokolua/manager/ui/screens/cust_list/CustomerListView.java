@@ -25,9 +25,6 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     @Inject
     CustomerListScreen.Presenter mPresenter;
 
-    //private CustomerListAdapter mAdapter;
-    private ReactiveRecyclerAdapter mAdapter;
-
 
     public CustomerListView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -37,7 +34,6 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     protected void initDagger(Context context) {
         if (!isInEditMode()) {
             DaggerService.<CustomerListScreen.Component>getDaggerComponent(context).inject(this);
-            //mAdapter = new CustomerListAdapter(true);
         }
 
 
@@ -49,19 +45,13 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     }
 
     public String getCustomerFilter(){
-        return "";
+        return "ав";
     }
 
-//    public CustomerListAdapter getAdapter(){
-//        return mAdapter;
-//    }
 
     public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
-        this.mAdapter = mAdapter;
-    }
-
-    public void showCustomerList() {
         mCustomerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mCustomerList.setAdapter(mAdapter);
     }
+
 }

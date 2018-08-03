@@ -1,10 +1,14 @@
 package com.sokolua.manager.ui.screens.customer.info;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.data.storage.dto.NoteDto;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -14,6 +18,7 @@ import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 
@@ -61,7 +66,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
         void inject(CustomerInfoView view);
 
-        void inject(CustomerInfoNoteAdapter noteAdapter);
+        void inject(CustomerNoteViewHolder viewHolder);
 
         void inject(CustomerInfoDataAdapter dataAdapter);
     }
@@ -70,7 +75,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<CustomerInfoView, CustomerModel> {
         @Inject
-        protected CustomerDto mCustomerDto;
+        protected CustomerRealm mCustomer;
 
 
         public Presenter() {
@@ -90,21 +95,27 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             super.onLoad(savedInstanceState);
 
 
-            CustomerInfoDataAdapter mDataAdapter = getView().getDataAdapter();
-            CustomerInfoNoteAdapter mNotesAdapter = getView().getNoteAdapter();
 
+            //Data custom adapter
+            CustomerInfoDataAdapter mDataAdapter = new CustomerInfoDataAdapter();
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header),mCustomer.getName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header),mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header),mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header),mCustomer.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL));
+            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header),mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL));
+            getView().setDataAdapter(mDataAdapter);
 
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header),mCustomerDto.getCustomerName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header),mCustomerDto.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header),mCustomerDto.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header),mCustomerDto.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header),mCustomerDto.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL));
+            //Notes realm adapter
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<NoteRealm> viewAndHolderFactory = (parent, pViewType) -> {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_info_note_item, parent, false);
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                        view,
+                        new CustomerNoteViewHolder(view)
+                );
+            };
+            ReactiveRecyclerAdapter mNotesAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerNotes(mCustomer.getCustomerId()), viewAndHolderFactory);
+            getView().setNoteAdapter(mNotesAdapter);
 
-            for (NoteDto note: mCustomerDto.getNotes()) {
-                mNotesAdapter.addItem(new CustomerInfoNoteItem(note.getNoteId(), note.getDate(), note.getData()));
-            }
-
-            getView().showData();
         }
 
         @Override
@@ -131,7 +142,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             }
         }
 
-        public void deleteNote(CustomerInfoNoteItem note) {
+        public void deleteNote(NoteRealm note) {
             if (getRootView() != null) {
                 getRootView().showMessage("Удаление заметки"); //TODO make realization of notes deletion
             }

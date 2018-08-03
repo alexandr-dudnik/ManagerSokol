@@ -13,6 +13,7 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 
@@ -27,8 +28,6 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
     @Inject
     CustomerTasksScreen.Presenter mPresenter;
 
-    private CustomerDebtAdapter mDebtAdapter;
-    private CustomerTaskAdapter mTaskAdapter;
 
     public CustomerTasksView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -38,8 +37,6 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
     protected void initDagger(Context context) {
         DaggerService.<CustomerTasksScreen.Component>getDaggerComponent(context).inject(this);
 
-        mDebtAdapter = new CustomerDebtAdapter();
-        mTaskAdapter = new CustomerTaskAdapter();
     }
 
     @Override
@@ -52,20 +49,15 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
         super.onAttachedToWindow();
     }
 
-    public void showData() {
+
+
+    public void setDebtAdapter(ReactiveRecyclerAdapter mDebtAdapter) {
         mDebtList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mDebtList.setAdapter(mDebtAdapter);
+    }
 
+    public void setTaskAdapter(ReactiveRecyclerAdapter mTaskAdapter) {
         mTaskList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mTaskList.setAdapter(mTaskAdapter);
-    }
-
-
-    public CustomerDebtAdapter getDebtAdapter() {
-        return mDebtAdapter;
-    }
-
-    public CustomerTaskAdapter getTaskAdapter() {
-        return mTaskAdapter;
     }
 }

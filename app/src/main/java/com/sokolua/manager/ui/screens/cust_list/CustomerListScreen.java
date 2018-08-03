@@ -2,9 +2,11 @@ package com.sokolua.manager.ui.screens.cust_list;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
@@ -12,8 +14,10 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
+import com.sokolua.manager.ui.screens.customer.tasks.CustomerTaskItem;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
@@ -64,7 +68,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
         void inject(CustomerListView view);
 
-        void inject(ReactiveRecyclerAdapter adapter);
+        void inject(CustomerViewHolder viewHolder);
     }
     //endregion ================== DI =========================
 
@@ -87,65 +91,45 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
-//            mCompSubs.add(subscribeOnCustomersRealmObs());
 
             ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory = (parent, pViewType) -> {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_item, parent, false);
+                View view;
+                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_HEADER) {
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_header, parent, false);
+                }else{
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_item, parent, false);
+                }
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
-                        new CustomerViewHolder<>(view)
+                        new CustomerViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerList(getView().getCustomerFilter()), viewAndHolderFactory);
+            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getHeaderedCustomerList(getView().getCustomerFilter()), viewAndHolderFactory);
 
             getView().setAdapter(reactiveRecyclerAdapter);
-            getView().showCustomerList();
         }
 
         @Override
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (getRootView() != null) {
+                                getRootView().showMessage("тут будет поиск"); //TODO - show filter string
+                            }
+                            return false;
+                        }
+                    }, true))
                     .setTitle("Клиенты")
                     .build();
 
         }
 
 
-//        private Disposable subscribeOnCustomersRealmObs() {
-//
-//            return subscribe(mModel.getCustomerList(getView().getCustomerFilter()), new RealmSubscriber());
-//        }
-//
-//        private class RealmSubscriber extends ViewSubscriber<CustomerRealm> {
-//            CustomerListAdapter mAdapter = getView().getAdapter();
-//
-//            @Override
-//            public void onStart() {
-//                super.onStart();
-//            }
-//
-//            @Override
-//            public void onComplete() {
-//
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                if (getRootView() != null) {
-//                    getRootView().showError(e);
-//                }
-//            }
-//
-//            @Override
-//            public void onNext(CustomerRealm customerRealm) {
-//                mAdapter.addItem(new CustomerListItem(customerRealm));
-//            }
-//        }
-
-
         //List actions
-        public void openCustomerMap(@NonNull CustomerRealm customer){
+        public void openCustomerMap(CustomerRealm customer){
             if (!IntentStarter.openMap(customer.getAddress()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
             }
@@ -159,7 +143,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
         public void openCustomerCard(CustomerRealm customer){
             if (getRootView()!= null) {
-                Flow.get(getView().getContext()).set(new CustomerScreen(mModel.getCustomerDtoById(customer.getCustomerId())));
+                Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
             }
         }
     }

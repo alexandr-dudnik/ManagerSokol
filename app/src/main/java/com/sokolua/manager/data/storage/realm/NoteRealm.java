@@ -14,13 +14,13 @@ public class NoteRealm extends RealmObject implements Serializable {
     private String noteId;
     private CustomerRealm customer ;
     @Required
-    private String date;
+    private Date date;
     private String data;
 
     public NoteRealm() {
     }
 
-    public NoteRealm(CustomerRealm customer, String noteId, String date, String data) {
+    public NoteRealm(CustomerRealm customer, String noteId, Date date, String data) {
         this.customer = customer;
         this.noteId = noteId;
         this.date = date;
@@ -33,7 +33,7 @@ public class NoteRealm extends RealmObject implements Serializable {
         return noteId;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 

@@ -1,5 +1,7 @@
 package com.sokolua.manager.ui.screens.main;
 
+import android.view.MenuItem;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
@@ -7,6 +9,7 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.MainModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
 import com.sokolua.manager.utils.App;
@@ -77,6 +80,12 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_settings), R.drawable.ic_settings, item -> {
+                        if (getRootView() != null) {
+                            getRootView().showMessage("когда будет что настраивать - откроются настройки"); //TODO - open screen settings
+                        }
+                        return true;
+                    }, true))
                     .setTitle("Вася Пупкин") //TODO - Имя менеджера
                     .build();
 

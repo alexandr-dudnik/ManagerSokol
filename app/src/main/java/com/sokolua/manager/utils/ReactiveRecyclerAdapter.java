@@ -2,14 +2,22 @@ package com.sokolua.manager.utils;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sokolua.manager.data.managers.ConstantManager;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import static com.sokolua.manager.ui.activities.RootActivity.TAG;
 
 public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRecyclerAdapter.ReactiveViewHolder<T>> {
     private final Observable<List<T>> observable;
@@ -47,7 +55,7 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
     }
 
     @Override
-    public void onBindViewHolder(ReactiveViewHolder<T> holder, int position) {
+    public void onBindViewHolder(@NonNull ReactiveViewHolder<T> holder, int position) {
         T item = currentList.get(position);
         holder.setCurrentItem(item);
     }
@@ -55,6 +63,19 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
     @Override
     public int getItemCount() {
         return currentList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        T item = currentList.get(position);
+        int viewType = ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
+        try {
+            Method mm = item.getClass().getMethod("isHeader", (Class<?>[]) null);
+            viewType = (boolean)mm.invoke(item, (Object[]) null)? ConstantManager.RECYCLER_VIEW_TYPE_HEADER:ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
+        } catch (Throwable t) {
+            Log.e(TAG, "getItemViewType: Header check error", t);
+        }
+        return viewType;
     }
 
     public static abstract class ReactiveViewHolder<T> extends RecyclerView.ViewHolder {

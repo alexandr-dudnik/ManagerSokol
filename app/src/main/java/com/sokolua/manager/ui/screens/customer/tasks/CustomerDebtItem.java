@@ -1,33 +1,27 @@
 package com.sokolua.manager.ui.screens.customer.tasks;
 
+import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.storage.realm.DebtRealm;
+
 public class CustomerDebtItem {
-    private String currency;
-    private Float value = 0f;
-    private int debtType;
+    private String headerText;
+    int     debtType;
+    private DebtRealm debt;
     private boolean header;
 
-    public CustomerDebtItem(String currency, Float value, int debtType) {
-        this.header = false;
-        this.currency = currency;
-        this.debtType = debtType;
-        this.value = value;
-    }
-
-    public CustomerDebtItem(String title, int debtType){
+    public CustomerDebtItem(String headerText, int debtType) {
         this.header = true;
         this.debtType = debtType;
-        this.currency = title;
+        this.headerText = headerText;
+    }
+
+    public CustomerDebtItem(DebtRealm debt){
+        this.header = false;
+        this.debtType = debt.isOutdated()?ConstantManager.DEBT_TYPE_OUTDATED:ConstantManager.DEBT_TYPE_NORMAL;
+        this.debt = debt;
     }
 
     //region ================================ Getters ==================================
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public Float getValue() {
-        return value;
-    }
 
     public boolean isHeader() {
         return header;
@@ -37,6 +31,13 @@ public class CustomerDebtItem {
         return debtType;
     }
 
+    public DebtRealm getDebt() {
+        return debt;
+    }
+
+    public String getHeaderText() {
+        return headerText;
+    }
     //endregion ============================= Getters ==================================
 
 

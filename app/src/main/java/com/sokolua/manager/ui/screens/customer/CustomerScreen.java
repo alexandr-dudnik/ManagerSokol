@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.data.storage.dto.CustomerDto;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -22,7 +24,7 @@ import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer)
 public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  implements TreeKey {
-    private CustomerDto mCustomerDto;
+    private CustomerRealm mCustomer;
 
 
     @Override
@@ -33,8 +35,8 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                 .build();
     }
 
-    public CustomerScreen(CustomerDto customerDto) {
-        mCustomerDto = customerDto;
+    public CustomerScreen(String customerId) {
+        mCustomer = DataManager.getInstance().getCustomerById(customerId);
     }
 
     //region ===================== DI =========================
@@ -56,8 +58,8 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
 
         @Provides
         @DaggerScope(CustomerScreen.class)
-        CustomerDto provideCustomerDto() {
-            return mCustomerDto;
+        CustomerRealm provideCustomer() {
+            return mCustomer;
         }
     }
 
@@ -68,11 +70,11 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
 
         void inject(CustomerView view);
 
-        void inject(CustomerDto customer);
+        void inject(CustomerRealm customer);
 
         RootPresenter getRootPresenter();
 
-        CustomerDto getCustomerDto();
+        CustomerRealm getCustomer();
     }
     //endregion ================== DI =========================
 
@@ -101,7 +103,7 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
-                    .setTitle(mCustomerDto.getCustomerName())
+                    .setTitle(mCustomer.getName())
                     .setTabs(getView().getViewPager())
                     .build();
 
