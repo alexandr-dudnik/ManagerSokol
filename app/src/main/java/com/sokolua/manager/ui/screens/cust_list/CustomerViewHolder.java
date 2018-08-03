@@ -37,16 +37,17 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
         ButterKnife.bind(this, itemView);
     }
 
+
     @Override
-    public void setCurrentItem(T currentItem) {
+    public void setCurrentItem(CustomerListItem currentItem) {
         super.setCurrentItem(currentItem);
 
         if (currentItem != null) {
-//            if (currentItem.isHeader() && mItemHeaderText != null){
-//                mItemHeaderText.setText(currentItem.getCustomerName());
-//            }else {
+            if (currentItem.isHeader() && mItemHeaderText != null){
+                mItemHeaderText.setText(currentItem.getHeaderText());
+            }else if (currentItem.getCustomer() != null){
                 if (mExclamationImg != null) {
-                    switch ( DataManager.getInstance().getCustomerDebtType(((CustomerRealm)currentItem).getCustomerId())){
+                    switch ( DataManager.getInstance().getCustomerDebtType(currentItem.getCustomer().getCustomerId())){
                         case ConstantManager.DEBT_TYPE_NORMAL:
                             mExclamationImg.setVisibility(View.VISIBLE);
                             mExclamationImg.setColorFilter(App.getColorRes(R.color.color_orange));
@@ -60,15 +61,15 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
                     }
                 }
                 if (mCustomerNameText != null) {
-                    mCustomerNameText.setText(((CustomerRealm)currentItem).getName());
+                    mCustomerNameText.setText(currentItem.getCustomer().getName());
                 }
                 if (mMapPinImg != null) {
-                    mMapPinImg.setVisibility(((CustomerRealm)currentItem).getAddress().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    mMapPinImg.setVisibility(currentItem.getCustomer().getAddress().isEmpty()?View.INVISIBLE:View.VISIBLE);
                 }
                 if (mCallImg != null) {
-                    mCallImg.setVisibility(((CustomerRealm)currentItem).getPhone().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    mCallImg.setVisibility(currentItem.getCustomer().getPhone().isEmpty()?View.INVISIBLE:View.VISIBLE);
                 }
-//            }
+            }
         }
 
     }
@@ -76,19 +77,28 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
     @Optional
     @OnClick(R.id.map_pin_img)
     public void onMapClick(View view){
-        mPresenter.openCustomerMap((CustomerRealm)currentItem);
+        if (currentItem.getCustomer() != null) {
+
+            mPresenter.openCustomerMap(currentItem.getCustomer());
+        }
     }
 
     @Optional
     @OnClick(R.id.call_img)
     public void onCallClick(View view){
-        mPresenter.callToCustomer((CustomerRealm)currentItem);
+        if (currentItem.getCustomer() != null) {
+
+            mPresenter.callToCustomer(currentItem.getCustomer());
+        }
     }
 
     @Optional
     @OnClick({R.id.exclamation_img, R.id.customer_name_text, R.id.customer_list_item})
     public void onCustomerClick(View view){
-        mPresenter.openCustomerCard((CustomerRealm)currentItem);
+        if (currentItem.getCustomer() != null) {
+
+            mPresenter.openCustomerCard(currentItem.getCustomer());
+        }
     }
 
 

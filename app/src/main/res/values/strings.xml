@@ -46,6 +46,8 @@
     <string name="customer_task_research">Развитие</string>
     <string name="customer_task_no_tasks">Нет задач</string>
     <string name="customer_task_individual">Индивидуальные</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_search">Поиск</string>
 
 
 </resources>

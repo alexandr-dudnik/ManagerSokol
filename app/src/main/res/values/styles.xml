@@ -10,7 +10,9 @@
         <item name="windowActionBar">false</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
         <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
+
 
     <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
         <!-- Required for pre-Lollipop. -->
@@ -21,17 +23,18 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@color/color_primary_dark</item>
         <item name="android:colorControlNormal" tools:targetApi="lollipop">@color/color_primary_dark</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
-
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 
     <style name = "AppTheme.NoActionBar.FullScreen" parent="AppTheme.NoActionBar" >

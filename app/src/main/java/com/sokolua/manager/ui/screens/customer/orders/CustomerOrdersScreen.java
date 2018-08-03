@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.dto.CustomerDto;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -64,7 +65,7 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<CustomerOrdersView, CustomerModel> {
         @Inject
-        protected CustomerDto mCustomerDto;
+        protected CustomerRealm mCustomer;
 
 
         public Presenter() {
@@ -75,7 +76,7 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
 
-            getView().setCustomerNameText(mCustomerDto.getAddress());
+            getView().setCustomerNameText(mCustomer.getAddress());
         }
 
         @Override
@@ -89,7 +90,7 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
         }
 
         protected void updateFields(){
-            getView().setCustomerNameText(mCustomerDto.getPhone());
+            getView().setCustomerNameText(mCustomer.getPhone());
         }
 
     }

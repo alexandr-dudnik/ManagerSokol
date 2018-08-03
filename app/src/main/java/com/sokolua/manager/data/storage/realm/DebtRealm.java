@@ -48,5 +48,13 @@ public class DebtRealm extends RealmObject implements Serializable {
         return outdated;
     }
 
+    public void setAmount(float amount) {
+        this.amount = amount;
+    }
+
+    public void setAmountUSD(float amountUSD) {
+        this.amountUSD = amountUSD;
+    }
+
 //endregion ================== Getters =========================
 }
