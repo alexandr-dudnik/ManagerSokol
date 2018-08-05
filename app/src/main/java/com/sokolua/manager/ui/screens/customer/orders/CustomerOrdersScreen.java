@@ -1,10 +1,14 @@
 package com.sokolua.manager.ui.screens.customer.orders;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -12,7 +16,9 @@ import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
+import com.sokolua.manager.ui.screens.customer.info.CustomerNoteViewHolder;
 import com.sokolua.manager.ui.screens.customer.info.DaggerCustomerInfoScreen_Component;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 
@@ -59,6 +65,12 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
         void inject(Presenter presenter);
 
         void inject(CustomerOrdersView view);
+
+        void inject(CustomerPlanViewHolder viewHolder);
+
+        void inject(CustomerOrderViewHolder viewHolder);
+
+
     }
     //endregion ================== DI =========================
 
@@ -76,12 +88,33 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
 
-            getView().setCustomerNameText(mCustomer.getAddress());
         }
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
+
+            //Plan realm adapter
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderPlanRealm> planViewAndHolderFactory = (parent, pViewType) -> {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_plan_item, parent, false);
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                        view,
+                        new CustomerPlanViewHolder(view)
+                );
+            };
+            ReactiveRecyclerAdapter mPlanAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerPlan(mCustomer.getCustomerId()), planViewAndHolderFactory);
+            getView().setPlanAdapter(mPlanAdapter);
+
+            //Orders realm adapter
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderPlanRealm> orderViewAndHolderFactory = (parent, pViewType) -> {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_order_item, parent, false);
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                        view,
+                        new CustomerPlanViewHolder(view)
+                );
+            };
+            ReactiveRecyclerAdapter mOrderAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerOrders(mCustomer.getCustomerId()), orderViewAndHolderFactory);
+            getView().setOrdersAdapter(mOrderAdapter);
         }
 
         @Override
@@ -89,9 +122,6 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
 
         }
 
-        protected void updateFields(){
-            getView().setCustomerNameText(mCustomer.getPhone());
-        }
 
     }
 }

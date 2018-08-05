@@ -1,7 +1,7 @@
 package com.sokolua.manager.mvp.models;
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
-import com.sokolua.manager.ui.screens.cust_list.CustomerListItem;
+import com.sokolua.manager.ui.screens.customer_list.CustomerListItem;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class CustomerListModel extends AbstractModel {
         return obs.map(CustomerListItem::new).toList().toObservable();
     }
 
-    public Observable<List<CustomerListItem>> getHeaderedCustomerList(String filter){
+    public Observable<List<CustomerListItem>> getCustomerListHeadered(String filter){
         if (filter != null && !filter.isEmpty()) {
             return getCustomerList(filter);
         }

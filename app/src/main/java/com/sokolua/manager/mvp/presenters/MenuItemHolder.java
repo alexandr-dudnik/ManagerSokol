@@ -1,6 +1,9 @@
 package com.sokolua.manager.mvp.presenters;
 
+import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
+
+import com.sokolua.manager.data.managers.ConstantManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +12,24 @@ public class MenuItemHolder {
     private final CharSequence itemTitle;
     private final int iconResId;
     private final MenuItem.OnMenuItemClickListener listener;
-    private final boolean action;
+    private final SearchView.OnQueryTextListener queryListener;
+    private final int itemType;
     private final List<MenuItemHolder> subMenu= new ArrayList<>();
 
-    public MenuItemHolder(CharSequence itemTitle, int iconResId, MenuItem.OnMenuItemClickListener listener, boolean action) {
+    public MenuItemHolder(CharSequence itemTitle, int iconResId, MenuItem.OnMenuItemClickListener listener, int type) {
         this.itemTitle = itemTitle;
         this.iconResId = iconResId;
         this.listener = listener;
-        this.action = action;
+        this.itemType = type;
+        this.queryListener = null;
+    }
+
+    public MenuItemHolder(CharSequence itemTitle, int iconResId, SearchView.OnQueryTextListener listener, int type) {
+        this.itemTitle = itemTitle;
+        this.iconResId = iconResId;
+        this.listener = null;
+        this.itemType = type;
+        this.queryListener = listener;
     }
 
     //region ===================== Getters =========================
@@ -33,8 +46,12 @@ public class MenuItemHolder {
         return listener;
     }
 
-    public boolean isAction() {
-        return action;
+    public SearchView.OnQueryTextListener getQueryListener() {
+        return queryListener;
+    }
+
+    public int getItemType() {
+        return itemType;
     }
 
     public List<MenuItemHolder> getSubMenu() {

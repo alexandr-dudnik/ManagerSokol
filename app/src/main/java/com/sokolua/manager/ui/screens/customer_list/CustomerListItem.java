@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.cust_list;
+package com.sokolua.manager.ui.screens.customer_list;
 
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;

@@ -41,6 +41,7 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
 //        return mViewClickSubject;
 //    }
 
+
     @Override
     public ReactiveViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, int pViewType) {
         ReactiveViewHolderFactory.ViewAndHolder<T> viewAndHolder = viewHolderFactory.createViewAndHolder(parent, pViewType);
@@ -72,8 +73,7 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
         try {
             Method mm = item.getClass().getMethod("isHeader", (Class<?>[]) null);
             viewType = (boolean)mm.invoke(item, (Object[]) null)? ConstantManager.RECYCLER_VIEW_TYPE_HEADER:ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
-        } catch (Throwable t) {
-            Log.e(TAG, "getItemViewType: Header check error", t);
+        } catch (Throwable ignore) {
         }
         return viewType;
     }

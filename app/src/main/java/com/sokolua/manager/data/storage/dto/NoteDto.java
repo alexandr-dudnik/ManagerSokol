@@ -27,7 +27,7 @@ public class NoteDto implements Parcelable{
     public NoteDto(NoteRealm realm) {
         this.customerId = realm.getCustomer().getCustomerId();
         this.noteId = realm.getNoteId();
-        this.date = realm.getDate();
+        this.date = realm.getDate().toString();
         this.data = realm.getData();
     }
 

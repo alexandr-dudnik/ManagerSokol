@@ -98,11 +98,21 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
             //Data custom adapter
             CustomerInfoDataAdapter mDataAdapter = new CustomerInfoDataAdapter();
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header),mCustomer.getName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header),mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header),mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header),mCustomer.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL));
-            mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header),mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL));
+            if (!mCustomer.getName().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header), mCustomer.getName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            }
+            if (!mCustomer.getContactName().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header), mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            }
+            if (!mCustomer.getAddress().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header), mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
+            }
+            if (!mCustomer.getPhone().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header), mCustomer.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL));
+            }
+            if (!mCustomer.getEmail().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header), mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL));
+            }
             getView().setDataAdapter(mDataAdapter);
 
             //Notes realm adapter

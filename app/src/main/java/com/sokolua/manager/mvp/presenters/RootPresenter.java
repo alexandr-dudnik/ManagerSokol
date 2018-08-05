@@ -155,6 +155,7 @@ public class RootPresenter extends Presenter<IRootView> {
             return this;
         }
 
+
         public ActionBarBuilder setTabs(ViewPager viewPager) {
             this.toolbarMode = TAB_MODE;
             this.pager = viewPager;

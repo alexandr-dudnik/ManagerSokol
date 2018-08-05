@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.cust_list;
+package com.sokolua.manager.ui.screens.customer_list;
 
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
-import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;

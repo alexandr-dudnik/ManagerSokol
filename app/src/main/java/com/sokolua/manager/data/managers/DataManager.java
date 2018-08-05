@@ -102,6 +102,10 @@ public class DataManager {
     public Observable<DebtRealm> getCustomerDebtByType(String customerId, int debtType) {
         return mRealmManager.getCustomerDebtByType(customerId, debtType);
     }
+
+    public Observable<TaskRealm> getCustomerTasksByType(String customerId, int taskType) {
+        return mRealmManager.getCustomerTaskByType(customerId, taskType);
+    }
     //endregion ================== Customers =========================
 
 

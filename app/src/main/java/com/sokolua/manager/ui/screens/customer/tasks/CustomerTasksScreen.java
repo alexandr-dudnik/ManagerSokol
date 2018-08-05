@@ -1,33 +1,20 @@
 package com.sokolua.manager.ui.screens.customer.tasks;
 
 import android.os.Bundle;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
-import com.sokolua.manager.data.storage.dto.CustomerDto;
-import com.sokolua.manager.data.storage.dto.DebtDto;
-import com.sokolua.manager.data.storage.dto.TaskDto;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
-import com.sokolua.manager.data.storage.realm.DebtRealm;
-import com.sokolua.manager.data.storage.realm.NoteRealm;
-import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
-import com.sokolua.manager.ui.screens.cust_list.CustomerViewHolder;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
-import com.sokolua.manager.ui.screens.customer.info.CustomerNoteViewHolder;
-import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -116,7 +103,7 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
                         new CustomerDebtViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mDebtAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerDebt(mCustomer.getCustomerId()), debtViewAndHolderFactory);
+            ReactiveRecyclerAdapter mDebtAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()), debtViewAndHolderFactory);
             getView().setDebtAdapter(mDebtAdapter);
 
 
@@ -133,7 +120,7 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
                         new CustomerTaskViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mTaskAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerTasks(mCustomer.getCustomerId()), taskViewAndHolderFactory);
+            ReactiveRecyclerAdapter mTaskAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()), taskViewAndHolderFactory);
             getView().setTaskAdapter(mTaskAdapter);
 
 

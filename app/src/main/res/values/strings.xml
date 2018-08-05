@@ -48,6 +48,11 @@
     <string name="customer_task_individual">Индивидуальные</string>
     <string name="menu_settings">Настройки</string>
     <string name="menu_search">Поиск</string>
+    <string name="customer_order_plan_header">План заказа на посещение</string>
+    <string name="customer_order_list_header">Заказы клиента</string>
+    <string name="search_hint">Поиск...</string>
+    <string name="payment_type_cash">ЧП</string>
+    <string name="payment_type_oficial">ООО</string>
 
 
 </resources>

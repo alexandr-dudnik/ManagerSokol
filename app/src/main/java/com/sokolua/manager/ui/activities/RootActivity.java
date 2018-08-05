@@ -1,6 +1,7 @@
 package com.sokolua.manager.ui.activities;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,7 +15,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -24,6 +27,7 @@ import android.widget.FrameLayout;
 
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
@@ -37,7 +41,7 @@ import com.sokolua.manager.mvp.views.IActionBarView;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
 import com.sokolua.manager.ui.screens.auth.AuthScreen;
-import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
+import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
 import com.squareup.picasso.Picasso;
@@ -99,10 +103,6 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mActionBar = getSupportActionBar();
-        mActionBar.setHomeButtonEnabled(true);
-        mActionBar.setDisplayShowHomeEnabled(true);
-        mActionBar.setLogo(R.drawable.ic_logo_bird);
-        mActionBar.setDisplayUseLogoEnabled(true);
     }
 
 
@@ -225,10 +225,6 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         mActionBar.setTitle(title);
     }
 
-    @Override
-    public void setActionSearchMode(boolean mode) {
-
-    }
 
     @Override
     public void setVisible(boolean visible) {
@@ -243,7 +239,6 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void setBackArrow(boolean enabled) {
-        mActionBar.setDisplayOptions(enabled?ActionBar.DISPLAY_SHOW_HOME:ActionBar.DISPLAY_USE_LOGO, ActionBar.DISPLAY_SHOW_HOME|ActionBar.DISPLAY_USE_LOGO);
         mActionBar.setDisplayHomeAsUpEnabled(enabled);
     }
 
@@ -253,8 +248,23 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         supportInvalidateOptionsMenu();
     }
 
+
     private void addMenuItem(Menu menu, MenuItemHolder menuItem) {
         MenuItem item;
+        if (menuItem.getItemType() == ConstantManager.MENU_ITEM_TYPE_SEARCH){
+            getMenuInflater().inflate(R.menu.search_menu, menu);
+            item = menu.findItem(R.id.search);
+            item.setTitle(menuItem.getItemTitle());
+            item.expandActionView();
+            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView) item.getActionView();
+            searchView.setQueryHint(App.getStringRes(R.string.search_hint));
+            searchView.setOnQueryTextListener(menuItem.getQueryListener());
+            searchView.requestFocus();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            return;
+        }
+
         if (menuItem.hasSubMenu()) {
             SubMenu subMenu = menu.addSubMenu(menuItem.getItemTitle());
             item = subMenu.getItem();
@@ -265,9 +275,18 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         } else {
             item = menu.add(menuItem.getItemTitle());
         }
-        item.setShowAsActionFlags(menuItem.isAction() ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER)
+        int flags;
+        switch (menuItem.getItemType()){
+            case ConstantManager.MENU_ITEM_TYPE_ACTION:
+                flags = MenuItem.SHOW_AS_ACTION_ALWAYS;
+                break;
+             default:
+                 flags = MenuItem.SHOW_AS_ACTION_NEVER;
+        }
+        item.setShowAsActionFlags(flags)
                 .setIcon(menuItem.getIconResId())
                 .setOnMenuItemClickListener(menuItem.getListener());
+
     }
 
     @Override

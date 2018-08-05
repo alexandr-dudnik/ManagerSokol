@@ -7,10 +7,9 @@ import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -19,6 +18,7 @@ public class DebugModule {
     public static void mock_RealmDB() throws ParseException {
         Realm realm = Realm.getDefaultInstance();
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
         RealmList<CustomerRealm> managedCustomers= new RealmList<>();
 
@@ -26,8 +26,8 @@ public class DebugModule {
         temp.getDebt().add(new DebtRealm(temp,"USD",1250,1250,true));
         temp.getDebt().add(new DebtRealm(temp,"UAH",2700,100,true));
         temp.getDebt().add(new DebtRealm(temp,"UAH",3500,150,false));
-        temp.getNotes().add(new NoteRealm(temp, "note0101", SimpleDateFormat.getDateInstance().parse("01.05.2018"),"Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
-        temp.getNotes().add(new NoteRealm(temp, "note0102",SimpleDateFormat.getDateInstance().parse("07.05.2018"),"Договорились о поставке крупной партии металлорукава"));
+        temp.getNotes().add(new NoteRealm(temp, "note0101", dateFormat.parse("2018-05-01"),"Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
+        temp.getNotes().add(new NoteRealm(temp, "note0102",dateFormat.parse("2018-07-05"),"Договорились о поставке крупной партии металлорукава"));
         temp.getTasks().add(new TaskRealm(temp, "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH));
         temp.getTasks().add(new TaskRealm(temp, "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH));
         temp.getTasks().add(new TaskRealm(temp, "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL));
@@ -42,8 +42,8 @@ public class DebugModule {
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
-        temp.getNotes().add(new NoteRealm(temp, "note0301",SimpleDateFormat.getDateInstance().parse("15.06.2018"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
-        temp.getNotes().add(new NoteRealm(temp, "note0302",SimpleDateFormat.getDateInstance().parse("01.07.2018"),"Обсудили условия поставки провода на объекты"));
+        temp.getNotes().add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
+        temp.getNotes().add(new NoteRealm(temp, "note0302",dateFormat.parse("2018-07-01"),"Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","");

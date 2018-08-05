@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.DataManager;
-import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
@@ -16,7 +15,7 @@ import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
-import com.sokolua.manager.ui.screens.cust_list.CustomerListScreen;
+import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
 
 import dagger.Provides;
 import flow.TreeKey;

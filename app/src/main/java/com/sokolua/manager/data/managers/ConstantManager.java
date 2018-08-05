@@ -2,7 +2,7 @@ package com.sokolua.manager.data.managers;
 
 public class ConstantManager {
     public static final int REQUEST_PERMISSION_READ_EXTERNAL_MEMORY = 3001;
-    public static final String FILE_PROVIDER_AUTHORITY = "com.skill_branch.graduate.fileprovider";
+    public static final String FILE_PROVIDER_AUTHORITY = "com.sokolua.manager.fileprovider";
     public static final String HEADER_LAST_MODIFIED = "Last-Modified";
     public static final String HEADER_IF_MODIFIED_SINCE = "Is-Modified-Since";
 
@@ -16,4 +16,16 @@ public class ConstantManager {
 
     public static final int RECYCLER_VIEW_TYPE_HEADER = 1;
     public static final int RECYCLER_VIEW_TYPE_ITEM = 0;
+
+    public static final int MENU_ITEM_TYPE_ITEM = 0;
+    public static final int MENU_ITEM_TYPE_ACTION = 1;
+    public static final int MENU_ITEM_TYPE_SEARCH = 2;
+
+    public static final int ORDER_STATUS_CART = 0;
+    public static final int ORDER_STATUS_IN_PROGRESS = 1;
+    public static final int ORDER_STATUS_SENT = 2;
+    public static final int ORDER_STATUS_DELIVERED = 3;
+
+    public static final int ORDER_PAYMENT_CASH = 0;
+    public static final int ORDER_PAYMENT_OFICIAL = 1;
 }

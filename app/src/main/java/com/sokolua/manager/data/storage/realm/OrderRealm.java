@@ -14,6 +14,7 @@ public class OrderRealm extends RealmObject implements Serializable{
     private String orderId;
     @Required
     private Date date;
+    private Date delivery;
     private CustomerRealm customer;
     private int status;
     private int payment;
@@ -24,12 +25,13 @@ public class OrderRealm extends RealmObject implements Serializable{
     public OrderRealm() {
     }
 
-    public OrderRealm(Date date, int status, int payment, Float total, String comments) {
+    public OrderRealm(Date date, Date delivery, int status, int payment, Float total, String comments) {
         this.date = date;
         this.status = status;
         this.payment = payment;
         this.total = total;
         this.comments = comments;
+        this.delivery = delivery;
     }
 
     //region ================================ Getters ==================================

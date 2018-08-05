@@ -26,4 +26,6 @@
     <dimen name="main_page_text_size">20sp</dimen>
     <dimen name="customer_debt_icon">24dp</dimen>
     <dimen name="customer_debt_margin">8dp</dimen>
+    <dimen name="customer_orders_margin">8dp</dimen>
+    <dimen name="customer_order_icon">24dp</dimen>
 </resources>

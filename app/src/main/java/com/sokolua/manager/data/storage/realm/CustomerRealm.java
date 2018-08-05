@@ -9,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -22,6 +23,8 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private String address = "";
     private String phone = "";
     private String email = "";
+    @Index
+    private String index = "";
     private RealmList<DebtRealm> debt = new RealmList<>();
     private RealmList<NoteRealm> notes = new RealmList<>();
     private RealmList<TaskRealm> tasks = new RealmList<>();
@@ -38,6 +41,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
         this.address = address;
         this.phone = phone;
         this.email = email;
+        this.index = name.toLowerCase();
     }
 
     //region ===================== Getters =========================

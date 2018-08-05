@@ -28,7 +28,10 @@ import com.sokolua.manager.ui.activities.DaggerRootActivity_RootComponent;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import java.text.ParseException;
+
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
@@ -65,7 +68,11 @@ public class App extends Application {
                             .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                             .build());
 
-            DebugModule.mock_RealmDB();
+            try {
+                DebugModule.mock_RealmDB();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
 

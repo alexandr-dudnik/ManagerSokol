@@ -1,8 +1,8 @@
-package com.sokolua.manager.ui.screens.cust_list;
+package com.sokolua.manager.ui.screens.customer_list;
 
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.sokolua.manager.R;
@@ -17,7 +17,6 @@ import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
-import com.sokolua.manager.ui.screens.customer.tasks.CustomerTaskItem;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
@@ -26,10 +25,9 @@ import javax.inject.Inject;
 
 import dagger.Provides;
 import flow.Flow;
-import io.reactivex.annotations.NonNull;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_cust_list)
+@Screen(R.layout.screen_customer_list)
 public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     @Override
@@ -79,6 +77,8 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         @Inject
         CustomerListModel mModel;
 
+        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory;
+
         public Presenter() {
         }
 
@@ -92,19 +92,25 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory = (parent, pViewType) -> {
+            viewAndHolderFactory = (parent, pViewType) -> {
                 View view;
                 if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_HEADER) {
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_header, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_header, parent, false);
                 }else{
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cust_list_item, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_item, parent, false);
                 }
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new CustomerViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getHeaderedCustomerList(getView().getCustomerFilter()), viewAndHolderFactory);
+
+            setCustomerListAdapter("");
+        }
+
+        public void setCustomerListAdapter(String filter){
+
+            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerListHeadered(filter), viewAndHolderFactory);
 
             getView().setAdapter(reactiveRecyclerAdapter);
         }
@@ -113,22 +119,27 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new MenuItem.OnMenuItemClickListener() {
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
                         @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if (getRootView() != null) {
-                                getRootView().showMessage("тут будет поиск"); //TODO - show filter string
-                            }
-                            return false;
+                        public boolean onQueryTextSubmit(String query) {
+                            setCustomerListAdapter(query);
+                            return true;
                         }
-                    }, true))
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            setCustomerListAdapter(newText);
+                            return true;
+                        }
+                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
                     .setTitle("Клиенты")
                     .build();
 
         }
 
 
-        //List actions
+        //region ===================== Event Actions =========================
+
         public void openCustomerMap(CustomerRealm customer){
             if (!IntentStarter.openMap(customer.getAddress()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
@@ -136,9 +147,9 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         }
 
         public void callToCustomer(CustomerRealm customer) {
-                if (!IntentStarter.openMap(customer.getPhone()) && getRootView()!= null){
-                    getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
-                }
+            if (!IntentStarter.openMap(customer.getPhone()) && getRootView()!= null){
+                getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
+            }
         }
 
         public void openCustomerCard(CustomerRealm customer){
@@ -146,7 +157,10 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                 Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
             }
         }
+
+        //endregion ================== Event Actions =========================
     }
+
     //endregion ================== Presenter =========================
 
 }

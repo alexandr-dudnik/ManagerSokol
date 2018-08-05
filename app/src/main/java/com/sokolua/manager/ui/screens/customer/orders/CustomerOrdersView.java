@@ -4,18 +4,27 @@ package com.sokolua.manager.ui.screens.customer.orders;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import butterknife.BindView;
 
 public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presenter>{
-    @BindView(R.id.customer_name_text)
-    TextView mCustomerNameText;
+
+    @BindView(R.id.plan_list)
+    RecyclerView mPlanList;
+
+    @BindView(R.id.orders_list)
+    RecyclerView mOrdersList;
+
 
     public CustomerOrdersView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -34,13 +43,16 @@ public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presen
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (!isInEditMode()) {
-            mPresenter.updateFields();
-        }
     }
 
 
-    public void setCustomerNameText(String name) {
-        mCustomerNameText.setText(name);
+    public void setPlanAdapter(ReactiveRecyclerAdapter planAdapter) {
+        mPlanList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
+        mPlanList.setAdapter(planAdapter);
+    }
+
+    public void setOrdersAdapter(ReactiveRecyclerAdapter ordersAdapter) {
+        mOrdersList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
+        mOrdersList.setAdapter(ordersAdapter);
     }
 }

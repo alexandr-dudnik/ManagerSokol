@@ -1,6 +1,7 @@
 package com.sokolua.manager.data.managers;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
@@ -17,6 +18,8 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import io.realm.internal.ManagableObject;
 
+import static com.sokolua.manager.ui.activities.RootActivity.TAG;
+
 public class RealmManager {
 
     private Realm mRealmInstance;
@@ -32,7 +35,7 @@ public class RealmManager {
     public Observable<CustomerRealm> getCustomersFromRealm(String filter){
         RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance()
                 .where(CustomerRealm.class)
-                .contains("name", filter == null ? "": filter, Case.INSENSITIVE)
+                .contains("index", filter == null ? "": filter, Case.INSENSITIVE) //Ищем по индексному полю - пока индекс = наименование
                 .sort("name")
                 .findAll();
 
@@ -80,7 +83,7 @@ public class RealmManager {
         if (customer == null || customer.getNotes().size() == 0) {
             return Observable.empty();
         }
-        return Observable.fromIterable(customer.getTasks().sort("date"));
+        return Observable.fromIterable(customer.getTasks().sort("taskType"));
     }
 
     public Observable<DebtRealm> getCustomerDebtByType(String customerId, int debtType) {
@@ -94,17 +97,34 @@ public class RealmManager {
             case ConstantManager.DEBT_TYPE_OUTDATED:
                 return Observable.fromIterable(customer.getDebt().where().equalTo("outdated", true).sort("currency").findAll());
             case ConstantManager.DEBT_TYPE_WHOLE:
-                return Observable.fromIterable(customer.getDebt())
+                return Observable.fromIterable(customer.getDebt().sort("currency"))
                         .groupBy(DebtRealm::getCurrency)
                         .map(grp->{
+                            Log.i(TAG, grp.getKey());
                             DebtRealm res = new DebtRealm(customer, grp.getKey(), 0f, 0f, false);
-                            grp.forEach(r->{
-                                res.setAmount(res.getAmount()+r.getAmount());
-                                res.setAmountUSD(res.getAmountUSD()+r.getAmountUSD());
-                               });
+                            grp.forEach (item ->{
+                                res.setAmount(res.getAmount()+item.getAmount());
+                                res.setAmountUSD(res.getAmountUSD()+item.getAmountUSD());
+                            });
                             return res;
-                        });
+                        })
+                        ;
         }
         return Observable.empty();
     }
+
+    public Observable<TaskRealm> getCustomerTaskByType(String customerId, int taskType) {
+        CustomerRealm customer = getCustomerById(customerId);
+        if (customer == null || customer.getDebt().size() == 0) {
+            return Observable.empty();
+        }
+        return Observable.fromIterable(
+                customer.getTasks()
+                        .where().equalTo("taskType", taskType)
+                        .sort("done",Sort.ASCENDING, "text", Sort.ASCENDING)
+                        .findAll()
+               );
+    }
+
 }
+
