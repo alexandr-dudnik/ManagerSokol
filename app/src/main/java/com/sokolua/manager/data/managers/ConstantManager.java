@@ -27,5 +27,5 @@ public class ConstantManager {
     public static final int ORDER_STATUS_DELIVERED = 3;
 
     public static final int ORDER_PAYMENT_CASH = 0;
-    public static final int ORDER_PAYMENT_OFICIAL = 1;
+    public static final int ORDER_PAYMENT_OFFICIAL = 1;
 }

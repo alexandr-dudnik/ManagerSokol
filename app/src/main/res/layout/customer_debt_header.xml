@@ -21,7 +21,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         tools:text="@string/customer_debt_outdated"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:fontFamily="@string/roboto_medium"
         />
 </LinearLayout>

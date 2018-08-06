@@ -255,12 +255,10 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
             getMenuInflater().inflate(R.menu.search_menu, menu);
             item = menu.findItem(R.id.search);
             item.setTitle(menuItem.getItemTitle());
-            item.expandActionView();
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             SearchView searchView = (SearchView) item.getActionView();
             searchView.setQueryHint(App.getStringRes(R.string.search_hint));
             searchView.setOnQueryTextListener(menuItem.getQueryListener());
-            searchView.requestFocus();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             return;
         }

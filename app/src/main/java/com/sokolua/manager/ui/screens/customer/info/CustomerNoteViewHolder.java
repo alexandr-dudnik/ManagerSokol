@@ -9,6 +9,7 @@ import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,8 @@ public class CustomerNoteViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     public void setCurrentItem(NoteRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-        mNoteDate.setText(SimpleDateFormat.getDateInstance().format(currentItem.getDate()));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        mNoteDate.setText(dateFormat.format(currentItem.getDate()));
         mNoteData.setText(currentItem.getData());
 
     }
