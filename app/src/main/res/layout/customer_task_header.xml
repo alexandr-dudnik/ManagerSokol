@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               xmlns:tools="http://schemas.android.com/tools"
               android:orientation="horizontal"
               android:layout_width="match_parent"
@@ -8,6 +7,9 @@
               android:layout_marginLeft="@dimen/customer_debt_margin"
               android:layout_marginRight="@dimen/customer_debt_margin"
               android:background="@color/color_gray_tint"
+              android:clickable="true"
+              android:focusable="true"
+              android:focusableInTouchMode="true"
     >
 
     <TextView

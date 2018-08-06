@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
@@ -19,7 +18,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 
-public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presenter>{
+public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presenter> {
     @BindView(R.id.debt_list)
     RecyclerView mDebtList;
     @BindView(R.id.tasks_list)
@@ -41,7 +40,7 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
 
     @Override
     public boolean viewOnBackPressed() {
-        return false;
+        return true;
     }
 
     @Override
@@ -60,4 +59,5 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
         mTaskList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mTaskList.setAdapter(mTaskAdapter);
     }
+
 }

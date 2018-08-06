@@ -2,13 +2,9 @@ package com.sokolua.manager.ui.screens.customer.tasks;
 
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
@@ -19,12 +15,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import butterknife.OnEditorAction;
+import butterknife.OnFocusChange;
 import butterknife.OnLongClick;
 import butterknife.Optional;
-import io.realm.ObjectChangeSet;
 import io.realm.RealmObjectChangeListener;
 
 public class CustomerTaskViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<CustomerTaskItem> {
@@ -105,38 +99,52 @@ public class CustomerTaskViewHolder extends ReactiveRecyclerAdapter.ReactiveView
 
 
 
+
     @Optional
-    @OnEditorAction(R.id.task_comment_edit)
-    public boolean commentEditorAction(TextView view, int actionCode, android.view.KeyEvent event){
-
-        switch (actionCode) {
-            case EditorInfo.IME_ACTION_DONE:
-            case EditorInfo.IME_ACTION_GO:
-            case EditorInfo.IME_ACTION_NEXT:
-            case EditorInfo.IME_ACTION_PREVIOUS:
-            case EditorInfo.IME_ACTION_SEARCH:
-            case EditorInfo.IME_ACTION_SEND:
-                if (currentItem.getTask() != null && mEditComment != null && mTaskComment != null &&  mTaskDone != null) {
-                    mEditComment.clearFocus();
-                    mTaskComment.setText(mEditComment.getText().toString());
-                    mTaskComment.setVisibility(View.VISIBLE);
-                    mEditComment.setVisibility(View.GONE);
-                    mPresenter.updateTask(currentItem.getTask().getTaskId(), mTaskDone.isChecked(), mEditComment.getText().toString());
-                }
-                break;
-
-            case EditorInfo.IME_ACTION_NONE:
-            case EditorInfo.IME_ACTION_UNSPECIFIED:
-            default:
-                if (mEditComment != null && mTaskComment != null) {
-                    mEditComment.clearFocus();
-                    mTaskComment.setVisibility(View.VISIBLE);
-                    mEditComment.setVisibility(View.GONE);
-                }
-                break;
+    @OnFocusChange(R.id.task_comment_edit)
+    void focusChange(View view, boolean focus){
+        if (!focus && currentItem.getTask() != null && mEditComment != null && mTaskComment != null &&  mTaskDone != null) {
+            mEditComment.clearFocus();
+            mTaskComment.setText(mEditComment.getText().toString());
+            mTaskComment.setVisibility(View.VISIBLE);
+            mEditComment.setVisibility(View.GONE);
+            mPresenter.updateTask(currentItem.getTask().getTaskId(), mTaskDone.isChecked(), mEditComment.getText().toString());
         }
-        return false;
     }
+
+
+//    @Optional
+//    @OnEditorAction(R.id.task_comment_edit)
+//    public boolean commentEditorAction(TextView view, int actionCode, android.view.KeyEvent event){
+//
+//        switch (actionCode) {
+//            case EditorInfo.IME_ACTION_DONE:
+//            case EditorInfo.IME_ACTION_GO:
+//            case EditorInfo.IME_ACTION_NEXT:
+//            case EditorInfo.IME_ACTION_PREVIOUS:
+//            case EditorInfo.IME_ACTION_SEARCH:
+//            case EditorInfo.IME_ACTION_SEND:
+//                if (currentItem.getTask() != null && mEditComment != null && mTaskComment != null &&  mTaskDone != null) {
+//                    mEditComment.clearFocus();
+//                    mTaskComment.setText(mEditComment.getText().toString());
+//                    mTaskComment.setVisibility(View.VISIBLE);
+//                    mEditComment.setVisibility(View.GONE);
+//                    mPresenter.updateTask(currentItem.getTask().getTaskId(), mTaskDone.isChecked(), mEditComment.getText().toString());
+//                }
+//                break;
+//
+//            case EditorInfo.IME_ACTION_NONE:
+//            case EditorInfo.IME_ACTION_UNSPECIFIED:
+//            default:
+//                if (mEditComment != null && mTaskComment != null) {
+//                    mEditComment.clearFocus();
+//                    mTaskComment.setVisibility(View.VISIBLE);
+//                    mEditComment.setVisibility(View.GONE);
+//                }
+//                break;
+//        }
+//        return false;
+//    }
 
     @Optional
     @OnClick(R.id.task_done_chk)
