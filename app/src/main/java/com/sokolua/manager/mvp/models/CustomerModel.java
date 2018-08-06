@@ -2,6 +2,7 @@ package com.sokolua.manager.mvp.models;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
@@ -64,10 +65,16 @@ public class CustomerModel extends AbstractModel {
     }
 
     public Observable<List<OrderPlanRealm>> getCustomerPlan(String customerId) {
-        return Observable.empty();
+        Observable<OrderPlanRealm> obs = mDataManager.getCustomerPlan(customerId);
+        return obs.toList().toObservable();
     }
 
     public Observable<List<OrderRealm>> getCustomerOrders(String customerId) {
-        return Observable.empty();
+        Observable<OrderRealm> obs = mDataManager.getCustomerOrders(customerId);
+        return obs.toList().toObservable();
+    }
+
+    public void updateTask(String taskId, boolean checked, String result) {
+        mDataManager.updateCustomerTask(taskId, checked, result);
     }
 }

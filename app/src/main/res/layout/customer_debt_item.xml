@@ -29,8 +29,8 @@
         android:layout_toStartOf="@id/debt_value_sum"
         android:layout_marginLeft="@dimen/customer_debt_margin"
         android:layout_marginStart="@dimen/customer_debt_margin"
-        android:fontFamily="@string/roboto_regular"
-        android:textColor="@color/color_gray"
+        android:fontFamily="@string/roboto_medium"
+        android:textColor="@color/color_black"
         android:textSize="16sp"
         tools:text="USD"
         />

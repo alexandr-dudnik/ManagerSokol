@@ -23,11 +23,13 @@ public class TaskRealm extends RealmObject implements Serializable {
     public TaskRealm() {
     }
 
-    public TaskRealm(CustomerRealm customer, String taskId, String text, int taskType) {
-        this.customer = customer;
+    public TaskRealm(CustomerRealm customer, String taskId,  String text, int taskType, boolean done, String result) {
         this.taskId = taskId;
+        this.customer = customer;
         this.text = text;
         this.taskType = taskType;
+        this.done = done;
+        this.result = result;
     }
 
     //region ===================== Getters =========================
@@ -48,6 +50,26 @@ public class TaskRealm extends RealmObject implements Serializable {
         return taskType;
     }
 
+    public boolean isDone() {
+        return done;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
 
     //endregion ================== Getters =========================
+
+    //region ===================== Setters =========================
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    //endregion ================== Setters =========================
+
 }

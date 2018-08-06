@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/customer_debt_margin"
-                android:layout_marginRight="@dimen/customer_debt_margin"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginLeft="@dimen/customer_debt_margin"
+    android:layout_marginRight="@dimen/customer_debt_margin"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/task_done_chk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/customer_debt_margin"
+        android:layout_marginStart="@dimen/customer_debt_margin"
+        tools:checked="false" />
 
     <TextView
         android:id="@+id/task_text"
@@ -14,15 +24,45 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/customer_debt_margin"
         android:layout_marginStart="@dimen/customer_debt_margin"
+        android:layout_toLeftOf="@id/task_done_chk"
+        android:layout_toStartOf="@id/task_done_chk"
         android:fontFamily="@string/roboto_regular"
         android:textColor="@color/color_gray"
         android:textSize="16sp"
-        tools:text="Test task"
-        />
+        tools:text="Test task" />
+
     <LinearLayout
+        android:id="@+id/task_view_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/task_text"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/task_comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/roboto_condensed"
+            android:textColor="@color/color_gray_light"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            tools:text="Комментарий к задачи полезен и будет передаваться в 1С" />
+
+        <EditText
+            android:id="@+id/task_comment_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@string/roboto_condensed"
+            android:inputType="textMultiLine"
+            android:textColor="@color/color_black"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="Комментарий к задачи полезен и будет передаваться в 1С" />
+    </LinearLayout>
+
+    <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/task_text"
-        android:background="@color/color_accent"
-        />
+        android:layout_below="@id/task_view_switcher"
+        android:background="@color/color_accent" />
 </RelativeLayout>

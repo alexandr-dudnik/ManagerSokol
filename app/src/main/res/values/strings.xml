@@ -53,6 +53,7 @@
     <string name="search_hint">Поиск...</string>
     <string name="payment_type_cash">ЧП</string>
     <string name="payment_type_oficial">ООО</string>
+    <string name="national_currency">ГРН</string>
 
 
 </resources>

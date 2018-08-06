@@ -131,5 +131,10 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
 
         }
 
+
+
+        public void updateTask(String taskId, boolean checked, String result) {
+            mModel.updateTask(taskId, checked, result);
+        }
     }
 }

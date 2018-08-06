@@ -3,6 +3,8 @@ package com.sokolua.manager.data.managers;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.DaggerDataManagerComponent;
@@ -105,6 +107,18 @@ public class DataManager {
 
     public Observable<TaskRealm> getCustomerTasksByType(String customerId, int taskType) {
         return mRealmManager.getCustomerTaskByType(customerId, taskType);
+    }
+
+    public Observable<OrderPlanRealm> getCustomerPlan(String customerId) {
+        return mRealmManager.getCustomerPlan(customerId);
+    }
+
+    public Observable<OrderRealm> getCustomerOrders(String customerId) {
+        return mRealmManager.getCustomerOrders(customerId);
+    }
+
+    public void updateCustomerTask(String taskId, boolean checked, String result) {
+        mRealmManager.updateCustomerTask(taskId, checked, result);
     }
     //endregion ================== Customers =========================
 

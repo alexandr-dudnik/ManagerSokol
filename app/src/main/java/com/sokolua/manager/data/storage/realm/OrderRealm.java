@@ -11,7 +11,7 @@ import io.realm.annotations.Required;
 public class OrderRealm extends RealmObject implements Serializable{
     @Required
     @PrimaryKey
-    private String orderId;
+    private String Id;
     @Required
     private Date date;
     private Date delivery;
@@ -25,13 +25,15 @@ public class OrderRealm extends RealmObject implements Serializable{
     public OrderRealm() {
     }
 
-    public OrderRealm(Date date, Date delivery, int status, int payment, Float total, String comments) {
+    public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, Float total, String comments) {
+        this.Id = id;
+        this.customer = customer;
         this.date = date;
+        this.delivery = delivery;
         this.status = status;
         this.payment = payment;
         this.total = total;
         this.comments = comments;
-        this.delivery = delivery;
     }
 
     //region ================================ Getters ==================================
@@ -56,6 +58,21 @@ public class OrderRealm extends RealmObject implements Serializable{
         return comments;
     }
 
+    public String getId() {
+        return Id;
+    }
+
+    public Date getDelivery() {
+        return delivery;
+    }
+
+    public CustomerRealm getCustomer() {
+        return customer;
+    }
+
+    public RealmList<OrderLineRealm> getLines() {
+        return lines;
+    }
 
     //endregion ============================= Getters ==================================
 }

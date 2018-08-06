@@ -9,6 +9,7 @@ import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -106,11 +107,11 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
             getView().setPlanAdapter(mPlanAdapter);
 
             //Orders realm adapter
-            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderPlanRealm> orderViewAndHolderFactory = (parent, pViewType) -> {
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> orderViewAndHolderFactory = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_order_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
-                        new CustomerPlanViewHolder(view)
+                        new CustomerOrderViewHolder(view)
                 );
             };
             ReactiveRecyclerAdapter mOrderAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerOrders(mCustomer.getCustomerId()), orderViewAndHolderFactory);

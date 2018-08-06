@@ -23,28 +23,33 @@
                 android:fontFamily="@string/roboto_medium"
                 android:text="@string/customer_order_plan_header"
                 android:textColor="@color/color_gray_dark"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/plan_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/customer_orders_margin" />
+                android:layout_marginBottom="@dimen/customer_orders_margin"
+                android:overScrollMode="never"
+                />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/customer_orders_margin"
                 android:layout_marginRight="@dimen/customer_orders_margin"
+                android:layout_marginTop="@dimen/customer_orders_margin"
                 android:fontFamily="@string/roboto_medium"
                 android:text="@string/customer_order_list_header"
                 android:textColor="@color/color_gray_dark"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/orders_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                />
 
 
         </LinearLayout>
