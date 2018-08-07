@@ -1,12 +1,7 @@
 package com.sokolua.manager.data.storage.realm;
 
-import com.sokolua.manager.data.managers.ConstantManager;
-
 import java.io.Serializable;
 
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -30,6 +25,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private RealmList<TaskRealm> tasks = new RealmList<>();
     private RealmList<OrderPlanRealm> plan = new RealmList<>();
     private RealmList<CustomerDiscountRealm> discounts = new RealmList<>();
+    private RealmList<VisitRealm> visits = new RealmList<>();
 
     public CustomerRealm() {
     }
@@ -88,6 +84,10 @@ public class CustomerRealm extends RealmObject implements Serializable{
 
     public RealmList<CustomerDiscountRealm> getDiscounts() {
         return discounts;
+    }
+
+    public RealmList<VisitRealm> getVisits() {
+        return visits;
     }
 
     //endregion ================== Getters =========================

@@ -17,7 +17,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -43,6 +42,8 @@ import com.sokolua.manager.mvp.views.IView;
 import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
 import com.sokolua.manager.ui.screens.main.MainScreen;
+import com.sokolua.manager.ui.screens.order_list.OrderListScreen;
+import com.sokolua.manager.ui.screens.routes.RoutesScreen;
 import com.sokolua.manager.utils.App;
 import com.squareup.picasso.Picasso;
 
@@ -360,6 +361,12 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 break;
             case R.id.bottomBarCustomers:
                 key = new CustomerListScreen();
+                break;
+            case R.id.bottomBarOrders:
+                key = new OrderListScreen();
+                break;
+            case R.id.bottomBarRoute:
+                key = new RoutesScreen();
                 break;
         }
 

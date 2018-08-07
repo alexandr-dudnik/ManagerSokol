@@ -7,9 +7,7 @@ import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
-import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.di.DaggerService;
-import com.sokolua.manager.ui.screens.customer.info.CustomerInfoScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
@@ -19,7 +17,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CustomerDebtViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<CustomerDebtItem> {
 
@@ -65,7 +62,7 @@ public class CustomerDebtViewHolder extends ReactiveRecyclerAdapter.ReactiveView
         }else{
             if (mDebtCurrency != null && currentItem.getDebt() != null) {
                 mDebtCurrency.setText(currentItem.getDebt().getCurrency());
-                mDebtValueSum.setText(String.format(Locale.getDefault(),"%1$.2f",currentItem.getDebt().getAmount()));
+                mDebtValueSum.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format),currentItem.getDebt().getAmount()));
             }
         }
     }

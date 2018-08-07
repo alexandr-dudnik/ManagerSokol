@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sokolua.manager.ui.screens.routes.RoutesView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_background">
+
+    <CalendarView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:firstDayOfWeek="2"
+        />
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/order_list"-->
+        <!--android:scrollbars="vertical"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+
+    <!--</android.support.v7.widget.RecyclerView>-->
+</com.sokolua.manager.ui.screens.routes.RoutesView>

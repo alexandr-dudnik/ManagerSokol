@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.customer.orders;
+package com.sokolua.manager.ui.screens.order_list;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -21,37 +21,28 @@ import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CustomerOrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderRealm> {
+public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderRealm> {
 
-    @BindView(R.id.order_status_img)
-    ImageView mOrderStatusImage;
-    @BindView(R.id.order_date_text)
-    TextView mOrderDate;
-    @BindView(R.id.order_type_text)
-    TextView mOrderType;
-    @BindView(R.id.order_amount_text)
-    TextView mOrderAmountText;
-    @BindView(R.id.order_comment_text)
-    TextView mOrderCommentText;
-    @BindView(R.id.order_delivery_text)
-    TextView mDeliveryDateText;
+    @BindView(R.id.customer_name_text)    TextView mCustomerNameText;
+    @BindView(R.id.order_status_img)      ImageView mOrderStatusImage;
+    @BindView(R.id.order_date_text)       TextView mOrderDate;
+    @BindView(R.id.order_type_text)       TextView mOrderType;
+    @BindView(R.id.order_amount_text)     TextView mOrderAmountText;
+    @BindView(R.id.order_comment_text)    TextView mOrderCommentText;
+    @BindView(R.id.order_delivery_text)   TextView mDeliveryDateText;
 
 
-    @BindDrawable(R.drawable.ic_cart)
-    Drawable cartDrawable;
-    @BindDrawable(R.drawable.ic_sync)
-    Drawable progressDrawable;
-    @BindDrawable(R.drawable.ic_done)
-    Drawable deliveredDrawable;
-    @BindDrawable(R.drawable.ic_backup)
-    Drawable sentDrawable;
+    @BindDrawable(R.drawable.ic_cart)    Drawable cartDrawable;
+    @BindDrawable(R.drawable.ic_sync)    Drawable progressDrawable;
+    @BindDrawable(R.drawable.ic_done)    Drawable deliveredDrawable;
+    @BindDrawable(R.drawable.ic_backup)  Drawable sentDrawable;
 
     @Inject
-    CustomerOrdersScreen.Presenter mPresenter;
+    OrderListScreen.Presenter mPresenter;
 
-    public CustomerOrderViewHolder(View itemView) {
+    public OrderViewHolder(View itemView) {
         super(itemView);
-        DaggerService.<CustomerOrdersScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
+        DaggerService.<OrderListScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
     }
 
@@ -60,6 +51,7 @@ public class CustomerOrderViewHolder extends ReactiveRecyclerAdapter.ReactiveVie
     public void setCurrentItem(OrderRealm currentItem) {
         super.setCurrentItem(currentItem);
 
+        mCustomerNameText.setText(currentItem.getCustomer().getName());
         mOrderStatusImage.setVisibility(View.VISIBLE);
         switch (currentItem.getStatus()){
             case ConstantManager.ORDER_STATUS_CART:

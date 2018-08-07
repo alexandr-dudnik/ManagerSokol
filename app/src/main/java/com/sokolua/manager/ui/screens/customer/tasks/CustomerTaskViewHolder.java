@@ -113,39 +113,6 @@ public class CustomerTaskViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     }
 
 
-//    @Optional
-//    @OnEditorAction(R.id.task_comment_edit)
-//    public boolean commentEditorAction(TextView view, int actionCode, android.view.KeyEvent event){
-//
-//        switch (actionCode) {
-//            case EditorInfo.IME_ACTION_DONE:
-//            case EditorInfo.IME_ACTION_GO:
-//            case EditorInfo.IME_ACTION_NEXT:
-//            case EditorInfo.IME_ACTION_PREVIOUS:
-//            case EditorInfo.IME_ACTION_SEARCH:
-//            case EditorInfo.IME_ACTION_SEND:
-//                if (currentItem.getTask() != null && mEditComment != null && mTaskComment != null &&  mTaskDone != null) {
-//                    mEditComment.clearFocus();
-//                    mTaskComment.setText(mEditComment.getText().toString());
-//                    mTaskComment.setVisibility(View.VISIBLE);
-//                    mEditComment.setVisibility(View.GONE);
-//                    mPresenter.updateTask(currentItem.getTask().getTaskId(), mTaskDone.isChecked(), mEditComment.getText().toString());
-//                }
-//                break;
-//
-//            case EditorInfo.IME_ACTION_NONE:
-//            case EditorInfo.IME_ACTION_UNSPECIFIED:
-//            default:
-//                if (mEditComment != null && mTaskComment != null) {
-//                    mEditComment.clearFocus();
-//                    mTaskComment.setVisibility(View.VISIBLE);
-//                    mEditComment.setVisibility(View.GONE);
-//                }
-//                break;
-//        }
-//        return false;
-//    }
-
     @Optional
     @OnClick(R.id.task_done_chk)
     void doneChanged(View chkBox){

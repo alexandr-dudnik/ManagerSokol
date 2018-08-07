@@ -21,8 +21,6 @@ import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
-import javax.inject.Inject;
-
 import dagger.Provides;
 import flow.Flow;
 import mortar.MortarScope;
@@ -74,9 +72,6 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<CustomerListView, CustomerListModel> {
 
-        @Inject
-        CustomerListModel mModel;
-
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory;
 
         public Presenter() {
@@ -105,10 +100,10 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                 );
             };
 
-            setCustomerListAdapter("");
+            setCustomerListFilter("");
         }
 
-        public void setCustomerListAdapter(String filter){
+        public void setCustomerListFilter(String filter){
 
             ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerListHeadered(filter), viewAndHolderFactory);
 
@@ -122,17 +117,17 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
-                            setCustomerListAdapter(query);
+                            setCustomerListFilter(query);
                             return true;
                         }
 
                         @Override
                         public boolean onQueryTextChange(String newText) {
-                            setCustomerListAdapter(newText);
+                            setCustomerListFilter(newText);
                             return true;
                         }
                     }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
-                    .setTitle("Клиенты")
+                    .setTitle(App.getStringRes(R.string.menu_customers))
                     .build();
 
         }

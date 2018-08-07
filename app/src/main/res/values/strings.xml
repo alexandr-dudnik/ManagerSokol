@@ -18,19 +18,31 @@
     <string name="error_phone_not_available">Не обнаружен телефон - совершить звонок не возможно!</string>
     <string name="error_email_not_available">Почтовая программа не установлена</string>
 
+    <string name="date_format">dd.MM.yyyy</string>
+    <string name="numeric_format">%1$.2f</string>
+    <string name="national_currency">грн</string>
 
+    <string name="search_hint">Поиск…</string>
+
+    <!-- Login -->
     <string name="login_form_caption">Ваши учетные данные</string>
     <string name="user_name_hint">Логин</string>
     <string name="user_password_hint">Пароль</string>
     <string name="login_button_text">Авторизация</string>
+
+    <!-- Menu items -->
     <string name="menu_home">Главная</string>
     <string name="menu_customers">Клиенты</string>
     <string name="menu_orders">Заказы</string>
     <string name="menu_goods">Товары</string>
     <string name="menu_route">Маршрут</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_search">Поиск</string>
+
+    <!-- Customer screen -->
     <string name="customer_tab_info">Инфо</string>
     <string name="customer_tab_tasks">Задачи</string>
-    <string name="customer_tab_orders">Закзазы</string>
+    <string name="customer_tab_orders">Заказы</string>
     <string name="customer_info_name_header">Название</string>
     <string name="customer_info_contact_header">Контактное лицо</string>
     <string name="customer_info_address_header">Адрес</string>
@@ -46,14 +58,12 @@
     <string name="customer_task_research">Развитие</string>
     <string name="customer_task_no_tasks">Нет задач</string>
     <string name="customer_task_individual">Индивидуальные</string>
-    <string name="menu_settings">Настройки</string>
-    <string name="menu_search">Поиск</string>
     <string name="customer_order_plan_header">План заказа на посещение</string>
     <string name="customer_order_list_header">Заказы клиента</string>
-    <string name="search_hint">Поиск...</string>
     <string name="payment_type_cash">ЧП</string>
-    <string name="payment_type_oficial">ООО</string>
-    <string name="national_currency">ГРН</string>
+    <string name="payment_type_official">ООО</string>
+    <string name="delivery_date_prefix">на:</string>
 
+    <!-- Orders screen -->
 
 </resources>

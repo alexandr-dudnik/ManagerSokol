@@ -13,8 +13,6 @@ import com.sokolua.manager.di.modules.LocalModule;
 import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -113,15 +111,24 @@ public class DataManager {
         return mRealmManager.getCustomerPlan(customerId);
     }
 
-    public Observable<OrderRealm> getCustomerOrders(String customerId) {
-        return mRealmManager.getCustomerOrders(customerId);
-    }
 
     public void updateCustomerTask(String taskId, boolean checked, String result) {
         mRealmManager.updateCustomerTask(taskId, checked, result);
     }
+
+
+
     //endregion ================== Customers =========================
 
+    //region ===================== Orders =========================
+    public Observable<OrderRealm> getCustomerOrders(String customerId) {
+        return mRealmManager.getCustomerOrders(customerId);
+    }
+
+    public Observable<OrderRealm> getOrders() {
+        return mRealmManager.getAllOrders();
+    }
+    //endregion ================== Orders =========================
 
 }
 

@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.customer_list;
+package com.sokolua.manager.ui.screens.order_list;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -17,22 +17,22 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 
-public class CustomerListView extends AbstractView<CustomerListScreen.Presenter> {
-    @BindView(R.id.customer_list)
-    RecyclerView mCustomerList;
+public class OrderListView extends AbstractView<OrderListScreen.Presenter> {
+    @BindView(R.id.order_list)
+    RecyclerView mOrderList;
 
     @Inject
-    CustomerListScreen.Presenter mPresenter;
+    OrderListScreen.Presenter mPresenter;
 
 
-    public CustomerListView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public OrderListView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     protected void initDagger(Context context) {
         if (!isInEditMode()) {
-            DaggerService.<CustomerListScreen.Component>getDaggerComponent(context).inject(this);
+            DaggerService.<OrderListScreen.Component>getDaggerComponent(context).inject(this);
         }
 
 
@@ -45,8 +45,8 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
 
 
     public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
-        mCustomerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerList.setAdapter(mAdapter);
+        mOrderList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
+        mOrderList.setAdapter(mAdapter);
     }
 
 }
