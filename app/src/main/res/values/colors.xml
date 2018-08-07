@@ -34,4 +34,9 @@
     <color name="tab_background_unselected" >#FFF9C4</color>
 
     <color name="menu_item_icon_color" >#5d5d5d</color>
+
+    <color name="color_order_in_progress">@color/color_orange</color>
+    <color name="color_order_done">@color/color_green</color>
+    <color name="color_order_cart">@color/color_gray</color>
+    <color name="color_order_sent">@color/color_gray</color>
 </resources>

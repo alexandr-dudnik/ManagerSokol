@@ -3,8 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/customer_orders_margin"
-    android:layout_marginRight="@dimen/customer_orders_margin">
+    android:layout_marginLeft="@dimen/order_list_margin"
+    android:layout_marginRight="@dimen/order_list_margin"
+    >
+
+    <TextView
+        android:id="@+id/customer_name_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@string/roboto_medium"
+        android:textColor="@color/color_green"
+        android:textSize="16sp"
+        tools:text="Покупатель ЧП" />
 
     <ImageView
         android:id="@+id/order_status_img"
@@ -12,18 +22,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@id/customer_name_text"
         android:scaleType="fitCenter"
         tools:srcCompat="@drawable/ic_cart" />
+
 
     <TextView
         android:id="@+id/order_date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/order_list_margin"
+        android:layout_marginStart="@dimen/order_list_margin"
         android:layout_toEndOf="@id/order_status_img"
         android:layout_toRightOf="@id/order_status_img"
+        android:layout_below="@id/customer_name_text"
         android:fontFamily="@string/roboto_medium"
-        android:layout_marginLeft="@dimen/customer_orders_margin"
-        android:layout_marginStart="@dimen/customer_orders_margin"
         android:textColor="@color/color_black"
         android:textSize="16sp"
         tools:text="12-07-2018" />
@@ -34,12 +47,14 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/order_date_text"
         android:layout_toRightOf="@id/order_date_text"
+        android:layout_below="@id/customer_name_text"
         android:fontFamily="@string/roboto_black"
-        android:paddingLeft="@dimen/customer_orders_margin_half"
-        android:paddingRight="@dimen/customer_orders_margin_half"
+        android:paddingLeft="@dimen/order_list_margin_half"
+        android:paddingRight="@dimen/order_list_margin_half"
         android:textColor="@color/color_gray"
         android:textSize="16sp"
         tools:text="ЧП" />
+
 
     <TextView
         android:id="@+id/order_amount_text"
@@ -47,8 +62,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="@dimen/customer_orders_margin"
-        android:layout_marginStart="@dimen/customer_orders_margin"
+        android:layout_marginLeft="@dimen/order_list_margin"
+        android:layout_marginStart="@dimen/order_list_margin"
+        android:layout_below="@id/customer_name_text"
         android:fontFamily="@string/roboto_medium"
         android:textColor="@color/color_green"
         android:textSize="16sp"
@@ -58,7 +74,8 @@
         android:id="@+id/order_delivery_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/customer_orders_margin_half"
+        android:layout_marginTop="@dimen/order_list_margin_half"
+        android:layout_below="@id/customer_name_text"
         android:layout_toLeftOf="@id/order_amount_text"
         android:layout_toStartOf="@id/order_amount_text"
         android:layout_toRightOf="@id/order_type_text"

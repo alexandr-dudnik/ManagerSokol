@@ -4,20 +4,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.sokolua.manager.R;
-import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.di.DaggerService;
-import com.sokolua.manager.ui.screens.customer.info.CustomerInfoScreen;
+import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CustomerPlanViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderPlanRealm> {
 
@@ -41,7 +38,7 @@ public class CustomerPlanViewHolder extends ReactiveRecyclerAdapter.ReactiveView
         super.setCurrentItem(currentItem);
 
         mGroupText.setText(currentItem.getCategory().getName());
-        mValueText.setText(String.format(Locale.getDefault(),"%1$.2f",currentItem.getAmount()));
+        mValueText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getAmount()));
 
     }
 

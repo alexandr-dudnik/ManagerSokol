@@ -5,9 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.sokolua.manager.R;
-import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
-import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
@@ -17,8 +15,6 @@ import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
-import com.sokolua.manager.ui.screens.customer.info.CustomerNoteViewHolder;
-import com.sokolua.manager.ui.screens.customer.info.DaggerCustomerInfoScreen_Component;
 import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;

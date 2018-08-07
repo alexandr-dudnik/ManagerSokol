@@ -11,10 +11,10 @@ import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
+import com.sokolua.manager.data.storage.realm.VisitRealm;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Locale;
 
 import io.realm.Realm;
@@ -123,6 +123,15 @@ public class DebugModule {
         temp.getPlan().add(new OrderPlanRealm(temp, cat1, 1500f));
         temp.getPlan().add(new OrderPlanRealm(temp, cat2, 5000f));
         temp.getPlan().add(new OrderPlanRealm(temp, cat3, 3500f));
+        temp.getVisits().add(new VisitRealm(temp, "visit00001", dateFormat.parse("2018-08-01"), true));
+        temp.getVisits().add(new VisitRealm(temp, "visit00002", dateFormat.parse("2018-08-05"), true));
+        temp.getVisits().add(new VisitRealm(temp, "visit00003", dateFormat.parse("2018-08-09"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00004", dateFormat.parse("2018-08-12"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00005", dateFormat.parse("2018-08-15"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00006", dateFormat.parse("2018-08-16"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00007", dateFormat.parse("2018-08-21"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00008", dateFormat.parse("2018-08-25"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00009", dateFormat.parse("2018-08-31"), false));
         managedCustomers.add(temp);
 
         OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1520f, "Заказ взял, клиет должен уточнить по количеству");
@@ -153,7 +162,19 @@ public class DebugModule {
         //--------------------------
         temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm");
         temp.getDebt().add(new DebtRealm(temp,"UAH",500,18,false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00010", dateFormat.parse("2018-08-05"), true));
+        temp.getVisits().add(new VisitRealm(temp, "visit00011", dateFormat.parse("2018-08-09"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00012", dateFormat.parse("2018-08-12"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00013", dateFormat.parse("2018-08-15"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00014", dateFormat.parse("2018-08-20"), false));
         managedCustomers.add(temp);
+
+        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1652.15f, "");
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f));
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item16, 3f, 90f));
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f));
+        managedOrders.add(tmpOrder);
+
         //--------------------------
         temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
         temp.getNotes().add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
@@ -165,12 +186,29 @@ public class DebugModule {
         temp.getDebt().add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
         temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com");
+        temp.getVisits().add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-01"), true));
+        temp.getVisits().add(new VisitRealm(temp, "visit00016", dateFormat.parse("2018-08-10"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-15"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00018", dateFormat.parse("2018-08-25"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00019", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","");
         temp.getDebt().add(new DebtRealm(temp,"USD",130,130,true));
         temp.getDebt().add(new DebtRealm(temp,"UAH",250,9.50f,false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00020", dateFormat.parse("2018-08-01"), true));
+        temp.getVisits().add(new VisitRealm(temp, "visit00021", dateFormat.parse("2018-08-05"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00022", dateFormat.parse("2018-08-15"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00023", dateFormat.parse("2018-08-25"), false));
+        temp.getVisits().add(new VisitRealm(temp, "visit00024", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
+
+        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 8945.00f, "плановый заказ");
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f));
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item2, 200f, 20f));
+        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
+        managedOrders.add(tmpOrder);
 
 
         realm.executeTransaction(db -> db.insertOrUpdate(managedCats));

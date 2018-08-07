@@ -27,5 +27,10 @@
     <dimen name="customer_debt_icon">24dp</dimen>
     <dimen name="customer_debt_margin">8dp</dimen>
     <dimen name="customer_orders_margin">8dp</dimen>
-    <dimen name="customer_order_icon">24dp</dimen>
+    <dimen name="customer_order_icon">16dp</dimen>
+
+    <!-- Orders -->
+    <dimen name="order_list_margin">8dp</dimen>
+    <dimen name="order_list_margin_half">4dp</dimen>
+    <dimen name="customer_orders_margin_half">4dp</dimen>
 </resources>
