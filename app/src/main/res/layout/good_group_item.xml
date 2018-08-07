@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:padding="2dp"
+    >
+
+    <com.sokolua.manager.ui.custom_views.SquareImageView
+        android:id="@+id/good_group_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/no_image"/>
+
+    <TextView
+        android:id="@+id/good_group_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minLines="2"
+        android:maxLines="2"
+        android:textAlignment="center"
+        android:background="@color/color_white"
+        tools:text="Kaбельный канал"
+        />
+</LinearLayout>

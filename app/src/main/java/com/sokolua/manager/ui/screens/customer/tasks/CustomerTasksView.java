@@ -11,10 +11,8 @@ import android.util.AttributeSet;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 
@@ -23,9 +21,6 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
     RecyclerView mDebtList;
     @BindView(R.id.tasks_list)
     RecyclerView mTaskList;
-
-    @Inject
-    CustomerTasksScreen.Presenter mPresenter;
 
 
     public CustomerTasksView(@NonNull Context context, @Nullable AttributeSet attrs) {

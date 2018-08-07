@@ -13,8 +13,8 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 

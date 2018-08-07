@@ -37,6 +37,7 @@
             android:id="@+id/root_frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_anchor="@id/appbar"
             app:layout_anchorGravity="top"

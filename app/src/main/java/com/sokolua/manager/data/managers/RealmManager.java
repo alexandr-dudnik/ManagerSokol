@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
+import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
@@ -147,6 +148,11 @@ public class RealmManager {
 
     public Observable<OrderRealm> getAllOrders() {
         RealmResults<OrderRealm> res = getQueryRealmInstance().where(OrderRealm.class).sort("status", Sort.ASCENDING, "date", Sort.DESCENDING).findAll();
+        return Observable.fromIterable(res);
+    }
+
+    public Observable<GoodsGroupRealm> getMainGroupsList() {
+        RealmResults<GoodsGroupRealm> res = getQueryRealmInstance().where(GoodsGroupRealm.class).isNull("parent").sort("name", Sort.ASCENDING).findAll();
         return Observable.fromIterable(res);
     }
 }

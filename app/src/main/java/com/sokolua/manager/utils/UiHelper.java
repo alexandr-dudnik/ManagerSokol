@@ -19,14 +19,11 @@ import java.util.ArrayList;
 
 public class UiHelper {
 
-    public static void getCachedImagePicasso(final Picasso picasso, final String uri, final ImageView view, final Drawable dummy, final boolean rounded, final boolean fited) {
+    public static void getCachedImagePicasso(final Picasso picasso, final String uri, final ImageView view, final Drawable dummy, final boolean fited) {
         RequestCreator rc = picasso.load(uri)
                 .placeholder(dummy)
                 .error(dummy)
                 .networkPolicy(NetworkPolicy.OFFLINE);
-        if (rounded) {
-           // rc.transform(new CircleTransform());
-        }
         if (fited) {
             rc.fit()
                     .centerCrop();
@@ -44,9 +41,6 @@ public class UiHelper {
                                 .placeholder(dummy)
                                 .error(dummy);
 
-                        if (rounded) {
-                            //rc.transform(new CircleTransform());
-                        }
                         if (fited) {
                             rc.fit()
                                     .centerCrop();

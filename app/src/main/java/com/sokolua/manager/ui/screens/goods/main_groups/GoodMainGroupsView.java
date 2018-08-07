@@ -1,9 +1,9 @@
-package com.sokolua.manager.ui.screens.customer_list;
+package com.sokolua.manager.ui.screens.goods.main_groups;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
@@ -11,23 +11,22 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
-import com.sokolua.manager.utils.App;
 
 import butterknife.BindView;
 
-public class CustomerListView extends AbstractView<CustomerListScreen.Presenter> {
-    @BindView(R.id.customer_list)
-    RecyclerView mCustomerList;
+public class GoodMainGroupsView extends AbstractView<GoodMainGroupsScreen.Presenter> {
+    @BindView(R.id.main_groups_grid)
+    RecyclerView mGrid;
 
 
-    public CustomerListView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public GoodMainGroupsView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     protected void initDagger(Context context) {
         if (!isInEditMode()) {
-            DaggerService.<CustomerListScreen.Component>getDaggerComponent(context).inject(this);
+            DaggerService.<GoodMainGroupsScreen.Component>getDaggerComponent(context).inject(this);
         }
 
 
@@ -40,8 +39,9 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
 
 
     public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
-        mCustomerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerList.setAdapter(mAdapter);
+        mGrid.setHasFixedSize(true);
+        mGrid.setLayoutManager(new GridLayoutManager(getContext(), 3)); //в три колонки
+        mGrid.setAdapter(mAdapter);
     }
 
 }
