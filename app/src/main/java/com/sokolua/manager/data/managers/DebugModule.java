@@ -32,7 +32,6 @@ public class DebugModule {
         RealmList<GoodsCategoryRealm> managedCats= new RealmList<>();
         RealmList<BrandsRealm> managedBrands= new RealmList<>();
         RealmList<GoodsGroupRealm> managedGroups= new RealmList<>();
-        RealmList<VisitRealm> managedVisits= new RealmList<>();
 
         GoodsCategoryRealm cat1 = new GoodsCategoryRealm("cat001","01. кабельно-проводниковая продукция","");
         GoodsCategoryRealm cat2 = new GoodsCategoryRealm("cat002","02.1. кабельные каналы","");
