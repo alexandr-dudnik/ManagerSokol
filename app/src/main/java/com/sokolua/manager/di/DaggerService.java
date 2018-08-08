@@ -1,5 +1,6 @@
 package com.sokolua.manager.di;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 public class DaggerService {
     public static final String SERVICE_NAME = "MANAGER_SOKOL_DAGGER_SERVICE";
 
+    @SuppressLint("WrongConstant")
     @SuppressWarnings("unchecked")
     public static  <T> T getDaggerComponent(Context context){
         //no inspection resource type

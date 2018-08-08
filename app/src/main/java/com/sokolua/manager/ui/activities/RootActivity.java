@@ -278,7 +278,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         int flags;
         switch (menuItem.getItemType()){
             case ConstantManager.MENU_ITEM_TYPE_ACTION:
-                flags = MenuItem.SHOW_AS_ACTION_ALWAYS;
+                flags = MenuItem.SHOW_AS_ACTION_IF_ROOM;
                 break;
              default:
                  flags = MenuItem.SHOW_AS_ACTION_NEVER;

@@ -17,7 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainGroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<GoodsGroupRealm> {
+public class GroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<GoodsGroupRealm> {
 
     @BindView(R.id.good_group_image)      ImageView mGroupImage;
     @BindView(R.id.good_group_name)       TextView mGroupName;
@@ -27,7 +27,7 @@ public class MainGroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHol
     @Inject
     GoodsScreen.Presenter mPresenter;
 
-    public MainGroupViewHolder(View itemView) {
+    public GroupViewHolder(View itemView) {
         super(itemView);
         DaggerService.<GoodsScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);

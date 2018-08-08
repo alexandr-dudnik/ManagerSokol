@@ -7,13 +7,26 @@
     >
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/main_groups_grid"
+        android:id="@+id/groups_grid"
         android:background="@color/color_primary_dark"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/good_list_margin_half"
         android:paddingRight="@dimen/good_list_margin_half"
         android:stretchMode="columnWidth"
+        android:alpha="1.0"
+        >
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/item_list"
+        android:background="@color/color_primary_dark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/good_list_margin_half"
+        android:paddingRight="@dimen/good_list_margin_half"
+        android:alpha="0.0"
+        android:visibility="gone"
         >
     </android.support.v7.widget.RecyclerView>
 
