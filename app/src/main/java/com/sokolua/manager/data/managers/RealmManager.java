@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
+import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
@@ -13,6 +14,7 @@ import com.sokolua.manager.data.storage.realm.TaskRealm;
 import io.reactivex.Observable;
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import io.realm.internal.ManagableObject;
@@ -151,9 +153,27 @@ public class RealmManager {
         return Observable.fromIterable(res);
     }
 
-    public Observable<GoodsGroupRealm> getMainGroupsList() {
-        RealmResults<GoodsGroupRealm> res = getQueryRealmInstance().where(GoodsGroupRealm.class).isNull("parent").sort("name", Sort.ASCENDING).findAll();
+    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent) {
+        RealmResults<GoodsGroupRealm> res;
+        if (parent == null) {
+             res = getQueryRealmInstance().where(GoodsGroupRealm.class).isNull("parent").sort("name", Sort.ASCENDING).findAll();
+        }else{
+            res = getQueryRealmInstance().where(GoodsGroupRealm.class).equalTo("parent.groupId", parent.getGroupId()).sort("name", Sort.ASCENDING).findAll();
+        }
         return Observable.fromIterable(res);
+    }
+
+    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
+        RealmQuery<ItemRealm> res;
+        if (parent == null) {
+            res = getQueryRealmInstance().where(ItemRealm.class).alwaysTrue();
+        }else {
+            res = getQueryRealmInstance().where(ItemRealm.class).equalTo("group.groupId", parent.getGroupId());
+        }
+        if (filter != null && !filter.isEmpty()){
+            res.contains("index", filter);
+        }
+        return Observable.fromIterable(res.sort("name", Sort.ASCENDING).findAll());
     }
 }
 

@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.goods.main_groups;
+package com.sokolua.manager.ui.screens.goods;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainGroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<GoodsGroupRealm> {
 
@@ -24,11 +25,11 @@ public class MainGroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHol
     @BindDrawable(R.drawable.no_image)    Drawable noImage;
 
     @Inject
-    GoodMainGroupsScreen.Presenter mPresenter;
+    GoodsScreen.Presenter mPresenter;
 
     public MainGroupViewHolder(View itemView) {
         super(itemView);
-        DaggerService.<GoodMainGroupsScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
+        DaggerService.<GoodsScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
     }
 
@@ -42,6 +43,9 @@ public class MainGroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHol
 
     }
 
-
+    @OnClick({R.id.good_group_image, R.id.good_group_name})
+    void clickOnGroup(View view){
+        mPresenter.mainGroupSelected(currentItem);
+    }
 
 }

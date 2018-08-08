@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.goods.main_groups;
+package com.sokolua.manager.ui.screens.goods;
 
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -20,14 +20,15 @@ import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
+import io.reactivex.Observable;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_goods)
-public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootComponent>{
+public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
-        return DaggerGoodMainGroupsScreen_Component.builder()
+        return DaggerGoodsScreen_Component.builder()
                 .module(new Module())
                 .rootComponent(parentComponent)
                 .build();
@@ -40,13 +41,13 @@ public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootCompon
     class Module {
 
         @Provides
-        @DaggerScope(GoodMainGroupsScreen.class)
+        @DaggerScope(GoodsScreen.class)
         GoodsModel provideGoodsModel() {
             return new GoodsModel();
         }
 
         @Provides
-        @DaggerScope(GoodMainGroupsScreen.class)
+        @DaggerScope(GoodsScreen.class)
         Presenter providePresenter() {
             return new Presenter();
         }
@@ -55,11 +56,11 @@ public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootCompon
 
 
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
-    @DaggerScope(GoodMainGroupsScreen.class)
+    @DaggerScope(GoodsScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
-        void inject(GoodMainGroupsView view);
+        void inject(GoodsView view);
 
         void inject(MainGroupViewHolder viewHolder);
     }
@@ -67,9 +68,12 @@ public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootCompon
 
 
     //region ===================== Presenter =========================
-    public class Presenter extends AbstractPresenter<GoodMainGroupsView, GoodsModel> {
+    public class Presenter extends AbstractPresenter<GoodsView, GoodsModel> {
 
-        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<GoodsGroupRealm> viewAndHolderFactory;
+        GoodsGroupRealm currentGroup = null;
+
+        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<GoodsGroupRealm> groupaViewHolder;
+        ReactiveRecyclerAdapter groupsAdapter;
 
         public Presenter() {
         }
@@ -84,28 +88,35 @@ public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootCompon
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            viewAndHolderFactory = (parent, pViewType) -> {
+
+
+            groupaViewHolder = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.good_group_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new MainGroupViewHolder(view)
                 );
             };
+            groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupaViewHolder);
+
+            getView().setAdapter(groupsAdapter);
 
             setOrderListFilter("");
         }
 
         public void setOrderListFilter(String filter){
-
-            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getMainGroupsList(), viewAndHolderFactory);
-
-            getView().setAdapter(reactiveRecyclerAdapter);
+            if (currentGroup == null || currentGroup.getParent() == null){
+                groupsAdapter.refreshList(mModel.getGroupList(currentGroup));
+            }else{
+                groupsAdapter.refreshList(Observable.empty());
+            }
         }
 
         @Override
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
+                    .setBackArrow(false)
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
@@ -125,7 +136,35 @@ public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootCompon
         }
 
 
+        public void mainGroupSelected(GoodsGroupRealm selectedGroup) {
 
+            if (getRootView() != null) {
+                currentGroup = selectedGroup;
+                ((RootActivity)getRootView()).setBackArrow(true);
+                ((RootActivity)getRootView()).setActionBarTitle(currentGroup.getName());
+                setOrderListFilter("");
+            }
+
+        }
+
+        public boolean goGroupBack(){
+            if (getRootView() != null) {
+                if (currentGroup == null) {
+                    return false;
+                } else {
+                    currentGroup = currentGroup.getParent();
+                }
+                if (currentGroup == null) {
+                    ((RootActivity) getRootView()).setBackArrow(false);
+                    ((RootActivity) getRootView()).setActionBarTitle(App.getStringRes(R.string.menu_goods));
+                }
+                else{
+                    ((RootActivity)getRootView()).setActionBarTitle(currentGroup.getName());
+                }
+                setOrderListFilter("");
+            }
+            return true;
+        }
     }
 
     //endregion ================== Presenter =========================

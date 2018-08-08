@@ -41,7 +41,7 @@ import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
 import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
-import com.sokolua.manager.ui.screens.goods.main_groups.GoodMainGroupsScreen;
+import com.sokolua.manager.ui.screens.goods.GoodsScreen;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.ui.screens.order_list.OrderListScreen;
 import com.sokolua.manager.ui.screens.routes.RoutesScreen;
@@ -370,7 +370,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 key = new RoutesScreen();
                 break;
             case R.id.bottomBarGoods:
-                key = new GoodMainGroupsScreen();
+                key = new GoodsScreen();
                 break;
         }
 

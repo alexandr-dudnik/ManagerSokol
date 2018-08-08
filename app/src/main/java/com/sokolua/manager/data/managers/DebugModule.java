@@ -68,11 +68,21 @@ public class DebugModule {
         GoodsGroupRealm mgrp1 = new GoodsGroupRealm("mgrp0001", "Кабель и провод", null, "");
         GoodsGroupRealm mgrp2 = new GoodsGroupRealm("mgrp0002", "Кабельные трассы", null, "");
         GoodsGroupRealm mgrp3 = new GoodsGroupRealm("mgrp0003", "Фурнитура", null, "");
-        GoodsGroupRealm mgrp4 = new GoodsGroupRealm("mgrp0004", "Источники света", null, "");
+        GoodsGroupRealm mgrp4 = new GoodsGroupRealm("mgrp0004", "Лампы", null, "");
+        GoodsGroupRealm mgrp5 = new GoodsGroupRealm("mgrp0005", "Все для монтажа", null, "");
+        GoodsGroupRealm mgrp6 = new GoodsGroupRealm("mgrp0006", "Низковольтное", null, "");
+        GoodsGroupRealm mgrp7 = new GoodsGroupRealm("mgrp0007", "Щиты и коробки", null, "");
+        GoodsGroupRealm mgrp8 = new GoodsGroupRealm("mgrp0008", "Силовые разъемы", null, "");
+        GoodsGroupRealm mgrp9 = new GoodsGroupRealm("mgrp0009", "Светильники", null, "");
         managedGroups.add(mgrp1);
         managedGroups.add(mgrp2);
         managedGroups.add(mgrp3);
         managedGroups.add(mgrp4);
+        managedGroups.add(mgrp5);
+        managedGroups.add(mgrp6);
+        managedGroups.add(mgrp7);
+        managedGroups.add(mgrp8);
+        managedGroups.add(mgrp9);
 
         GoodsGroupRealm grp1 = new GoodsGroupRealm("grp0001", "ШВВП", mgrp1, "");
         GoodsGroupRealm grp2 = new GoodsGroupRealm("grp0002", "ПВС", mgrp1, "");
@@ -82,7 +92,7 @@ public class DebugModule {
         GoodsGroupRealm grp6 = new GoodsGroupRealm("grp0006", "Розетки", mgrp3, "");
         GoodsGroupRealm grp7 = new GoodsGroupRealm("grp0007", "Выключатели", mgrp3, "");
         GoodsGroupRealm grp8 = new GoodsGroupRealm("grp0008", "LED Лампы", mgrp4, "");
-        GoodsGroupRealm grp9 = new GoodsGroupRealm("grp0009", "LED Панели", mgrp4, "");
+        GoodsGroupRealm grp9 = new GoodsGroupRealm("grp0009", "LED Панели", mgrp9, "");
         managedGroups.add(grp1);
         managedGroups.add(grp2);
         managedGroups.add(grp3);

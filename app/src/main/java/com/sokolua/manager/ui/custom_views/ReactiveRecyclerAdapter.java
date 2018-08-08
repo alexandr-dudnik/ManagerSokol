@@ -15,20 +15,25 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRecyclerAdapter.ReactiveViewHolder<T>> {
-    private final Observable<List<T>> observable;
+    private Observable<List<T>> observable;
     private final ReactiveViewHolderFactory<T> viewHolderFactory;
     private List<T> currentList;
 
     public ReactiveRecyclerAdapter(Observable<List<T>> observable, ReactiveViewHolderFactory<T> viewHolderFactory) {
         this.viewHolderFactory = viewHolderFactory;
         this.currentList = Collections.emptyList();
+        refreshList(observable);
+    }
+
+    public void refreshList(Observable<List<T>> observable){
         this.observable = observable;
         this.observable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(items -> {
-                        this.currentList = items;
-                        this.notifyDataSetChanged();
-                });
+                .doOnNext(items -> {
+                    this.currentList = items;
+                    this.notifyDataSetChanged();
+                })
+                .subscribe();
     }
 //    private PublishSubject<T> mViewClickSubject = PublishSubject.create();
 
