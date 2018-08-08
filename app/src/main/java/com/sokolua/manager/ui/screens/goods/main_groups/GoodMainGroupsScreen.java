@@ -1,17 +1,20 @@
-package com.sokolua.manager.ui.screens.order_list;
+package com.sokolua.manager.ui.screens.goods.main_groups;
 
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import com.sokolua.manager.R;
-import com.sokolua.manager.data.storage.realm.OrderRealm;
+import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
-import com.sokolua.manager.mvp.models.OrderListModel;
+import com.sokolua.manager.mvp.models.GoodsModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
@@ -19,12 +22,12 @@ import com.sokolua.manager.utils.App;
 import dagger.Provides;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_order_list)
-public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
+@Screen(R.layout.screen_goods)
+public class GoodMainGroupsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
-        return DaggerOrderListScreen_Component.builder()
+        return DaggerGoodMainGroupsScreen_Component.builder()
                 .module(new Module())
                 .rootComponent(parentComponent)
                 .build();
@@ -37,13 +40,13 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
     class Module {
 
         @Provides
-        @DaggerScope(OrderListScreen.class)
-        OrderListModel provideOrderListModel() {
-            return new OrderListModel();
+        @DaggerScope(GoodMainGroupsScreen.class)
+        GoodsModel provideGoodsModel() {
+            return new GoodsModel();
         }
 
         @Provides
-        @DaggerScope(OrderListScreen.class)
+        @DaggerScope(GoodMainGroupsScreen.class)
         Presenter providePresenter() {
             return new Presenter();
         }
@@ -52,21 +55,21 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
 
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
-    @DaggerScope(OrderListScreen.class)
+    @DaggerScope(GoodMainGroupsScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
-        void inject(OrderListView view);
+        void inject(GoodMainGroupsView view);
 
-        void inject(OrderViewHolder viewHolder);
+        void inject(MainGroupViewHolder viewHolder);
     }
     //endregion ================== DI =========================
 
 
     //region ===================== Presenter =========================
-    public class Presenter extends AbstractPresenter<OrderListView, OrderListModel> {
+    public class Presenter extends AbstractPresenter<GoodMainGroupsView, GoodsModel> {
 
-        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> viewAndHolderFactory;
+        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<GoodsGroupRealm> viewAndHolderFactory;
 
         public Presenter() {
         }
@@ -82,10 +85,10 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
             super.onLoad(savedInstanceState);
 
             viewAndHolderFactory = (parent, pViewType) -> {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_list_item, parent, false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.good_group_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
-                        new OrderViewHolder(view)
+                        new MainGroupViewHolder(view)
                 );
             };
 
@@ -94,7 +97,7 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void setOrderListFilter(String filter){
 
-            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getOrderList(), viewAndHolderFactory);
+            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getMainGroupsList(), viewAndHolderFactory);
 
             getView().setAdapter(reactiveRecyclerAdapter);
         }
@@ -103,20 +106,20 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
-//                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
-//                        @Override
-//                        public boolean onQueryTextSubmit(String query) {
-//                            setOrderListFilter(query);
-//                            return true;
-//                        }
-//
-//                        @Override
-//                        public boolean onQueryTextChange(String newText) {
-//                            setOrderListFilter(newText);
-//                            return true;
-//                        }
-//                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
-                    .setTitle(App.getStringRes(R.string.menu_orders))
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
+                        @Override
+                        public boolean onQueryTextSubmit(String query) {
+                            setOrderListFilter(query);
+                            return true;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText) {
+                            setOrderListFilter(newText);
+                            return true;
+                        }
+                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
+                    .setTitle(App.getStringRes(R.string.menu_goods))
                     .build();
 
         }

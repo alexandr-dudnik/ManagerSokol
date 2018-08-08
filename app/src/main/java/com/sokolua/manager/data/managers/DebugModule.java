@@ -65,15 +65,24 @@ public class DebugModule {
         managedBrands.add(brand4);
         managedBrands.add(brand5);
 
-        GoodsGroupRealm grp1 = new GoodsGroupRealm("grp0001", "ШВВП", "");
-        GoodsGroupRealm grp2 = new GoodsGroupRealm("grp0002", "ПВС", "");
-        GoodsGroupRealm grp3 = new GoodsGroupRealm("grp0003", "Кабельные каналы", "");
-        GoodsGroupRealm grp4 = new GoodsGroupRealm("grp0004", "Металлорукав РЗЦ", "");
-        GoodsGroupRealm grp5 = new GoodsGroupRealm("grp0005", "Металлорукав РЗЦ-Х", "");
-        GoodsGroupRealm grp6 = new GoodsGroupRealm("grp0006", "Розетки", "");
-        GoodsGroupRealm grp7 = new GoodsGroupRealm("grp0007", "Выключатели", "");
-        GoodsGroupRealm grp8 = new GoodsGroupRealm("grp0008", "LED Лампы", "");
-        GoodsGroupRealm grp9 = new GoodsGroupRealm("grp0009", "LED Панели", "");
+        GoodsGroupRealm mgrp1 = new GoodsGroupRealm("mgrp0001", "Кабель и провод", null, "");
+        GoodsGroupRealm mgrp2 = new GoodsGroupRealm("mgrp0002", "Кабельные трассы", null, "");
+        GoodsGroupRealm mgrp3 = new GoodsGroupRealm("mgrp0003", "Фурнитура", null, "");
+        GoodsGroupRealm mgrp4 = new GoodsGroupRealm("mgrp0004", "Источники света", null, "");
+        managedGroups.add(mgrp1);
+        managedGroups.add(mgrp2);
+        managedGroups.add(mgrp3);
+        managedGroups.add(mgrp4);
+
+        GoodsGroupRealm grp1 = new GoodsGroupRealm("grp0001", "ШВВП", mgrp1, "");
+        GoodsGroupRealm grp2 = new GoodsGroupRealm("grp0002", "ПВС", mgrp1, "");
+        GoodsGroupRealm grp3 = new GoodsGroupRealm("grp0003", "Кабельные каналы", mgrp2, "");
+        GoodsGroupRealm grp4 = new GoodsGroupRealm("grp0004", "Металлорукав РЗЦ", mgrp2, "");
+        GoodsGroupRealm grp5 = new GoodsGroupRealm("grp0005", "Металлорукав РЗЦ-Х", mgrp2, "");
+        GoodsGroupRealm grp6 = new GoodsGroupRealm("grp0006", "Розетки", mgrp3, "");
+        GoodsGroupRealm grp7 = new GoodsGroupRealm("grp0007", "Выключатели", mgrp3, "");
+        GoodsGroupRealm grp8 = new GoodsGroupRealm("grp0008", "LED Лампы", mgrp4, "");
+        GoodsGroupRealm grp9 = new GoodsGroupRealm("grp0009", "LED Панели", mgrp4, "");
         managedGroups.add(grp1);
         managedGroups.add(grp2);
         managedGroups.add(grp3);

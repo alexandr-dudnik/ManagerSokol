@@ -16,10 +16,10 @@ import com.sokolua.manager.mvp.models.CustomerListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import dagger.Provides;
 import flow.Flow;

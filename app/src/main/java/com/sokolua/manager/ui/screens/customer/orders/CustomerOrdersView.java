@@ -7,13 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import butterknife.BindView;
 

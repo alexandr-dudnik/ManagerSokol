@@ -1,23 +1,18 @@
-package com.sokolua.manager.utils;
+package com.sokolua.manager.ui.custom_views;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.sokolua.manager.data.managers.ConstantManager;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-
-import static com.sokolua.manager.ui.activities.RootActivity.TAG;
 
 public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRecyclerAdapter.ReactiveViewHolder<T>> {
     private final Observable<List<T>> observable;
