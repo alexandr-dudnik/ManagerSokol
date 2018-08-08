@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sokolua.manager.ui.screens.goods.main_groups.GoodMainGroupsView
+<com.sokolua.manager.ui.screens.goods.GoodsView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -17,4 +17,4 @@
         >
     </android.support.v7.widget.RecyclerView>
 
-</com.sokolua.manager.ui.screens.goods.main_groups.GoodMainGroupsView>
+</com.sokolua.manager.ui.screens.goods.GoodsView>

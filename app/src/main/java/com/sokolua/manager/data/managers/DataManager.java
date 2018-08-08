@@ -3,6 +3,7 @@ package com.sokolua.manager.data.managers;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
+import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
@@ -135,10 +136,13 @@ public class DataManager {
 
 
     //region ===================== Goods =========================
-    public Observable<GoodsGroupRealm> getMainGroupsList() {
-        return mRealmManager.getMainGroupsList();
+    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent) {
+        return mRealmManager.getGroupList(parent);
     }
 
+    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
+        return mRealmManager.getItemList(parent, filter);
+    }
     //endregion ================== Goods =========================
 }
 

@@ -1,4 +1,4 @@
-package com.sokolua.manager.ui.screens.goods.main_groups;
+package com.sokolua.manager.ui.screens.goods;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -14,19 +14,19 @@ import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 
 import butterknife.BindView;
 
-public class GoodMainGroupsView extends AbstractView<GoodMainGroupsScreen.Presenter> {
+public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
     @BindView(R.id.main_groups_grid)
     RecyclerView mGrid;
 
 
-    public GoodMainGroupsView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public GoodsView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     protected void initDagger(Context context) {
         if (!isInEditMode()) {
-            DaggerService.<GoodMainGroupsScreen.Component>getDaggerComponent(context).inject(this);
+            DaggerService.<GoodsScreen.Component>getDaggerComponent(context).inject(this);
         }
 
 
@@ -34,7 +34,7 @@ public class GoodMainGroupsView extends AbstractView<GoodMainGroupsScreen.Presen
 
     @Override
     public boolean viewOnBackPressed() {
-        return false ;
+        return mPresenter.goGroupBack() ;
     }
 
 
