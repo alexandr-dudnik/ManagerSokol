@@ -8,6 +8,7 @@ import android.view.View;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
+import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -62,7 +63,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         void inject(GoodsView view);
 
-        void inject(MainGroupViewHolder viewHolder);
+        void inject(GroupViewHolder viewHolder);
+
+        void inject(ItemViewHolder viewHolder);
     }
     //endregion ================== DI =========================
 
@@ -72,8 +75,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         GoodsGroupRealm currentGroup = null;
 
-        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<GoodsGroupRealm> groupaViewHolder;
+        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<GoodsGroupRealm> groupViewHolder;
+        ReactiveRecyclerAdapter.ReactiveViewHolderFactory<ItemRealm> itemViewHolder;
         ReactiveRecyclerAdapter groupsAdapter;
+        ReactiveRecyclerAdapter itemsAdapter;
 
         public Presenter() {
         }
@@ -89,26 +94,39 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             super.onLoad(savedInstanceState);
 
 
-
-            groupaViewHolder = (parent, pViewType) -> {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.good_group_item, parent, false);
+            groupViewHolder = (parent, pViewType) -> {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goods_groups_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
-                        new MainGroupViewHolder(view)
+                        new GroupViewHolder(view)
                 );
             };
-            groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupaViewHolder);
+            groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupViewHolder);
 
-            getView().setAdapter(groupsAdapter);
+            getView().setGroupsAdapter(groupsAdapter);
+
+
+            itemViewHolder = (parent, pViewType) -> {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goods_items_item, parent, false);
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                        view,
+                        new ItemViewHolder(view)
+                );
+            };
+            itemsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), itemViewHolder);
+
+            getView().setItemsAdapter(itemsAdapter);
 
             setOrderListFilter("");
         }
 
         public void setOrderListFilter(String filter){
-            if (currentGroup == null || currentGroup.getParent() == null){
+            if ((currentGroup == null || currentGroup.getParent() == null) && (filter == null || filter.isEmpty())){
                 groupsAdapter.refreshList(mModel.getGroupList(currentGroup));
+                getView().showGroups();
             }else{
-                groupsAdapter.refreshList(Observable.empty());
+                itemsAdapter.refreshList(mModel.getItemList(currentGroup, filter));
+                getView().showItems();
             }
         }
 

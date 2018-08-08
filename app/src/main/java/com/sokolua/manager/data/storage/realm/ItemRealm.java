@@ -43,7 +43,7 @@ public class ItemRealm extends RealmObject implements Serializable{
         this.category = category;
         this.group = group;
         this.brand = brand;
-        this.index = name.toLowerCase()+"#"+artNumber.toLowerCase()+"#"+brand.getName().toLowerCase();
+        this.index = name.toLowerCase()+"#"+artNumber.toLowerCase();
     }
 
     //region ===================== Getters =========================

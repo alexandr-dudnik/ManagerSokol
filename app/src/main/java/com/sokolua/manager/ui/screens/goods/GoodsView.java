@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
@@ -11,12 +12,15 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.utils.App;
 
 import butterknife.BindView;
 
 public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
-    @BindView(R.id.main_groups_grid)
+    @BindView(R.id.groups_grid)
     RecyclerView mGrid;
+    @BindView(R.id.item_list)
+    RecyclerView mItems;
 
 
     public GoodsView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -38,10 +42,46 @@ public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
     }
 
 
-    public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
+    public void setGroupsAdapter(ReactiveRecyclerAdapter mAdapter) {
         mGrid.setHasFixedSize(true);
         mGrid.setLayoutManager(new GridLayoutManager(getContext(), 3)); //в три колонки
         mGrid.setAdapter(mAdapter);
     }
 
+    public void setItemsAdapter(ReactiveRecyclerAdapter mAdapter) {
+        mItems.setHasFixedSize(true);
+        mItems.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        mItems.setAdapter(mAdapter);
+    }
+
+    public void showGroups() {
+        if (mGrid.getAlpha() == 0f) {
+            mItems.animate()
+                    .setDuration(500)
+                    .alpha(0f)
+                    .start();
+            mGrid.animate()
+                    .setStartDelay(100)
+                    .setDuration(500)
+                    .alpha(1f)
+                    .start();
+            mItems.setVisibility(GONE);
+            mGrid.setVisibility(VISIBLE);
+        }
+    }
+    public void showItems() {
+        if (mItems.getAlpha() == 0f) {
+            mGrid.animate()
+                    .setDuration(500)
+                    .alpha(0f)
+                    .start();
+            mItems.animate()
+                    .setStartDelay(100)
+                    .setDuration(500)
+                    .alpha(1f)
+                    .start();
+            mGrid.setVisibility(GONE);
+            mItems.setVisibility(VISIBLE);
+        }
+    }
 }

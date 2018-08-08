@@ -60,6 +60,7 @@
             android:textColor="@color/color_black"
             android:textSize="12sp"
             android:visibility="gone"
+            android:hint="@string/enter_task_result_hint"
             tools:text="Комментарий к задачи полезен и будет передаваться в 1С" />
     </LinearLayout>
 
