@@ -191,6 +191,7 @@
         android:layout_toStartOf="@id/price_label_group"
         android:layout_below="@id/good_article_text"
         android:minLines="2"
+        android:maxLines="2"
         android:textColor="@color/color_black"
         android:fontFamily="@string/roboto_regular"
         android:gravity="start"
