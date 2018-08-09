@@ -153,25 +153,25 @@ public class DebugModule {
         temp.getVisits().add(new VisitRealm(temp, "visit00009", dateFormat.parse("2018-08-31"), false));
         managedCustomers.add(temp);
 
-        OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1520f, "Заказ взял, клиет должен уточнить по количеству");
+        OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1520f, "UAH", "Заказ взял, клиет должен уточнить по количеству");
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item1, 10f, 12.5f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item21, 1f, 500f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item3, 5f, 30f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item5, 25f, 29.8f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, 10020.50f, "Отгрузка на среду, платит по факту");
+        tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, 10020.50f, "UAH", "Отгрузка на среду, платит по факту");
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item11, 10f, 81.95f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item16, 30f, 90f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item22, 5f, 1300.2f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, 6013.75f, "Отгрузка на среду, оплата на месте по факту");
+        tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, 6013.75f, "UAH", "Отгрузка на среду, оплата на месте по факту");
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item6, 1000f, 4.5f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item17, 35f, 43.25f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 57770.00f, "Нужно привезти в пятницу, берет под клиента.");
+        tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 57770.00f, "UAH", "Нужно привезти в пятницу, берет под клиента.");
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item10, 1500f, 9.5f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item2, 2000f, 20f));
@@ -188,7 +188,7 @@ public class DebugModule {
         temp.getVisits().add(new VisitRealm(temp, "visit00014", dateFormat.parse("2018-08-20"), false));
         managedCustomers.add(temp);
 
-        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1652.15f, "");
+        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1652.15f, "UAH", "");
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item16, 3f, 90f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f));
@@ -222,7 +222,7 @@ public class DebugModule {
         temp.getVisits().add(new VisitRealm(temp, "visit00024", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
 
-        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 8945.00f, "плановый заказ");
+        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 8945.00f, "UAH", "плановый заказ");
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
         tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item2, 200f, 20f));

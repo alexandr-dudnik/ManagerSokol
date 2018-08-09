@@ -30,6 +30,7 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
     @BindView(R.id.order_amount_text)     TextView mOrderAmountText;
     @BindView(R.id.order_comment_text)    TextView mOrderCommentText;
     @BindView(R.id.order_delivery_text)   TextView mDeliveryDateText;
+    //@BindView(R.id.order_currency_text)   TextView mCurrencyText;
 
 
     @BindDrawable(R.drawable.ic_cart)    Drawable cartDrawable;
@@ -88,7 +89,8 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
                 break;
         }
 
-        mOrderAmountText.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format)+" "+App.getStringRes(R.string.national_currency),currentItem.getTotal()));
+        mOrderAmountText.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format),currentItem.getTotal()));
+        //mCurrencyText.setText(currentItem.getCurrency());
         mOrderCommentText.setText(currentItem.getComments());
 
 
