@@ -19,13 +19,14 @@ public class OrderRealm extends RealmObject implements Serializable{
     private int status;
     private int payment;
     private RealmList<OrderLineRealm> lines = new RealmList<>();
+    private String currency;
     private Float total;
     private String comments;
 
     public OrderRealm() {
     }
 
-    public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, Float total, String comments) {
+    public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, Float total, String currency, String comments) {
         this.Id = id;
         this.customer = customer;
         this.date = date;
@@ -33,6 +34,7 @@ public class OrderRealm extends RealmObject implements Serializable{
         this.status = status;
         this.payment = payment;
         this.total = total;
+        this.currency = currency;
         this.comments = comments;
     }
 
@@ -64,6 +66,10 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public Date getDelivery() {
         return delivery;
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 
     public CustomerRealm getCustomer() {

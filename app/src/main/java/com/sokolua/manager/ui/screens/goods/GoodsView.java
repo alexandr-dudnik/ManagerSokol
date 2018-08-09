@@ -56,32 +56,24 @@ public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
 
     public void showGroups() {
         if (mGrid.getAlpha() == 0f) {
-            mItems.animate()
-                    .setDuration(500)
-                    .alpha(0f)
-                    .start();
+            mItems.setAlpha(0f);
+            mItems.setVisibility(GONE);
+            mGrid.setVisibility(VISIBLE);
             mGrid.animate()
-                    .setStartDelay(100)
                     .setDuration(500)
                     .alpha(1f)
                     .start();
-            mItems.setVisibility(GONE);
-            mGrid.setVisibility(VISIBLE);
         }
     }
     public void showItems() {
         if (mItems.getAlpha() == 0f) {
-            mGrid.animate()
-                    .setDuration(500)
-                    .alpha(0f)
-                    .start();
+            mGrid.setAlpha(0f);
+            mGrid.setVisibility(GONE);
+            mItems.setVisibility(VISIBLE);
             mItems.animate()
-                    .setStartDelay(100)
                     .setDuration(500)
                     .alpha(1f)
                     .start();
-            mGrid.setVisibility(GONE);
-            mItems.setVisibility(VISIBLE);
         }
     }
 }

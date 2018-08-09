@@ -21,7 +21,7 @@
     <string name="date_format">dd.MM.yyyy</string>
     <string name="numeric_format">%1$.2f</string>
     <string name="numeric_format_int">%1$.0f</string>
-    <string name="national_currency">грн</string>
+    <string name="national_currency">UAH</string>
 
     <string name="search_hint">Поиск…</string>
 
@@ -61,6 +61,7 @@
     <string name="customer_task_individual">Индивидуальные</string>
     <string name="customer_order_plan_header">План заказа на посещение</string>
     <string name="customer_order_list_header">Заказы клиента</string>
+    <string name="customer_enter_task_result_hint">Укажите результат выполнения задачи…</string>
 
     <!-- Orders screen -->
     <string name="payment_type_cash">ЧП</string>
@@ -73,6 +74,6 @@
     <string name="item_official_rest_label">БН</string>
     <string name="item_base_price_label">Прайс</string>
     <string name="item_min_price_label">Мин.</string>
-    <string name="enter_task_result_hint">Укажите результат выполнения задачи...</string>
+    <string name="order_title">Заказ</string>
 
 </resources>

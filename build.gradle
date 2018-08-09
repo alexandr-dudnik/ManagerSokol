@@ -20,9 +20,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven{
-            url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
-        }
+
     }
 }
 
