@@ -15,7 +15,6 @@ import com.sokolua.manager.mvp.models.OrderModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
-import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
 import io.reactivex.Observable;
@@ -109,7 +108,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
-                    .setTitle(App.getStringRes(R.string.order_title)+" "+(currentOrder==null?"":currentOrder.getCustomer().getName()))
+                    .setTitle(currentOrder==null?"":currentOrder.getCustomer().getName())
                     .build();
 
         }
