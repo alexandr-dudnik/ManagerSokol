@@ -114,6 +114,17 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
 
+        public void updateFields() {
+
+            getView().setComment(currentOrder.getComments());
+            getView().setCurrency(currentOrder.getCurrency());
+            getView().setDeliveryDate(currentOrder.getDelivery());
+            getView().setOrderAmount(currentOrder.getTotal());
+            getView().setOrderDate(currentOrder.getDate());
+            getView().setOrderType(currentOrder.getPayment());
+            getView().setStatus(currentOrder.getStatus());
+
+        }
     }
     //endregion ================== Presenter =========================
 

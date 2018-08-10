@@ -14,9 +14,11 @@ import com.sokolua.manager.mvp.models.OrderListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
+import flow.Flow;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order_list)
@@ -122,7 +124,9 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
 
-
+        public void openOrder(OrderRealm order) {
+            Flow.get(getView()).set(new OrderScreen(order));
+        }
     }
 
     //endregion ================== Presenter =========================

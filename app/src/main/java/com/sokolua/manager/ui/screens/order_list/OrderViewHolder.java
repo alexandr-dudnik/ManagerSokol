@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderRealm> {
 
@@ -30,7 +31,7 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
     @BindView(R.id.order_amount_text)     TextView mOrderAmountText;
     @BindView(R.id.order_comment_text)    TextView mOrderCommentText;
     @BindView(R.id.order_delivery_text)   TextView mDeliveryDateText;
-    //@BindView(R.id.order_currency_text)   TextView mCurrencyText;
+    @BindView(R.id.order_currency_text)   TextView mCurrencyText;
 
 
     @BindDrawable(R.drawable.ic_cart)    Drawable cartDrawable;
@@ -90,12 +91,15 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
         }
 
         mOrderAmountText.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format),currentItem.getTotal()));
-        //mCurrencyText.setText(currentItem.getCurrency());
+        mCurrencyText.setText(currentItem.getCurrency());
         mOrderCommentText.setText(currentItem.getComments());
 
 
     }
 
-
+    @OnClick(R.id.order_placeholder)
+    void onClick(View view){
+        mPresenter.openOrder(currentItem);
+    }
 
 }

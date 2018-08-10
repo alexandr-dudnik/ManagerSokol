@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class CustomerOrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderRealm> {
 
@@ -95,5 +96,9 @@ public class CustomerOrderViewHolder extends ReactiveRecyclerAdapter.ReactiveVie
     }
 
 
+    @OnClick(R.id.order_placeholder)
+    void onClick(View view){
+        mPresenter.openOrder(currentItem);
+    }
 
 }

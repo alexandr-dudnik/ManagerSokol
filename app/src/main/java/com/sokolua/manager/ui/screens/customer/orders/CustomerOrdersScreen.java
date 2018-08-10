@@ -16,10 +16,12 @@ import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
+import com.sokolua.manager.ui.screens.order.OrderScreen;
 
 import javax.inject.Inject;
 
 import dagger.Provides;
+import flow.Flow;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_orders)
@@ -119,6 +121,10 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
 
         }
 
+
+        public void openOrder(OrderRealm order) {
+            Flow.get(getView()).set(new OrderScreen(order));
+        }
 
     }
 }
