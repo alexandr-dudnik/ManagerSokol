@@ -1,6 +1,9 @@
 package com.sokolua.manager.data.storage.realm;
 
+import com.sokolua.manager.data.managers.ConstantManager;
+
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -41,6 +44,9 @@ public class OrderRealm extends RealmObject implements Serializable{
     //region ================================ Getters ==================================
 
     public Date getDate() {
+        if (this.status == ConstantManager.ORDER_STATUS_CART){
+            return Calendar.getInstance().getTime();
+        }
         return date;
     }
 

@@ -36,5 +36,5 @@
     <dimen name="good_list_margin">8dp</dimen>
     <dimen name="good_list_margin_half">4dp</dimen>
     <dimen name="order_margin">8dp</dimen>
-    <dimen name="order_icon">24</dimen>
+    <dimen name="order_icon">24dp</dimen>
 </resources>
