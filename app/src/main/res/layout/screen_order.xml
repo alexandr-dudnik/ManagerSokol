@@ -32,6 +32,8 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:layout_marginLeft="@dimen/order_margin"
+                android:layout_marginStart="@dimen/order_margin"
                 android:textColor="@color/color_black"
                 android:fontFamily="@string/roboto_black"
                 android:textSize="20sp"
@@ -55,10 +57,245 @@
                 />
 
             <View
+                android:id="@+id/order_divider_1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@id/order_status_image"
                 style="@style/order_divider"/>
+
+            <LinearLayout
+                android:id="@+id/order_header_values_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@id/order_title_text"
+                android:layout_toEndOf="@id/order_title_text"
+                android:layout_below="@id/order_divider_1"
+                android:orientation="vertical"
+                >
+                <TextView
+                    android:id="@+id/order_currency_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_medium"
+                    android:textSize="18sp"
+                    tools:text="USD"
+                    />
+                <Spinner
+                    android:id="@+id/order_type_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_medium"
+                    android:textSize="18sp"
+                    />
+                <EditText
+                    android:id="@+id/order_delivery_text"
+                    android:inputType="date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:hint="@string/order_delivery_date_title"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_medium"
+                    android:background="@android:color/transparent"
+                    android:textSize="18sp"
+                    tools:text="23-07-2018"
+                    />
+                <TextView
+                    android:id="@+id/order_amount_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_medium"
+                    android:textSize="18sp"
+                    tools:text="100000.00"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_header_titles_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@id/order_header_values_group"
+                android:layout_toStartOf="@id/order_header_values_group"
+                android:layout_below="@id/order_divider_1"
+                android:orientation="vertical"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_regular"
+                    android:textSize="18sp"
+                    android:text="@string/order_currency_title"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_regular"
+                    android:textSize="18sp"
+                    android:text="@string/order_type_title"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:hint="@string/order_delivery_date_title"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_regular"
+                    android:background="@android:color/transparent"
+                    android:textSize="18sp"
+                    android:text="@string/order_delivery_date_title"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/order_margin"
+                    android:layout_marginLeft="@dimen/order_margin"
+                    android:textColor="@color/color_gray"
+                    android:fontFamily="@string/roboto_regular"
+                    android:textSize="18sp"
+                    android:text="@string/order_amount_title"
+                    />
+
+            </LinearLayout>
+            <!-- Table -->
+            <TableLayout
+                android:id="@+id/order_items_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/order_header_titles_group"
+                android:layout_marginTop="@dimen/order_margin"
+                android:stretchColumns="1"
+                android:background="@drawable/rectangle_shape"
+                >
+                <TableRow>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Артикул"
+                        android:background="@drawable/rectangle_shape"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content"
+                        android:text="Наименование"
+                        android:background="@drawable/rectangle_shape"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Цена"
+                        android:background="@drawable/rectangle_shape"
+                        android:gravity="end"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Кол-во"
+                        android:background="@drawable/rectangle_shape"
+                        android:gravity="end"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text="23345"
+                        android:background="@drawable/rectangle_shape"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content"
+                        android:text="Кабельныdfgdfgfgй канал"
+                        android:background="@drawable/rectangle_shape"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text="50.25"
+                        android:background="@drawable/rectangle_shape"
+                        android:gravity="end"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text="20"
+                        android:background="@drawable/rectangle_shape"
+                        android:gravity="end"
+                        android:padding="2dp"
+                        android:textSize="12sp"
+                        />
+                </TableRow>
+            </TableLayout>
+            <!-- end Table -->
+
+
+            <TextView
+                android:id="@+id/order_comment_title"
+                android:layout_below="@id/order_items_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/order_margin"
+                android:textColor="@color/color_gray"
+                android:fontFamily="@string/roboto_medium"
+                android:textSize="18sp"
+                android:text="@string/order_comment_title"
+                />
+            <EditText
+                android:id="@+id/order_comment_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/order_comment_title"
+                android:textColor="@color/color_gray"
+                android:fontFamily="@string/roboto_regular"
+                android:textStyle="italic"
+                android:textSize="18sp"
+                android:text="@string/order_comment_title"
+                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero."
+                />
         </RelativeLayout>
 
     </ScrollView>
