@@ -15,6 +15,8 @@ import com.sokolua.manager.di.modules.LocalModule;
 import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -132,6 +134,10 @@ public class DataManager {
     }
 
 
+    public void setDeliveryDate(OrderRealm currentOrder, Date mDate) {
+        mRealmManager.setDeliveryDate(currentOrder, mDate);
+    }
+
     //endregion ================== Orders =========================
 
 
@@ -143,6 +149,7 @@ public class DataManager {
     public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
         return mRealmManager.getItemList(parent, filter);
     }
+
     //endregion ================== Goods =========================
 }
 

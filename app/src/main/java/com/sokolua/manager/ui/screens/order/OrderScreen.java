@@ -16,8 +16,15 @@ import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 
+import java.util.Date;
+
+import javax.annotation.Nullable;
+
 import dagger.Provides;
 import io.reactivex.Observable;
+import io.realm.ObjectChangeSet;
+import io.realm.RealmModel;
+import io.realm.RealmObjectChangeListener;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order)
@@ -100,8 +107,46 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             getView().setLinesAdapter(linesAdapter);
 
+            currentOrder.addChangeListener(new RealmObjectChangeListener<RealmModel>() {
+                @Override
+                public void onChange(RealmModel realmModel, @Nullable ObjectChangeSet changeSet) {
+                    if (changeSet == null) {
+                        return;
+                    }
+                    if (changeSet.isDeleted()) {
+                        getView().viewOnBackPressed();
+                    }
+                    if (changeSet.isFieldChanged("comments")) {
+                        getView().setComment(currentOrder.getComments());
+                    }
+                    if (changeSet.isFieldChanged("currency")) {
+                        getView().setCurrency(currentOrder.getCurrency());
+                    }
+                    if (changeSet.isFieldChanged("delivery")) {
+                        getView().setDeliveryDate(currentOrder.getDelivery());
+                    }
+                    if (changeSet.isFieldChanged("total")) {
+                        getView().setOrderAmount(currentOrder.getTotal());
+                    }
+                    if (changeSet.isFieldChanged("date")) {
+                        getView().setOrderDate(currentOrder.getDate());
+                    }
+                    if (changeSet.isFieldChanged("payment")) {
+                        getView().setOrderType(currentOrder.getPayment());
+                    }
+                    if (changeSet.isFieldChanged("status")) {
+                        getView().setStatus(currentOrder.getStatus());
+                    }
+                }
+            });
         }
 
+
+        @Override
+        public void dropView(OrderView view) {
+            currentOrder.removeAllChangeListeners();
+            super.dropView(view);
+        }
 
         @Override
         protected void initActionBar() {
@@ -124,6 +169,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             getView().setOrderType(currentOrder.getPayment());
             getView().setStatus(currentOrder.getStatus());
 
+        }
+
+        public void updateDeliveryDate(Date mDate) {
+            mModel.setDeliveryDate(currentOrder, mDate);
         }
     }
     //endregion ================== Presenter =========================

@@ -1,5 +1,6 @@
 package com.sokolua.manager.ui.screens.order;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -27,6 +29,7 @@ import java.util.Map;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindView(R.id.order_status_image)      ImageView mStatusImage;
@@ -34,7 +37,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindView(R.id.order_title_text)        TextView mOrderTitle;
     @BindView(R.id.order_currency_text)     TextView mCurrency;
     @BindView(R.id.order_type_text)         Spinner mOrderType;
-    @BindView(R.id.order_delivery_text)     EditText mDeliveryDate;
+    @BindView(R.id.order_delivery_text)     TextView mDeliveryDate;
     @BindView(R.id.order_amount_text)       TextView mOrderAmount;
     @BindView(R.id.order_comment_text)      EditText mComment;
 
@@ -42,6 +45,8 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindDrawable(R.drawable.ic_sync)       Drawable progressDrawable;
     @BindDrawable(R.drawable.ic_done)       Drawable deliveredDrawable;
     @BindDrawable(R.drawable.ic_backup)     Drawable sentDrawable;
+
+    private int mStatus;
 
     private Map<String, Integer> orderTypes = new HashMap<>();
 
@@ -79,6 +84,9 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         mPresenter.updateFields();
     }
 
+
+    //region ===================== Setters =========================
+
     public void setLinesAdapter(ReactiveRecyclerAdapter mAdapter) {
 //        mItems.setHasFixedSize(true);
 //        mItems.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
@@ -87,6 +95,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
 
 
     public void setStatus(int status) {
+        mStatus = status;
         mOrderTitle.setText(App.getStringRes(R.string.order_title));
         mStatusImage.setVisibility(View.VISIBLE);
         switch (status){
@@ -142,4 +151,26 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     public void setComment(String comment) {
         this.mComment.setText(comment);
     }
+
+    //endregion ================== Setters =========================
+
+    //region ===================== Events =========================
+    @OnClick(R.id.order_delivery_text)
+    void selectDeliveryDate(){
+        if (mStatus == ConstantManager.ORDER_STATUS_CART){
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            DatePickerDialog picker = new DatePickerDialog(getRootView().getContext(), (datePicker, yy, mm, dd) -> {
+                c.clear();
+                c.set(yy, mm, dd);
+                mPresenter.updateDeliveryDate(c.getTime());
+            }, year, month, day);
+            picker.show();
+        }
+    }
+    //endregion ================== Events =========================
 }
