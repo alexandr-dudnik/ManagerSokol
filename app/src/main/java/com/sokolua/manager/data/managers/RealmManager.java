@@ -11,6 +11,8 @@ import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
+import java.util.Date;
+
 import io.reactivex.Observable;
 import io.realm.Case;
 import io.realm.Realm;
@@ -175,5 +177,12 @@ public class RealmManager {
         }
         return Observable.fromIterable(res.sort("name", Sort.ASCENDING).findAll());
     }
+
+    public void setDeliveryDate(OrderRealm currentOrder, Date mDate) {
+        OrderRealm temp = getQueryRealmInstance().copyFromRealm(currentOrder);
+        temp.setDelivery(mDate);
+        getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+    }
 }
+
 

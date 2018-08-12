@@ -87,4 +87,40 @@ public class OrderRealm extends RealmObject implements Serializable{
     }
 
     //endregion ============================= Getters ==================================
+
+    //region ===================== Setters =========================
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setDelivery(Date delivery) {
+        this.delivery = delivery;
+    }
+
+    public void setCustomer(CustomerRealm customer) {
+        this.customer = customer;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setPayment(int payment) {
+        this.payment = payment;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public void setTotal(Float total) {
+        this.total = total;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    //endregion ================== Setters =========================
 }
