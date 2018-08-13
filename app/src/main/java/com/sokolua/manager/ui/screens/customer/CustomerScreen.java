@@ -93,9 +93,6 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
-
-//            CustomerPagerAdapter adapter = getView().getAdapter();
-//            adapter.setCustomer(mCustomerDto);
         }
 
         @Override

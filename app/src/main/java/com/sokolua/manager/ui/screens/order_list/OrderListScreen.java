@@ -18,6 +18,7 @@ import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
+import flow.Direction;
 import flow.Flow;
 import mortar.MortarScope;
 
@@ -125,7 +126,7 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
 
         public void openOrder(OrderRealm order) {
-            Flow.get(getView()).set(new OrderScreen(order));
+            Flow.get(getView()).replaceHistory(new OrderScreen(order), Direction.FORWARD);
         }
     }
 
