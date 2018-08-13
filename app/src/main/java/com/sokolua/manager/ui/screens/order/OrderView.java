@@ -5,6 +5,9 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -19,6 +22,7 @@ import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.SwipeToDeleteCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,10 +40,15 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindView(R.id.order_date_text)         TextView mOrderDate;
     @BindView(R.id.order_title_text)        TextView mOrderTitle;
     @BindView(R.id.order_currency_text)     TextView mCurrency;
-    @BindView(R.id.order_type_text)         Spinner mOrderType;
+    @BindView(R.id.order_type_spin)         Spinner mOrderType;
+    @BindView(R.id.order_type_text)         TextView mOrderTypeText;
     @BindView(R.id.order_delivery_text)     TextView mDeliveryDate;
     @BindView(R.id.order_amount_text)       TextView mOrderAmount;
-    @BindView(R.id.order_comment_text)      EditText mComment;
+    @BindView(R.id.order_comment_edit)      EditText mComment;
+    @BindView(R.id.order_comment_text)      TextView mCommentText;
+
+    @BindView(R.id.order_items_list)        RecyclerView mItems;
+
 
     @BindDrawable(R.drawable.ic_cart)       Drawable cartDrawable;
     @BindDrawable(R.drawable.ic_sync)       Drawable progressDrawable;
@@ -47,6 +56,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindDrawable(R.drawable.ic_backup)     Drawable sentDrawable;
 
     private int mStatus;
+    private ItemTouchHelper itemTouchHelper;
 
     private Map<String, Integer> orderTypes = new HashMap<>();
 
@@ -82,15 +92,25 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         dateFormat = new SimpleDateFormat(App.getStringRes(R.string.date_format), Locale.getDefault());
 
         mPresenter.updateFields();
+
+        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+            itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(getContext()) {
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                    mPresenter.removeLine(((OrderLineViewHolder) viewHolder).getCurrentItem());
+                }
+            });
+        }
+
     }
 
 
     //region ===================== Setters =========================
 
     public void setLinesAdapter(ReactiveRecyclerAdapter mAdapter) {
-//        mItems.setHasFixedSize(true);
-//        mItems.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
-//        mItems.setAdapter(mAdapter);
+        mItems.setHasFixedSize(true);
+        mItems.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        mItems.setAdapter(mAdapter);
     }
 
 
@@ -98,23 +118,43 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         mStatus = status;
         mOrderTitle.setText(App.getStringRes(R.string.order_title));
         mStatusImage.setVisibility(View.VISIBLE);
+        mOrderType.setVisibility(GONE);
+        mOrderTypeText.setVisibility(VISIBLE);
+        mComment.setVisibility(GONE);
+        mCommentText.setVisibility(VISIBLE);
         switch (status){
             case ConstantManager.ORDER_STATUS_CART:
                 mStatusImage.setImageDrawable(cartDrawable);
                 mStatusImage.setColorFilter(App.getColorRes(R.color.color_order_cart));
                 mOrderTitle.setText(App.getStringRes(R.string.cart_title));
+                mOrderType.setVisibility(VISIBLE);
+                mOrderTypeText.setVisibility(GONE);
+                mComment.setVisibility(VISIBLE);
+                mCommentText.setVisibility(GONE);
+                if (itemTouchHelper != null) {
+                    itemTouchHelper.attachToRecyclerView(mItems);
+                }
                 break;
             case ConstantManager.ORDER_STATUS_DELIVERED:
                 mStatusImage.setImageDrawable(deliveredDrawable);
                 mStatusImage.setColorFilter(App.getColorRes(R.color.color_order_done));
+                if (itemTouchHelper != null) {
+                    itemTouchHelper.attachToRecyclerView(null);
+                }
                 break;
             case ConstantManager.ORDER_STATUS_IN_PROGRESS:
                 mStatusImage.setImageDrawable(progressDrawable);
                 mStatusImage.setColorFilter(App.getColorRes(R.color.color_order_in_progress));
+                if (itemTouchHelper != null) {
+                    itemTouchHelper.attachToRecyclerView(null);
+                }
                 break;
             case ConstantManager.ORDER_STATUS_SENT:
                 mStatusImage.setImageDrawable(sentDrawable);
                 mStatusImage.setColorFilter(App.getColorRes(R.color.color_order_sent));
+                if (itemTouchHelper != null) {
+                    itemTouchHelper.attachToRecyclerView(null);
+                }
                 break;
             default:
                 mStatusImage.setVisibility(View.INVISIBLE);
@@ -133,6 +173,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         int index=0;
         for (String key : orderTypes.keySet()) {
             if (orderTypes.get(key).equals(orderType)) {
+                mOrderTypeText.setText(key);
                 break;
             }
             index++;
@@ -150,6 +191,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
 
     public void setComment(String comment) {
         this.mComment.setText(comment);
+        this.mCommentText.setText(comment);
     }
 
     //endregion ================== Setters =========================

@@ -2,7 +2,7 @@ package com.sokolua.manager.mvp.models;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
-import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
@@ -15,7 +15,6 @@ import com.sokolua.manager.utils.App;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 
 public class CustomerModel extends AbstractModel {
 
@@ -76,5 +75,9 @@ public class CustomerModel extends AbstractModel {
 
     public void updateTask(String taskId, boolean checked, String result) {
         mDataManager.updateCustomerTask(taskId, checked, result);
+    }
+
+    public OrderRealm getCartForCustomer(CustomerRealm customer) {
+        return mDataManager.getCartForCustomer(customer);
     }
 }

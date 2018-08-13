@@ -14,7 +14,7 @@ import io.realm.annotations.Required;
 public class OrderRealm extends RealmObject implements Serializable{
     @Required
     @PrimaryKey
-    private String Id;
+    private String id;
     @Required
     private Date date;
     private Date delivery;
@@ -23,20 +23,18 @@ public class OrderRealm extends RealmObject implements Serializable{
     private int payment;
     private RealmList<OrderLineRealm> lines = new RealmList<>();
     private String currency;
-    private Float total;
     private String comments;
 
     public OrderRealm() {
     }
 
-    public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, Float total, String currency, String comments) {
-        this.Id = id;
+    public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, String currency, String comments) {
+        this.id = id;
         this.customer = customer;
         this.date = date;
         this.delivery = delivery;
         this.status = status;
         this.payment = payment;
-        this.total = total;
         this.currency = currency;
         this.comments = comments;
     }
@@ -59,6 +57,10 @@ public class OrderRealm extends RealmObject implements Serializable{
     }
 
     public Float getTotal() {
+        float total = 0f;
+        for (OrderLineRealm line : getLines()){
+            total += line.getPrice()*line.getQuantity();
+        }
         return total;
     }
 
@@ -67,7 +69,7 @@ public class OrderRealm extends RealmObject implements Serializable{
     }
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public Date getDelivery() {
@@ -108,14 +110,6 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public void setPayment(int payment) {
         this.payment = payment;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public void setTotal(Float total) {
-        this.total = total;
     }
 
     public void setComments(String comments) {

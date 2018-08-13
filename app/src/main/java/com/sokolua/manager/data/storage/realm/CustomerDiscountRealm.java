@@ -1,11 +1,10 @@
 package com.sokolua.manager.data.storage.realm;
 
+import com.sokolua.manager.data.managers.ConstantManager;
+
 import java.io.Serializable;
 
-import javax.annotation.Nullable;
-
 import io.realm.RealmObject;
-import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -28,5 +27,42 @@ public class CustomerDiscountRealm extends RealmObject implements Serializable{
         this.category = category;
         this.item = item;
         this.percent = percent;
+        this.discountId = String.valueOf(discountType)+"#"+customer.getCustomerId()+"#"+(discountType== ConstantManager.DISCOUNT_TYPE_ITEM?item.getItemId():category.getCategoryId());
     }
+
+
+    //region ================================ Getters ==================================
+    public String getDiscountId() {
+        return discountId;
+    }
+
+    public int getDiscountType() {
+        return discountType;
+    }
+
+    public CustomerRealm getCustomer() {
+        return customer;
+    }
+
+    public GoodsCategoryRealm getCategory() {
+        return category;
+    }
+
+    public ItemRealm getItem() {
+        return item;
+    }
+
+    public Float getPercent() {
+        return percent;
+    }
+
+    //endregion ============================= Getters ==================================
+
+    //region ================================ Setters ==================================
+
+    public void setPercent(Float percent) {
+        this.percent = percent;
+    }
+
+    //endregion ============================= Setters ==================================
 }

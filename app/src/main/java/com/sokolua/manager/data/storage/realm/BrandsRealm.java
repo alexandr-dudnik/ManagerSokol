@@ -24,7 +24,7 @@ public class BrandsRealm extends RealmObject implements Serializable{
     }
 
 
-//region ================================ Getters ==================================
+    //region ================================ Getters ==================================
 
     public String getBrandId() {
         return brandId;

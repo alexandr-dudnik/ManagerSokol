@@ -1,7 +1,6 @@
 package com.sokolua.manager.mvp.models;
 
 
-
 import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.DaggerModelComponent;
@@ -38,6 +37,8 @@ public abstract class AbstractModel {
     public DataManager getDataManager() {
         return mDataManager;
     }
+
+
 //
 //    public JobManager getJobManager() {
 //        return mJobManager;

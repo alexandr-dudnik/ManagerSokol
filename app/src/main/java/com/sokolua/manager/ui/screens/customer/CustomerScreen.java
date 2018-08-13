@@ -5,19 +5,25 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
+import com.sokolua.manager.ui.screens.order.OrderScreen;
+import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
+import flow.Flow;
 import flow.TreeKey;
 import mortar.MortarScope;
 
@@ -104,6 +110,11 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                     .setBackArrow(true)
                     .setTitle(mCustomer.getName())
                     .setTabs(getView().getViewPager())
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.cart_title), R.drawable.ic_cart, item ->{
+                                OrderRealm cart = mModel.getCartForCustomer(mCustomer);
+                                Flow.get(getView()).set(new OrderScreen(cart));
+                                return false;
+                            } , ConstantManager.MENU_ITEM_TYPE_ACTION))
                     .build();
 
         }
