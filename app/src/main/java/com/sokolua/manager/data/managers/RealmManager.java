@@ -7,15 +7,18 @@ import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import io.reactivex.Observable;
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -182,6 +185,66 @@ public class RealmManager {
         OrderRealm temp = getQueryRealmInstance().copyFromRealm(currentOrder);
         temp.setDelivery(mDate);
         getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+    }
+
+    public void updateOrderItemPrice(OrderRealm order, ItemRealm item, Float value) {
+        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        if (line != null) {
+            OrderLineRealm temp = getQueryRealmInstance().copyFromRealm(line);
+            temp.setPrice(value);
+            getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+        }
+    }
+
+    public void updateOrderItemQty(OrderRealm order, ItemRealm item, Float value) {
+        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        if (line != null) {
+            OrderLineRealm temp = getQueryRealmInstance().copyFromRealm(line);
+            temp.setQuantity(value);
+            getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+        }
+    }
+
+    public void removeOrderItem(OrderRealm order, ItemRealm item) {
+        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        if (line != null) {
+            getQueryRealmInstance().executeTransaction(db -> line.deleteFromRealm());
+        }
+    }
+
+    public Observable<OrderLineRealm> getOrderLinesList(OrderRealm order) {
+        RealmResults<OrderLineRealm> res = getQueryRealmInstance().where(OrderLineRealm.class).equalTo("order.id", order.getId()).sort("item.artNumber").findAll();
+        return Observable.fromIterable(res);
+    }
+
+    public void updateOrderStatus(OrderRealm order, int orderStatus) {
+        OrderRealm temp = getQueryRealmInstance().copyFromRealm(order);
+        temp.setStatus(orderStatus);
+        getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+    }
+
+    public void clearOrderLines(OrderRealm order) {
+        RealmList<OrderLineRealm> list= order.getLines();
+        if (!list.isEmpty()){
+            getQueryRealmInstance().executeTransaction(db -> list.deleteAllFromRealm());
+        }
+    }
+
+    public OrderRealm getCartForCustomer(CustomerRealm customer) {
+        OrderRealm result = getQueryRealmInstance().where(OrderRealm.class)
+                .beginGroup()
+                .equalTo("customer.cusomerId", customer.getCustomerId())
+                .and()
+                .equalTo("status", ConstantManager.ORDER_STATUS_CART)
+                .endGroup()
+                .findFirst();
+        if (result == null){
+            result = new OrderRealm("cart_"+customer.getCustomerId(), customer, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_CASH, ConstantManager.MAIN_CURRENCY, "");
+            OrderRealm finalResult = result;
+            getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(finalResult));
+            result = getQueryRealmInstance().where(OrderRealm.class).equalTo("id", finalResult.getId()).findFirst();
+        }
+        return result;
     }
 }
 

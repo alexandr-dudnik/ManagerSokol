@@ -1,10 +1,15 @@
 package com.sokolua.manager.ui.screens.order;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
@@ -13,18 +18,17 @@ import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.OrderModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
+import com.sokolua.manager.mvp.presenters.MenuItemHolder;
+import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.utils.App;
 
 import java.util.Date;
-
-import javax.annotation.Nullable;
+import java.util.Locale;
 
 import dagger.Provides;
 import io.reactivex.Observable;
-import io.realm.ObjectChangeSet;
-import io.realm.RealmModel;
-import io.realm.RealmObjectChangeListener;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order)
@@ -104,57 +108,85 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 );
             };
             linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder);
+            updateLines();
+
+            currentOrder.getLines().addChangeListener(orderLineRealms -> updateLines());
 
             getView().setLinesAdapter(linesAdapter);
 
-            currentOrder.addChangeListener(new RealmObjectChangeListener<RealmModel>() {
-                @Override
-                public void onChange(RealmModel realmModel, @Nullable ObjectChangeSet changeSet) {
-                    if (changeSet == null) {
-                        return;
-                    }
-                    if (changeSet.isDeleted()) {
-                        getView().viewOnBackPressed();
-                    }
-                    if (changeSet.isFieldChanged("comments")) {
-                        getView().setComment(currentOrder.getComments());
-                    }
-                    if (changeSet.isFieldChanged("currency")) {
-                        getView().setCurrency(currentOrder.getCurrency());
-                    }
-                    if (changeSet.isFieldChanged("delivery")) {
-                        getView().setDeliveryDate(currentOrder.getDelivery());
-                    }
-                    if (changeSet.isFieldChanged("total")) {
-                        getView().setOrderAmount(currentOrder.getTotal());
-                    }
-                    if (changeSet.isFieldChanged("date")) {
-                        getView().setOrderDate(currentOrder.getDate());
-                    }
-                    if (changeSet.isFieldChanged("payment")) {
-                        getView().setOrderType(currentOrder.getPayment());
-                    }
-                    if (changeSet.isFieldChanged("status")) {
-                        getView().setStatus(currentOrder.getStatus());
-                    }
+            currentOrder.addChangeListener((realmModel, changeSet) -> {
+                if (changeSet == null) {
+                    return;
+                }
+                if (changeSet.isDeleted()) {
+                    getView().viewOnBackPressed();
+                }
+                if (changeSet.isFieldChanged("comments")) {
+                    getView().setComment(currentOrder.getComments());
+                }
+                if (changeSet.isFieldChanged("currency")) {
+                    getView().setCurrency(currentOrder.getCurrency());
+                }
+                if (changeSet.isFieldChanged("delivery")) {
+                    getView().setDeliveryDate(currentOrder.getDelivery());
+                }
+                if (changeSet.isFieldChanged("date")) {
+                    getView().setOrderDate(currentOrder.getDate());
+                }
+                if (changeSet.isFieldChanged("payment")) {
+                    getView().setOrderType(currentOrder.getPayment());
+                }
+                if (changeSet.isFieldChanged("status")) {
+                    getView().setStatus(currentOrder.getStatus());
+                    initActionBar();
                 }
             });
+        }
+
+        private void updateLines(){
+            linesAdapter.refreshList(mModel.getLinesList(currentOrder));
+            getView().setOrderAmount(currentOrder.getTotal());
         }
 
 
         @Override
         public void dropView(OrderView view) {
             currentOrder.removeAllChangeListeners();
+            currentOrder.getLines().removeAllChangeListeners();
             super.dropView(view);
         }
 
         @Override
         protected void initActionBar() {
-            mRootPresenter.newActionBarBuilder()
+            RootPresenter.ActionBarBuilder abb = mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
-                    .setTitle(currentOrder==null?"":currentOrder.getCustomer().getName())
-                    .build();
+                    .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName());
+            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+                abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
+                    if (currentOrder.getLines().isEmpty()){
+                        if (getRootView() != null) {
+                            getRootView().showMessage(App.getStringRes(R.string.error_empty_order));
+                            return false;
+                        }
+                    }
+                    if (currentOrder.getDate().compareTo(currentOrder.getDelivery())>0){
+                        if (getRootView() != null) {
+                            getRootView().showMessage(App.getStringRes(R.string.error_wrong_delivery));
+                            return false;
+                        }
+                    }
+                    mModel.sendOrder(currentOrder);
+                    return false;
+                }, ConstantManager.MENU_ITEM_TYPE_ACTION))
+                .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
+                    mModel.clearOrderLines(currentOrder);
+                    return false;
+                }, ConstantManager.MENU_ITEM_TYPE_ITEM));
+
+            }
+
+            abb.build();
 
         }
 
@@ -173,6 +205,68 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void updateDeliveryDate(Date mDate) {
             mModel.setDeliveryDate(currentOrder, mDate);
+        }
+
+        public void updatePrice(OrderLineRealm line) {
+            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
+                alert.setTitle(App.getStringRes(R.string.order_items_header_price));
+
+                final EditText input = new EditText(getView().getContext());
+                alert.setView(input);
+                input.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), line.getPrice()));
+
+                input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                input.setRawInputType(Configuration.KEYBOARD_12KEY);
+
+                alert.setPositiveButton("OK", (dialog, whichButton) -> {
+                    float newValue = Float.parseFloat(input.getText().toString());
+                    //check price
+                    if (newValue < line.getItem().getLowPrice()) {
+                        if (getRootView() != null) {
+                            getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), line.getItem().getLowPrice()) + ")");
+                        }
+                    } else {
+                        mModel.updateOrderItemPrice(currentOrder, line.getItem(), newValue);
+                    }
+                });
+                alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                });
+                alert.show();
+            }
+        }
+
+        public void updateQuantity(OrderLineRealm line) {
+            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
+                alert.setTitle(App.getStringRes(R.string.order_items_header_quantity));
+
+                final EditText input = new EditText(getView().getContext());
+                alert.setView(input);
+                input.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), line.getQuantity()));
+
+                input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                input.setRawInputType(Configuration.KEYBOARD_12KEY);
+
+                alert.setPositiveButton("OK", (dialog, whichButton) -> {
+                    float newValue = Float.parseFloat(input.getText().toString());
+                    if (newValue == 0f) {
+                        mModel.removeOrderItem(currentOrder, line.getItem());
+                    } else {
+                        mModel.updateOrderItemQty(currentOrder, line.getItem(), newValue);
+                    }
+                });
+                alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                });
+                alert.show();
+            }
+        }
+
+        public void removeLine(OrderLineRealm currentItem) {
+            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+                mModel.removeOrderItem(currentOrder, currentItem.getItem());
+            }
         }
     }
     //endregion ================== Presenter =========================

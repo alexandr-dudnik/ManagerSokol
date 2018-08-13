@@ -5,6 +5,7 @@ import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
@@ -138,6 +139,34 @@ public class DataManager {
         mRealmManager.setDeliveryDate(currentOrder, mDate);
     }
 
+    public void updateOrderItemPrice(OrderRealm order, ItemRealm item, Float value) {
+        mRealmManager.updateOrderItemPrice(order, item, value);
+    }
+
+    public void updateOrderItemQty(OrderRealm order, ItemRealm item, Float value) {
+        mRealmManager.updateOrderItemQty(order, item, value);
+    }
+
+    public void removeOrderItem(OrderRealm order, ItemRealm item) {
+        mRealmManager.removeOrderItem(order, item);
+    }
+
+    public Observable<OrderLineRealm> getOrderLines(OrderRealm order) {
+        return mRealmManager.getOrderLinesList(order);
+    }
+
+    public void updateOrderStatus(OrderRealm order, int orderStatus) {
+        mRealmManager.updateOrderStatus(order, orderStatus);
+    }
+
+    public void clearOrderLines(OrderRealm order) {
+        mRealmManager.clearOrderLines(order);
+    }
+
+    public OrderRealm getCartForCustomer(CustomerRealm customer) {
+        return mRealmManager.getCartForCustomer(customer) ;
+    }
+
     //endregion ================== Orders =========================
 
 
@@ -149,6 +178,8 @@ public class DataManager {
     public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
         return mRealmManager.getItemList(parent, filter);
     }
+
+
 
     //endregion ================== Goods =========================
 }

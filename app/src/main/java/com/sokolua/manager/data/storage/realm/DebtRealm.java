@@ -3,11 +3,13 @@ package com.sokolua.manager.data.storage.realm;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 public class DebtRealm extends RealmObject implements Serializable {
+    @PrimaryKey
+    @Required
+    private String debtId;
     private CustomerRealm customer;
     @Required
     private String currency;
@@ -24,6 +26,7 @@ public class DebtRealm extends RealmObject implements Serializable {
         this.amount = amount;
         this.amountUSD = amountUSD;
         this.outdated = outdated;
+        this.debtId = customer.getCustomerId()+"#"+currency;
     }
 
 //region ===================== Getters =========================
