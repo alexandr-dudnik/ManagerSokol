@@ -232,17 +232,13 @@ public class RealmManager {
 
     public OrderRealm getCartForCustomer(CustomerRealm customer) {
         OrderRealm result = getQueryRealmInstance().where(OrderRealm.class)
-                .beginGroup()
-                .equalTo("customer.cusomerId", customer.getCustomerId())
-                .and()
+                .equalTo("customer.customerId", customer.getCustomerId())
                 .equalTo("status", ConstantManager.ORDER_STATUS_CART)
-                .endGroup()
                 .findFirst();
         if (result == null){
-            result = new OrderRealm("cart_"+customer.getCustomerId(), customer, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_CASH, ConstantManager.MAIN_CURRENCY, "");
-            OrderRealm finalResult = result;
-            getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(finalResult));
-            result = getQueryRealmInstance().where(OrderRealm.class).equalTo("id", finalResult.getId()).findFirst();
+            OrderRealm tmp = new OrderRealm("cart_"+customer.getCustomerId(), customer, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_CASH, ConstantManager.MAIN_CURRENCY, "");
+            getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(tmp));
+            result = getCartForCustomer(customer);
         }
         return result;
     }

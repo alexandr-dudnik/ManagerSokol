@@ -44,9 +44,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 .build();
     }
 
+
+
     public OrderScreen(OrderRealm currentOrder) {
         this.currentOrder = currentOrder;
     }
+
 
     //region ===================== DI =========================
 
@@ -270,5 +273,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
     }
     //endregion ================== Presenter =========================
+
 
 }

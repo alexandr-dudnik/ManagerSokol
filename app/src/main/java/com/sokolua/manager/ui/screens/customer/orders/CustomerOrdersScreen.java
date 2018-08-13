@@ -123,7 +123,9 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
 
 
         public void openOrder(OrderRealm order) {
-            Flow.get(getView()).set(new OrderScreen(order));
+            if (getRootView() != null) {
+                Flow.get(getView()).set(new OrderScreen(order));
+            }
         }
 
     }
