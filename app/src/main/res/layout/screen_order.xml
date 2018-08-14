@@ -317,6 +317,7 @@
                     android:id="@+id/order_comment_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:inputType="text"
                     android:fontFamily="@string/roboto_regular"
                     android:text="@string/order_comment_title"
                     android:textColor="@color/color_gray"

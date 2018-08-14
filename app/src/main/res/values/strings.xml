@@ -92,6 +92,6 @@
     <string name="action_clear_order">Очистить</string>
     <string name="order_items_counter_title">Товаров</string>
     <string name="button_negative_text">Cancel</string>
-    <string name="button_positive_text">Ok</string>
+    <string name="button_positive_text">OK</string>
 
 </resources>

@@ -52,53 +52,67 @@ public class RealmManager {
 
     @Nullable
     public CustomerRealm getCustomerById(String id) {
-        return getQueryRealmInstance().where(CustomerRealm.class).equalTo("customerId", id).findFirst();
+        return getQueryRealmInstance()
+                .where(CustomerRealm.class)
+                .equalTo("customerId", id)
+                .findFirst();
     }
 
     public int getCustomerDebtType(String customerId) {
-        CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getDebt().size() == 0) {
+        RealmQuery<DebtRealm> qAll = getQueryRealmInstance()
+                .where(DebtRealm.class)
+                .equalTo("customer.customerId", customerId);
+        if (qAll.findFirst() == null) {
             return ConstantManager.DEBT_TYPE_NO_DEBT;
         }
-        return customer.getDebt().where().equalTo("outdated", true).findFirst() == null ? ConstantManager.DEBT_TYPE_NORMAL : ConstantManager.DEBT_TYPE_OUTDATED;
+        return qAll.equalTo("outdated", true).findFirst() == null ? ConstantManager.DEBT_TYPE_NORMAL : ConstantManager.DEBT_TYPE_OUTDATED;
     }
 
     public Observable<NoteRealm> getCustomerNotes(String customerId) {
-        CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getNotes().size() == 0) {
+        RealmQuery<NoteRealm> qAll = getQueryRealmInstance()
+                .where(NoteRealm.class)
+                .equalTo("customer.customerId", customerId);
+        if (qAll.findFirst() == null) {
             return Observable.empty();
         }
-        return Observable.fromIterable(customer.getNotes().sort("date", Sort.DESCENDING));
+        return Observable.fromIterable(qAll.sort("date", Sort.DESCENDING).findAll());
     }
 
     public Observable<DebtRealm> getCustomerDebt(String customerId) {
-        CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getNotes().size() == 0) {
+        RealmQuery<DebtRealm> qAll = getQueryRealmInstance()
+                .where(DebtRealm.class)
+                .equalTo("customer.customerId", customerId);
+        if (qAll.findFirst() == null) {
             return Observable.empty();
         }
-        return Observable.fromIterable(customer.getDebt().sort("currency"));
+        return Observable.fromIterable(qAll.sort("currency").findAll());
     }
 
     public Observable<TaskRealm> getCustomerTasks(String customerId) {
-        CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getNotes().size() == 0) {
+        RealmQuery<TaskRealm> qAll = getQueryRealmInstance()
+                .where(TaskRealm.class)
+                .equalTo("customer.customerId", customerId);
+        if (qAll.findFirst() == null) {
             return Observable.empty();
         }
-        return Observable.fromIterable(customer.getTasks().sort("taskType"));
+        return Observable.fromIterable(qAll.sort("taskType").findAll());
     }
 
     public Observable<DebtRealm> getCustomerDebtByType(String customerId, int debtType) {
+        RealmQuery<DebtRealm> qAll = getQueryRealmInstance()
+                .where(DebtRealm.class)
+                .equalTo("customer.customerId", customerId);
         CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getDebt().size() == 0) {
+        if (qAll.findFirst() == null || customer == null) {
             return Observable.empty();
         }
         switch(debtType){
             case ConstantManager.DEBT_TYPE_NORMAL:
-                return Observable.fromIterable(customer.getDebt().where().equalTo("outdated", false).sort("currency").findAll());
+                return Observable.fromIterable(qAll.equalTo("outdated", false).sort("currency").findAll());
             case ConstantManager.DEBT_TYPE_OUTDATED:
-                return Observable.fromIterable(customer.getDebt().where().equalTo("outdated", true).sort("currency").findAll());
+                return Observable.fromIterable(qAll.equalTo("outdated", true).sort("currency").findAll());
             case ConstantManager.DEBT_TYPE_WHOLE:
-                return Observable.fromIterable(customer.getDebt().sort("currency"))
+                return Observable.fromIterable(qAll.sort("currency").findAll())
                         .groupBy(DebtRealm::getCurrency)
                         .map(grp->{
                             DebtRealm res = new DebtRealm(customer, grp.getKey(), 0f, 0f, false);
@@ -114,20 +128,24 @@ public class RealmManager {
     }
 
     public Observable<TaskRealm> getCustomerTaskByType(String customerId, int taskType) {
-        CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getDebt().size() == 0) {
+        RealmQuery<TaskRealm> qAll = getQueryRealmInstance()
+                .where(TaskRealm.class)
+                .equalTo("customer.customerId", customerId)
+                .equalTo("taskType", taskType);
+        if (qAll.findFirst() == null ) {
             return Observable.empty();
         }
         return Observable.fromIterable(
-                customer.getTasks()
-                        .where().equalTo("taskType", taskType)
+                        qAll
                         .sort("done",Sort.ASCENDING, "text", Sort.ASCENDING)
                         .findAll()
                );
     }
 
     public void updateCustomerTask(String taskId, boolean checked, String result) {
-        TaskRealm task = getQueryRealmInstance().where(TaskRealm.class).equalTo("taskId", taskId).findFirst();
+        TaskRealm task = getQueryRealmInstance()
+                .where(TaskRealm.class)
+                .equalTo("taskId", taskId).findFirst();
         if (task != null && task.isLoaded() && task.isValid()) {
             TaskRealm temp = getQueryRealmInstance().copyFromRealm(task);
             temp.setDone(checked);
@@ -137,32 +155,46 @@ public class RealmManager {
     }
 
     public Observable<OrderPlanRealm> getCustomerPlan(String customerId) {
-        CustomerRealm customer = getCustomerById(customerId);
-        if (customer == null || customer.getDebt().size() == 0) {
+        RealmQuery<OrderPlanRealm> qAll = getQueryRealmInstance()
+                .where(OrderPlanRealm.class)
+                .equalTo("customer.customerId", customerId);
+        if (qAll.findFirst() == null ) {
             return Observable.empty();
         }
-        return Observable.fromIterable(
-                customer.getPlan()
-                        .sort("category.name",Sort.ASCENDING)
-        );
+        return Observable.fromIterable(qAll.sort("category.name",Sort.ASCENDING).findAll());
     }
 
     public Observable<OrderRealm> getCustomerOrders(String customerId) {
-        RealmResults<OrderRealm> res = getQueryRealmInstance().where(OrderRealm.class).equalTo("customer.customerId", customerId).sort("status", Sort.ASCENDING, "date", Sort.DESCENDING).findAll();
+        RealmResults<OrderRealm> res = getQueryRealmInstance()
+                .where(OrderRealm.class)
+                .equalTo("customer.customerId", customerId)
+                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
+                .findAll();
         return Observable.fromIterable(res);
     }
 
     public Observable<OrderRealm> getAllOrders() {
-        RealmResults<OrderRealm> res = getQueryRealmInstance().where(OrderRealm.class).sort("status", Sort.ASCENDING, "date", Sort.DESCENDING).findAll();
+        RealmResults<OrderRealm> res = getQueryRealmInstance()
+                .where(OrderRealm.class)
+                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
+                .findAll();
         return Observable.fromIterable(res);
     }
 
     public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent) {
         RealmResults<GoodsGroupRealm> res;
         if (parent == null) {
-             res = getQueryRealmInstance().where(GoodsGroupRealm.class).isNull("parent").sort("name", Sort.ASCENDING).findAll();
+             res = getQueryRealmInstance()
+                     .where(GoodsGroupRealm.class)
+                     .isNull("parent")
+                     .sort("name", Sort.ASCENDING)
+                     .findAll();
         }else{
-            res = getQueryRealmInstance().where(GoodsGroupRealm.class).equalTo("parent.groupId", parent.getGroupId()).sort("name", Sort.ASCENDING).findAll();
+            res = getQueryRealmInstance()
+                    .where(GoodsGroupRealm.class)
+                    .equalTo("parent.groupId", parent.getGroupId())
+                    .sort("name", Sort.ASCENDING)
+                    .findAll();
         }
         return Observable.fromIterable(res);
     }
@@ -187,7 +219,11 @@ public class RealmManager {
     }
 
     public void updateOrderItemPrice(OrderRealm order, ItemRealm item, Float value) {
-        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        OrderLineRealm line = getQueryRealmInstance()
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", order.getId())
+                .equalTo("item.itemId", item.getItemId())
+                .findFirst();
         if (line != null) {
             OrderLineRealm temp = getQueryRealmInstance().copyFromRealm(line);
             temp.setPrice(value);
@@ -196,7 +232,11 @@ public class RealmManager {
     }
 
     public void updateOrderItemQty(OrderRealm order, ItemRealm item, Float value) {
-        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        OrderLineRealm line = getQueryRealmInstance()
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", order.getId())
+                .equalTo("item.itemId", item.getItemId())
+                .findFirst();
         if (line != null) {
             OrderLineRealm temp = getQueryRealmInstance().copyFromRealm(line);
             temp.setQuantity(value);
@@ -205,14 +245,21 @@ public class RealmManager {
     }
 
     public void removeOrderItem(OrderRealm order, ItemRealm item) {
-        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        OrderLineRealm line = getQueryRealmInstance()
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", order.getId())
+                .equalTo("item.itemId", item.getItemId())
+                .findFirst();
         if (line != null) {
             getQueryRealmInstance().executeTransaction(db -> line.deleteFromRealm());
         }
     }
 
     public Observable<OrderLineRealm> getOrderLinesList(OrderRealm order) {
-        RealmResults<OrderLineRealm> res = getQueryRealmInstance().where(OrderLineRealm.class).equalTo("order.id", order.getId()).sort("item.artNumber").findAll();
+        RealmResults<OrderLineRealm> res = getQueryRealmInstance()
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", order.getId())
+                .sort("item.artNumber").findAll();
         return Observable.fromIterable(res);
     }
 
@@ -254,12 +301,14 @@ public class RealmManager {
     }
 
     public void addItemToCart(OrderRealm order, ItemRealm item, float newQty, float newPrice) {
-        OrderRealm temp = getQueryRealmInstance().copyFromRealm(order);
-        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        OrderLineRealm line = getQueryRealmInstance()
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", order.getId())
+                .equalTo("item.itemId", item.getItemId())
+                .findFirst();
         if (line == null){
             OrderLineRealm tmpLine = new OrderLineRealm(order, item, newQty, newPrice);
-            temp.getLines().add(tmpLine);
-            getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(temp));
+            getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(tmpLine));
         }else{
             OrderLineRealm tmpLine = getQueryRealmInstance().copyFromRealm(line);
             tmpLine.setQuantity(tmpLine.getQuantity()+newQty);
@@ -270,7 +319,10 @@ public class RealmManager {
     }
 
     public OrderRealm getOrderById(String orderId) {
-        return getQueryRealmInstance().where(OrderRealm.class).equalTo("id", orderId).findFirst();
+        return getQueryRealmInstance()
+                .where(OrderRealm.class)
+                .equalTo("id", orderId)
+                .findFirst();
     }
 }
 
