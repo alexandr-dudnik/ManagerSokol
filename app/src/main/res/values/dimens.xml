@@ -37,4 +37,6 @@
     <dimen name="good_list_margin_half">4dp</dimen>
     <dimen name="order_margin">8dp</dimen>
     <dimen name="order_icon">24dp</dimen>
+    <dimen name="order_lines_add_image_size">24dp</dimen>
+    <dimen name="goods_cart_image_size">32dp</dimen>
 </resources>

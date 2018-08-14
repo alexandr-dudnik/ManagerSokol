@@ -44,6 +44,12 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
         mCustomer = DataManager.getInstance().getCustomerById(customerId);
     }
 
+    @Override
+    public String getScopeName() {
+        return super.getScopeName()+"_"+mCustomer.getCustomerId();
+    }
+
+
     //region ===================== DI =========================
 
     @dagger.Module

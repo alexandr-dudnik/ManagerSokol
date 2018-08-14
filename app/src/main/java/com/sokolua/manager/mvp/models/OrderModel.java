@@ -40,4 +40,12 @@ public class OrderModel extends AbstractModel {
     public void clearOrderLines(OrderRealm order) {
         mDataManager.clearOrderLines(order);
     }
+
+    public void updateOrderComment(OrderRealm order, String comment) {
+        mDataManager.updateOrderComment(order, comment);
+    }
+
+    public void updateOrderPayment(OrderRealm order, int payment) {
+        mDataManager.updateOrderPayment(order, payment);
+    }
 }

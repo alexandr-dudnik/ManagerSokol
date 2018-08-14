@@ -254,14 +254,16 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     private void addMenuItem(Menu menu, MenuItemHolder menuItem) {
         MenuItem item;
         if (menuItem.getItemType() == ConstantManager.MENU_ITEM_TYPE_SEARCH){
-            getMenuInflater().inflate(R.menu.search_menu, menu);
-            item = menu.findItem(R.id.search);
-            item.setTitle(menuItem.getItemTitle());
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView) item.getActionView();
-            searchView.setQueryHint(App.getStringRes(R.string.search_hint));
-            searchView.setOnQueryTextListener(menuItem.getQueryListener());
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            if (searchManager != null) {
+                getMenuInflater().inflate(R.menu.search_menu, menu);
+                item = menu.findItem(R.id.search);
+                item.setTitle(menuItem.getItemTitle());
+                SearchView searchView = (SearchView) item.getActionView();
+                searchView.setQueryHint(App.getStringRes(R.string.search_hint));
+                searchView.setOnQueryTextListener(menuItem.getQueryListener());
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            }
             return;
         }
 
@@ -287,6 +289,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 .setIcon(menuItem.getIconResId())
                 .setOnMenuItemClickListener(menuItem.getListener());
 
+        this.tintMenuIcon(this, item, R.color.menu_item_icon_color);
     }
 
     @Override

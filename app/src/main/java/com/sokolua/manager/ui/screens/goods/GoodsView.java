@@ -7,6 +7,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
@@ -14,13 +16,18 @@ import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 
 public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
-    @BindView(R.id.groups_grid)
-    RecyclerView mGrid;
-    @BindView(R.id.item_list)
-    RecyclerView mItems;
+    @BindView(R.id.groups_grid)         RecyclerView mGrid;
+    @BindView(R.id.item_list)           RecyclerView mItems;
+    @BindView(R.id.cart_panel)          RelativeLayout mCartPanel;
+    @BindView(R.id.cart_customer_text)  TextView mCustomerName;
+    @BindView(R.id.cart_currency)       TextView mCartCurrency;
+    @BindView(R.id.cart_amount)         TextView mCartAmount;
+    @BindView(R.id.cart_items_counter)  TextView mCartItemsCount;
 
 
     public GoodsView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -76,4 +83,31 @@ public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
                     .start();
         }
     }
+
+
+
+    public void setCartMode(){
+        mCartPanel.setVisibility(VISIBLE);
+    }
+    public void setCatalogMode(){
+        mCartPanel.setVisibility(GONE);
+    }
+
+    public void setCustomer(String customerName){
+        mCustomerName.setText(customerName);
+    }
+
+    public void setCartCurrency(String currency){
+        mCartCurrency.setText(currency);
+    }
+
+    public void setCartAmount(Float amount){
+        mCartAmount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),amount));
+    }
+
+    public void setCartItemsCount(int count){
+        mCartItemsCount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),(count+0.f)));
+    }
+
+
 }

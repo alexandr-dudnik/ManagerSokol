@@ -6,8 +6,9 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -21,7 +22,8 @@ public class OrderRealm extends RealmObject implements Serializable{
     private CustomerRealm customer;
     private int status;
     private int payment;
-    private RealmList<OrderLineRealm> lines = new RealmList<>();
+    @LinkingObjects("order")
+    private final RealmResults<OrderLineRealm> lines = null;
     private String currency;
     private String comments;
 
@@ -84,7 +86,7 @@ public class OrderRealm extends RealmObject implements Serializable{
         return customer;
     }
 
-    public RealmList<OrderLineRealm> getLines() {
+    public RealmResults<OrderLineRealm> getLines() {
         return lines;
     }
 

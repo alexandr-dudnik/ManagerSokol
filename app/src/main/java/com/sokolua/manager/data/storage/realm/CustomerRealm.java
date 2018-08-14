@@ -2,9 +2,10 @@ package com.sokolua.manager.data.storage.realm;
 
 import java.io.Serializable;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.Index;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -20,12 +21,18 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private String email = "";
     @Index
     private String index = "";
-    private RealmList<DebtRealm> debt = new RealmList<>();
-    private RealmList<NoteRealm> notes = new RealmList<>();
-    private RealmList<TaskRealm> tasks = new RealmList<>();
-    private RealmList<OrderPlanRealm> plan = new RealmList<>();
-    private RealmList<CustomerDiscountRealm> discounts = new RealmList<>();
-    private RealmList<VisitRealm> visits = new RealmList<>();
+    @LinkingObjects("customer")
+    private final RealmResults<DebtRealm> debt = null;
+    @LinkingObjects("customer")
+    private final RealmResults<NoteRealm> notes = null;
+    @LinkingObjects("customer")
+    private final RealmResults<TaskRealm> tasks = null;
+    @LinkingObjects("customer")
+    private final RealmResults<OrderPlanRealm> plan = null;
+    @LinkingObjects("customer")
+    private final RealmResults<CustomerDiscountRealm> discounts = null;
+    @LinkingObjects("customer")
+    private final RealmResults<VisitRealm> visits = null;
 
     public CustomerRealm() {
     }
@@ -66,27 +73,27 @@ public class CustomerRealm extends RealmObject implements Serializable{
         return email;
     }
 
-    public RealmList<DebtRealm> getDebt() {
+    public RealmResults<DebtRealm> getDebt() {
         return debt;
     }
 
-    public RealmList<NoteRealm> getNotes() {
+    public RealmResults<NoteRealm> getNotes() {
         return notes;
     }
 
-    public RealmList<TaskRealm> getTasks() {
+    public RealmResults<TaskRealm> getTasks() {
         return tasks;
     }
 
-    public RealmList<OrderPlanRealm> getPlan() {
+    public RealmResults<OrderPlanRealm> getPlan() {
         return plan;
     }
 
-    public RealmList<CustomerDiscountRealm> getDiscounts() {
+    public RealmResults<CustomerDiscountRealm> getDiscounts() {
         return discounts;
     }
 
-    public RealmList<VisitRealm> getVisits() {
+    public RealmResults<VisitRealm> getVisits() {
         return visits;
     }
 

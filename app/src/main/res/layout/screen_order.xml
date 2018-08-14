@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sokolua.manager.ui.screens.order.OrderView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sokolua.manager.ui.screens.order.OrderView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="@dimen/order_margin"
     android:orientation="vertical"
     android:background="@color/main_background">
@@ -11,11 +11,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:isScrollContainer="true">
+        android:isScrollContainer="true"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <ImageView
                 android:id="@+id/order_status_image"
@@ -73,7 +75,11 @@
                 android:layout_below="@id/order_divider_1"
                 android:layout_toEndOf="@id/order_title_text"
                 android:layout_toRightOf="@id/order_title_text"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                >
 
                 <TextView
                     android:id="@+id/order_currency_text"
@@ -146,7 +152,11 @@
                 android:layout_below="@id/order_divider_1"
                 android:layout_toLeftOf="@id/order_header_values_group"
                 android:layout_toStartOf="@id/order_header_values_group"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                >
 
                 <TextView
                     android:layout_width="match_parent"
@@ -198,7 +208,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/order_header_titles_group"
                 android:layout_marginTop="@dimen/order_margin"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                >
 
                 <TextView
                     android:layout_width="0dp"
@@ -247,7 +261,34 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/order_items_list_header"
                 android:isScrollContainer="false"
-                android:overScrollMode="never" />
+                android:overScrollMode="never"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
+
+            <LinearLayout
+                android:id="@+id/order_items_list_footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/order_items_list"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                >
+
+                <ImageView
+                    android:id="@+id/order_items_add_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/order_lines_add_image_size"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/order_margin"
+                    android:scaleType="fitCenter"
+                    android:tint="@color/color_green"
+                    app:srcCompat="@drawable/ic_add_circle"
+                    />
+            </LinearLayout>
             <!-- end Table -->
 
 
@@ -255,17 +296,22 @@
                 android:id="@+id/order_comment_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/order_items_list"
+                android:layout_below="@id/order_items_list_footer"
                 android:layout_marginTop="@dimen/order_margin"
                 android:fontFamily="@string/roboto_medium"
                 android:text="@string/order_comment_title"
                 android:textColor="@color/color_gray"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
 
             <ViewSwitcher
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/order_comment_title">
+                android:layout_below="@id/order_comment_title"
+                >
 
                 <EditText
                     android:id="@+id/order_comment_edit"
