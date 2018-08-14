@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.sokolua.manager.utils.App;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
     @BindView(R.id.groups_grid)         RecyclerView mGrid;
@@ -109,5 +111,10 @@ public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
         mCartItemsCount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),(count+0.f)));
     }
 
+
+    @OnClick(R.id.cart_image)
+    void onCartClick(View v){
+        mPresenter.returnToCart();
+    }
 
 }

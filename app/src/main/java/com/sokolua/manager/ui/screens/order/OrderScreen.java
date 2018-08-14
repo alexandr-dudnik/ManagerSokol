@@ -289,7 +289,9 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         public void addNewItemToOrder() {
-            Flow.get(getView()).set(new GoodsScreen(currentOrder.getId()));
+            if (getRootView() != null) {
+                Flow.get((RootActivity)getRootView()).set(new GoodsScreen(currentOrder.getId()));
+            }
         }
     }
     //endregion ================== Presenter =========================

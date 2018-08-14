@@ -22,11 +22,13 @@ import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
 
 import java.util.Locale;
 
 import dagger.Provides;
+import flow.Flow;
 import io.reactivex.Observable;
 import mortar.MortarScope;
 
@@ -83,9 +85,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
     }
 
     public GoodsScreen() {
+        super();
     }
 
     public GoodsScreen(String orderId) {
+        super();
         this.mCustomerOrderId = orderId;
     }
 
@@ -314,6 +318,12 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     alert.show();
                 }
 
+            }
+        }
+
+        public void returnToCart() {
+            if (currentCart != null) {
+                Flow.get(getView()).set(new OrderScreen(currentCart));
             }
         }
     }
