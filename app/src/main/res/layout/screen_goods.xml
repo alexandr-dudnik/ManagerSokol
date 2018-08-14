@@ -5,31 +5,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    >
 
-    <ScrollView
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:isScrollContainer="true"
         android:background="@color/color_primary_dark"
         >
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
 
             <RelativeLayout
                 android:id="@+id/cart_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="top|fill_horizontal"
                 android:background="@color/main_background"
                 >
 
                 <ImageView
                     android:id="@+id/cart_image"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:padding="@dimen/good_list_margin_half"
                     android:scaleType="fitCenter"
                     android:tint="@color/color_gray"
@@ -116,26 +112,26 @@
                     tools:text="5" />
             </RelativeLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/groups_grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/cart_panel"
-                android:alpha="1.0"
-                android:paddingLeft="@dimen/good_list_margin_half"
-                android:paddingRight="@dimen/good_list_margin_half"
-                android:stretchMode="columnWidth" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/groups_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/cart_panel"
+            android:alpha="1.0"
+            android:layout_gravity="fill"
+            android:paddingLeft="@dimen/good_list_margin_half"
+            android:paddingRight="@dimen/good_list_margin_half"
+            android:stretchMode="columnWidth" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/item_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/cart_panel"
-                android:alpha="0.0"
-                android:paddingLeft="@dimen/good_list_margin_half"
-                android:paddingRight="@dimen/good_list_margin_half"
-                android:visibility="gone" />
-        </RelativeLayout>
-    </ScrollView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/item_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/cart_panel"
+            android:alpha="0.0"
+            android:paddingLeft="@dimen/good_list_margin_half"
+            android:paddingRight="@dimen/good_list_margin_half"
+            android:visibility="gone" />
+    </RelativeLayout>
 
 </com.sokolua.manager.ui.screens.goods.GoodsView>
