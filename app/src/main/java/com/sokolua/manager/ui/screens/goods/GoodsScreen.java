@@ -1,14 +1,18 @@
 package com.sokolua.manager.ui.screens.goods;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -20,12 +24,15 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 
+import java.util.Locale;
+
 import dagger.Provides;
 import io.reactivex.Observable;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_goods)
 public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
+    private String mCustomerOrderId = null;
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -53,6 +60,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             return new Presenter();
         }
 
+        @Provides
+        @DaggerScope(GoodsScreen.class)
+        String provideCustomerCart() {
+            return mCustomerOrderId;
+        }
     }
 
 
@@ -66,12 +78,29 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         void inject(GroupViewHolder viewHolder);
 
         void inject(ItemViewHolder viewHolder);
+
+//        OrderRealm  getCustomerCart();
     }
+
+    public GoodsScreen() {
+    }
+
+    public GoodsScreen(String orderId) {
+        this.mCustomerOrderId = orderId;
+    }
+
+    @Override
+    public String getScopeName() {
+        return super.getScopeName()+(mCustomerOrderId==null||mCustomerOrderId.isEmpty()?"":("_"+mCustomerOrderId));
+    }
+
     //endregion ================== DI =========================
 
 
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<GoodsView, GoodsModel> {
+
+        OrderRealm currentCart;
 
         GoodsGroupRealm currentGroup = null;
 
@@ -92,6 +121,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
+
+            if (mCustomerOrderId!=null && !mCustomerOrderId.isEmpty()) {
+                currentCart = mModel.getOrderById(mCustomerOrderId);
+            }
 
 
             groupViewHolder = (parent, pViewType) -> {
@@ -117,10 +150,69 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             getView().setItemsAdapter(itemsAdapter);
 
-            setOrderListFilter("");
+            setGoodsListFilter("");
+
+
+
+            if (currentCart != null){
+                getView().setCartMode();
+                updateFields();
+
+                currentCart.addChangeListener((realmModel, changeSet) -> {
+                    if (changeSet == null) {
+                        return;
+                    }
+                    if (changeSet.isDeleted()) {
+                        currentCart = null;
+                        getView().setCatalogMode();
+                    }
+                    if (changeSet.isFieldChanged("status")) {
+                        if (currentCart.getStatus()!=ConstantManager.ORDER_STATUS_CART){
+                            currentCart = null;
+                            getView().setCatalogMode();
+                        }
+                    }
+                    if (changeSet.isFieldChanged("customer")) {
+                        getView().setCustomer(currentCart.getCustomer().getName());
+                    }
+                    if (changeSet.isFieldChanged("currency")) {
+                        getView().setCartCurrency(currentCart.getCurrency());
+                    }
+                });
+                currentCart.getLines().addChangeListener(orderLineRealms -> {
+                        getView().setCartAmount(currentCart.getTotal());
+                        getView().setCartItemsCount(currentCart.getLines().size());
+                    }
+
+                );
+
+            }else{
+                getView().setCatalogMode();
+            }
+
         }
 
-        public void setOrderListFilter(String filter){
+        @Override
+        public void dropView(GoodsView view) {
+            if (currentCart != null){
+                currentCart.getLines().removeAllChangeListeners();
+                currentCart.removeAllChangeListeners();
+                currentCart = null;
+            }
+
+            super.dropView(view);
+        }
+
+        public void updateFields() {
+
+            getView().setCustomer(currentCart.getCustomer().getName());
+            getView().setCartCurrency(currentCart.getCurrency());
+            getView().setCartAmount(currentCart.getTotal());
+            getView().setCartItemsCount(currentCart.getLines().size());
+
+        }
+
+        public void setGoodsListFilter(String filter){
             if ((currentGroup == null || currentGroup.getParent() == null) && (filter == null || filter.isEmpty())){
                 groupsAdapter.refreshList(mModel.getGroupList(currentGroup));
                 getView().showGroups();
@@ -134,17 +226,17 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
-                    .setBackArrow(false)
+                    .setBackArrow(currentCart!=null)
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
-                            setOrderListFilter(query);
+                            setGoodsListFilter(query);
                             return true;
                         }
 
                         @Override
                         public boolean onQueryTextChange(String newText) {
-                            setOrderListFilter(newText);
+                            setGoodsListFilter(newText);
                             return true;
                         }
                     }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
@@ -160,7 +252,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 currentGroup = selectedGroup;
                 ((RootActivity)getRootView()).setBackArrow(true);
                 ((RootActivity)getRootView()).setActionBarTitle(currentGroup.getName());
-                setOrderListFilter("");
+                setGoodsListFilter("");
             }
 
         }
@@ -173,15 +265,56 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     currentGroup = currentGroup.getParent();
                 }
                 if (currentGroup == null) {
-                    ((RootActivity) getRootView()).setBackArrow(false);
+                    if (currentCart == null) {
+                        ((RootActivity) getRootView()).setBackArrow(false);
+                    }
                     ((RootActivity) getRootView()).setActionBarTitle(App.getStringRes(R.string.menu_goods));
                 }
                 else{
                     ((RootActivity)getRootView()).setActionBarTitle(currentGroup.getName());
                 }
-                setOrderListFilter("");
+                setGoodsListFilter("");
             }
             return true;
+        }
+
+        public void itemSelected(ItemRealm selectedItem) {
+            if (currentCart == null){
+                //TODO: make screen with item card
+            }else{
+                if (getRootView() != null) {
+                    LayoutInflater layoutInflater = ((Activity)getRootView()).getLayoutInflater();
+                    View view = layoutInflater.inflate(R.layout.add_item_to_cart, null);
+                    EditText inputPrice = view.findViewById(R.id.item_price);
+                    inputPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),selectedItem.getBasePrice()));
+                    EditText inputQty  = view.findViewById(R.id.item_quantity);
+                    inputQty.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),1f));
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
+                            .setTitle(selectedItem.getName())
+                            .setView(view);
+
+                    alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
+                        float newPrice = Float.parseFloat(inputPrice.getText().toString());
+                        float newQty = Float.parseFloat(inputQty.getText().toString());
+                        //check price
+                        if (newPrice < selectedItem.getLowPrice()) {
+                            if (getRootView() != null) {
+                                getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), selectedItem.getLowPrice()) + ")");
+                            }
+                        } else{
+                            if (newQty > 0){
+                                mModel.addItemToCart(currentCart, selectedItem, newQty, newPrice);
+
+                            }
+                        }
+                    });
+                    alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
+                    });
+                    alert.show();
+                }
+
+            }
         }
     }
 

@@ -167,6 +167,22 @@ public class DataManager {
         return mRealmManager.getCartForCustomer(customer) ;
     }
 
+    public void updateOrderComment(OrderRealm order, String comment) {
+        mRealmManager.updateOrderComment(order, comment);
+    }
+
+    public void updateOrderPayment(OrderRealm order, int payment) {
+        mRealmManager.updateOrderPayment(order, payment);
+    }
+
+    public void addItemToCart(OrderRealm customerCart, ItemRealm item, float newQty, float newPrice) {
+        mRealmManager.addItemToCart(customerCart, item, newQty, newPrice);
+    }
+
+    public OrderRealm getOrderById(String orderId) {
+        return mRealmManager.getOrderById(orderId);
+    }
+
     //endregion ================== Orders =========================
 
 
@@ -178,7 +194,6 @@ public class DataManager {
     public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
         return mRealmManager.getItemList(parent, filter);
     }
-
 
 
     //endregion ================== Goods =========================

@@ -90,5 +90,8 @@
     <string name="error_empty_order">Отправка не удалась! Заказ клиента пуст!</string>
     <string name="error_wrong_delivery">Отправка не удалась! Дата заказа позже даты доставки!</string>
     <string name="action_clear_order">Очистить</string>
+    <string name="order_items_counter_title">Товаров</string>
+    <string name="button_negative_text">Cancel</string>
+    <string name="button_positive_text">Ok</string>
 
 </resources>

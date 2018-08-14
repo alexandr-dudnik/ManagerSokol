@@ -22,12 +22,14 @@ import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.ui.screens.goods.GoodsScreen;
 import com.sokolua.manager.utils.App;
 
 import java.util.Date;
 import java.util.Locale;
 
 import dagger.Provides;
+import flow.Flow;
 import io.reactivex.Observable;
 import mortar.MortarScope;
 
@@ -50,6 +52,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         this.currentOrder = currentOrder;
     }
 
+    @Override
+    public String getScopeName() {
+        return super.getScopeName()+"_"+this.currentOrder.getId();
+    }
 
     //region ===================== DI =========================
 
@@ -215,6 +221,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
                 alert.setTitle(App.getStringRes(R.string.order_items_header_price));
+                alert.setMessage(line.getItem().getName());
 
                 final EditText input = new EditText(getView().getContext());
                 alert.setView(input);
@@ -223,7 +230,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 input.setRawInputType(Configuration.KEYBOARD_12KEY);
 
-                alert.setPositiveButton("OK", (dialog, whichButton) -> {
+                alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                     float newValue = Float.parseFloat(input.getText().toString());
                     //check price
                     if (newValue < line.getItem().getLowPrice()) {
@@ -234,7 +241,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                         mModel.updateOrderItemPrice(currentOrder, line.getItem(), newValue);
                     }
                 });
-                alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
                 });
                 alert.show();
             }
@@ -252,7 +259,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 input.setInputType(InputType.TYPE_CLASS_NUMBER);
                 input.setRawInputType(Configuration.KEYBOARD_12KEY);
 
-                alert.setPositiveButton("OK", (dialog, whichButton) -> {
+                alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                     float newValue = Float.parseFloat(input.getText().toString());
                     if (newValue == 0f) {
                         mModel.removeOrderItem(currentOrder, line.getItem());
@@ -260,7 +267,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                         mModel.updateOrderItemQty(currentOrder, line.getItem(), newValue);
                     }
                 });
-                alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+                alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
                 });
                 alert.show();
             }
@@ -270,6 +277,19 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 mModel.removeOrderItem(currentOrder, currentItem.getItem());
             }
+        }
+
+        public void updatePayment(int payment) {
+            mModel.updateOrderPayment(currentOrder, payment);
+        }
+
+
+        public void updateComment(String comment) {
+            mModel.updateOrderComment(currentOrder, comment);
+        }
+
+        public void addNewItemToOrder() {
+            Flow.get(getView()).set(new GoodsScreen(currentOrder.getId()));
         }
     }
     //endregion ================== Presenter =========================

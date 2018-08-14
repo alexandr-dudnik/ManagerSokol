@@ -2,6 +2,7 @@ package com.sokolua.manager.mvp.models;
 
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 
 import java.util.List;
 
@@ -20,4 +21,11 @@ public class GoodsModel extends AbstractModel {
         return obs.toList().toObservable();
     }
 
+    public void addItemToCart(OrderRealm customerCart, ItemRealm item, float newQty, float newPrice) {
+        mDataManager.addItemToCart(customerCart, item, newQty, newPrice);
+    }
+
+    public OrderRealm getOrderById(String orderId) {
+        return mDataManager.getOrderById(orderId);
+    }
 }

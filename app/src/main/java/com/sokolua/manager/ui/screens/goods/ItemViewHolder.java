@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<ItemRealm> {
 
@@ -54,5 +55,9 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
 
     }
 
+    @OnClick(R.id.good_item_wrapper)
+    void onClick(View view){
+        mPresenter.itemSelected(currentItem);
+    }
 
 }

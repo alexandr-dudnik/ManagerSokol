@@ -18,7 +18,6 @@ import java.util.Date;
 import io.reactivex.Observable;
 import io.realm.Case;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -224,9 +223,8 @@ public class RealmManager {
     }
 
     public void clearOrderLines(OrderRealm order) {
-        RealmList<OrderLineRealm> list= order.getLines();
-        if (!list.isEmpty()){
-            getQueryRealmInstance().executeTransaction(db -> list.deleteAllFromRealm());
+        if (!order.getLines().isEmpty()){
+            getQueryRealmInstance().executeTransaction(db -> order.getLines().deleteAllFromRealm());
         }
     }
 
@@ -241,6 +239,38 @@ public class RealmManager {
             result = getCartForCustomer(customer);
         }
         return result;
+    }
+
+    public void updateOrderComment(OrderRealm order, String comment) {
+        OrderRealm temp = getQueryRealmInstance().copyFromRealm(order);
+        temp.setComments(comment);
+        getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+    }
+
+    public void updateOrderPayment(OrderRealm order, int payment) {
+        OrderRealm temp = getQueryRealmInstance().copyFromRealm(order);
+        temp.setPayment(payment);
+        getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(temp));
+    }
+
+    public void addItemToCart(OrderRealm order, ItemRealm item, float newQty, float newPrice) {
+        OrderRealm temp = getQueryRealmInstance().copyFromRealm(order);
+        OrderLineRealm line = order.getLines().where().equalTo("item.itemId", item.getItemId()).findFirst();
+        if (line == null){
+            OrderLineRealm tmpLine = new OrderLineRealm(order, item, newQty, newPrice);
+            temp.getLines().add(tmpLine);
+            getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(temp));
+        }else{
+            OrderLineRealm tmpLine = getQueryRealmInstance().copyFromRealm(line);
+            tmpLine.setQuantity(tmpLine.getQuantity()+newQty);
+            tmpLine.setPrice(newPrice);
+            getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(tmpLine));
+        }
+
+    }
+
+    public OrderRealm getOrderById(String orderId) {
+        return getQueryRealmInstance().where(OrderRealm.class).equalTo("id", orderId).findFirst();
     }
 }
 

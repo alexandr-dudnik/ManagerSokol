@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,6 +35,8 @@ import java.util.Map;
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.OnClick;
+import butterknife.OnFocusChange;
+import butterknife.OnItemSelected;
 
 public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindView(R.id.order_status_image)      ImageView mStatusImage;
@@ -48,6 +51,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindView(R.id.order_comment_text)      TextView mCommentText;
 
     @BindView(R.id.order_items_list)        RecyclerView mItems;
+    @BindView(R.id.order_items_list_footer) LinearLayout mFooter;
 
 
     @BindDrawable(R.drawable.ic_cart)       Drawable cartDrawable;
@@ -122,6 +126,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         mOrderTypeText.setVisibility(VISIBLE);
         mComment.setVisibility(GONE);
         mCommentText.setVisibility(VISIBLE);
+        mFooter.setVisibility(GONE);
         switch (status){
             case ConstantManager.ORDER_STATUS_CART:
                 mStatusImage.setImageDrawable(cartDrawable);
@@ -131,6 +136,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
                 mOrderTypeText.setVisibility(GONE);
                 mComment.setVisibility(VISIBLE);
                 mCommentText.setVisibility(GONE);
+                mFooter.setVisibility(VISIBLE);
                 if (itemTouchHelper != null) {
                     itemTouchHelper.attachToRecyclerView(mItems);
                 }
@@ -213,6 +219,25 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
             }, year, month, day);
             picker.show();
         }
+    }
+
+    @OnItemSelected(R.id.order_type_spin)
+    void paymentChange(View view){
+        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+            mPresenter.updatePayment(orderTypes.get(mOrderType.getSelectedItem().toString()));
+        }
+    }
+
+    @OnFocusChange(R.id.order_comment_edit)
+    void commentFocus(View view, boolean focus){
+        if (mStatus == ConstantManager.ORDER_STATUS_CART && !focus) {
+            mPresenter.updateComment(mComment.getText().toString());
+        }
+    }
+
+    @OnClick(R.id.order_items_add_image)
+    void addItemsClick(View view){
+        mPresenter.addNewItemToOrder();
     }
     //endregion ================== Events =========================
 }
