@@ -16,13 +16,14 @@ import com.sokolua.manager.mvp.models.CustomerListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.customer.CustomerScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.IntentStarter;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import dagger.Provides;
 import flow.Flow;
+import io.reactivex.Observable;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_list)
@@ -73,6 +74,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
     public class Presenter extends AbstractPresenter<CustomerListView, CustomerListModel> {
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory;
+        ReactiveRecyclerAdapter reactiveRecyclerAdapter;
 
         public Presenter() {
         }
@@ -100,14 +102,13 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                 );
             };
 
+            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory);
+            getView().setAdapter(reactiveRecyclerAdapter);
             setCustomerListFilter("");
         }
 
         public void setCustomerListFilter(String filter){
-
-            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerListHeadered(filter), viewAndHolderFactory);
-
-            getView().setAdapter(reactiveRecyclerAdapter);
+            reactiveRecyclerAdapter.refreshList(mModel.getCustomerListHeadered(filter));
         }
 
         @Override

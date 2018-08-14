@@ -10,19 +10,14 @@ import android.util.AttributeSet;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 
 public class OrderListView extends AbstractView<OrderListScreen.Presenter> {
     @BindView(R.id.order_list)
     RecyclerView mOrderList;
-
-    @Inject
-    OrderListScreen.Presenter mPresenter;
 
 
     public OrderListView(@NonNull Context context, @Nullable AttributeSet attrs) {

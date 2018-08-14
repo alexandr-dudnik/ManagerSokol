@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sokolua.manager.ui.screens.goods.GoodsView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:isScrollContainer="true"
+        android:background="@color/color_primary_dark"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <RelativeLayout
+                android:id="@+id/cart_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/main_background"
+                >
+
+                <ImageView
+                    android:id="@+id/cart_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/good_list_margin_half"
+                    android:scaleType="fitCenter"
+                    android:tint="@color/color_gray"
+                    app:srcCompat="@drawable/ic_cart"
+
+                    />
+
+                <TextView
+                    android:id="@+id/cart_customer_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/cart_image"
+                    android:layout_toRightOf="@id/cart_image"
+                    android:fontFamily="@string/roboto_medium"
+                    android:textColor="@color/color_black"
+                    android:textSize="12sp"
+                    tools:text="Customer name" />
+
+                <TextView
+                    android:id="@+id/cart_currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/cart_customer_text"
+                    android:textColor="@color/color_black"
+                    android:textSize="12sp"
+                    tools:text="UAH" />
+
+                <TextView
+                    android:id="@+id/cart_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cart_customer_text"
+                    android:layout_toLeftOf="@id/cart_currency"
+                    android:layout_toStartOf="@id/cart_currency"
+                    android:fontFamily="@string/roboto_black"
+                    android:paddingEnd="@dimen/good_list_margin_half"
+                    android:paddingStart="@dimen/good_list_margin_half"
+                    android:textColor="@color/color_green"
+                    android:textSize="12sp"
+                    tools:text="1500.00" />
+
+                <TextView
+                    android:id="@+id/cart_amount_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cart_customer_text"
+                    android:layout_toLeftOf="@id/cart_amount"
+                    android:layout_toStartOf="@id/cart_amount"
+                    android:paddingEnd="@dimen/good_list_margin_half"
+                    android:paddingStart="@dimen/good_list_margin_half"
+                    android:text="@string/order_amount_title"
+                    android:fontFamily="@string/roboto_regular"
+                    android:textColor="@color/color_gray"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/cart_items_counter_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cart_customer_text"
+                    android:layout_toEndOf="@id/cart_image"
+                    android:layout_toRightOf="@id/cart_image"
+                    android:text="@string/order_items_counter_title"
+                    android:fontFamily="@string/roboto_regular"
+                    android:textColor="@color/color_gray"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/cart_items_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cart_customer_text"
+                    android:layout_toEndOf="@id/cart_items_counter_text"
+                    android:layout_toLeftOf="@id/cart_amount_text"
+                    android:layout_toRightOf="@id/cart_items_counter_text"
+                    android:layout_toStartOf="@id/cart_amount_text"
+                    android:paddingEnd="@dimen/good_list_margin_half"
+                    android:paddingStart="@dimen/good_list_margin_half"
+                    android:textColor="@color/color_green"
+                    android:fontFamily="@string/roboto_black"
+                    android:textSize="12sp"
+                    tools:text="5" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/groups_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/cart_panel"
+                android:alpha="1.0"
+                android:paddingLeft="@dimen/good_list_margin_half"
+                android:paddingRight="@dimen/good_list_margin_half"
+                android:stretchMode="columnWidth" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/item_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/cart_panel"
+                android:alpha="0.0"
+                android:paddingLeft="@dimen/good_list_margin_half"
+                android:paddingRight="@dimen/good_list_margin_half"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </ScrollView>
+
+</com.sokolua.manager.ui.screens.goods.GoodsView>

@@ -28,10 +28,16 @@ public class DebugModule {
 
         RealmList<CustomerRealm> managedCustomers= new RealmList<>();
         RealmList<OrderRealm> managedOrders= new RealmList<>();
+        RealmList<OrderLineRealm> managedOrderLines= new RealmList<>();
         RealmList<ItemRealm> managedItems= new RealmList<>();
         RealmList<GoodsCategoryRealm> managedCats= new RealmList<>();
         RealmList<BrandsRealm> managedBrands= new RealmList<>();
         RealmList<GoodsGroupRealm> managedGroups= new RealmList<>();
+        RealmList<DebtRealm> managedDebtRealms= new RealmList<>();
+        RealmList<VisitRealm> managedVisitRealms= new RealmList<>();
+        RealmList<TaskRealm> managedTaskRealms= new RealmList<>();
+        RealmList<NoteRealm> managedNoteRealms= new RealmList<>();
+        RealmList<OrderPlanRealm> managedPlanRealms= new RealmList<>();
 
         GoodsCategoryRealm cat1 = new GoodsCategoryRealm("cat001","01. кабельно-проводниковая продукция","");
         GoodsCategoryRealm cat2 = new GoodsCategoryRealm("cat002","02.1. кабельные каналы","");
@@ -65,15 +71,34 @@ public class DebugModule {
         managedBrands.add(brand4);
         managedBrands.add(brand5);
 
-        GoodsGroupRealm grp1 = new GoodsGroupRealm("grp0001", "ШВВП", "");
-        GoodsGroupRealm grp2 = new GoodsGroupRealm("grp0002", "ПВС", "");
-        GoodsGroupRealm grp3 = new GoodsGroupRealm("grp0003", "Кабельные каналы", "");
-        GoodsGroupRealm grp4 = new GoodsGroupRealm("grp0004", "Металлорукав РЗЦ", "");
-        GoodsGroupRealm grp5 = new GoodsGroupRealm("grp0005", "Металлорукав РЗЦ-Х", "");
-        GoodsGroupRealm grp6 = new GoodsGroupRealm("grp0006", "Розетки", "");
-        GoodsGroupRealm grp7 = new GoodsGroupRealm("grp0007", "Выключатели", "");
-        GoodsGroupRealm grp8 = new GoodsGroupRealm("grp0008", "LED Лампы", "");
-        GoodsGroupRealm grp9 = new GoodsGroupRealm("grp0009", "LED Панели", "");
+        GoodsGroupRealm mgrp1 = new GoodsGroupRealm("mgrp0001", "Кабель и провод", null, "");
+        GoodsGroupRealm mgrp2 = new GoodsGroupRealm("mgrp0002", "Кабельные трассы", null, "");
+        GoodsGroupRealm mgrp3 = new GoodsGroupRealm("mgrp0003", "Фурнитура", null, "");
+        GoodsGroupRealm mgrp4 = new GoodsGroupRealm("mgrp0004", "Лампы", null, "");
+        GoodsGroupRealm mgrp5 = new GoodsGroupRealm("mgrp0005", "Все для монтажа", null, "");
+        GoodsGroupRealm mgrp6 = new GoodsGroupRealm("mgrp0006", "Низковольтное", null, "");
+        GoodsGroupRealm mgrp7 = new GoodsGroupRealm("mgrp0007", "Щиты и коробки", null, "");
+        GoodsGroupRealm mgrp8 = new GoodsGroupRealm("mgrp0008", "Силовые разъемы", null, "");
+        GoodsGroupRealm mgrp9 = new GoodsGroupRealm("mgrp0009", "Светильники", null, "");
+        managedGroups.add(mgrp1);
+        managedGroups.add(mgrp2);
+        managedGroups.add(mgrp3);
+        managedGroups.add(mgrp4);
+        managedGroups.add(mgrp5);
+        managedGroups.add(mgrp6);
+        managedGroups.add(mgrp7);
+        managedGroups.add(mgrp8);
+        managedGroups.add(mgrp9);
+
+        GoodsGroupRealm grp1 = new GoodsGroupRealm("grp0001", "ШВВП", mgrp1, "");
+        GoodsGroupRealm grp2 = new GoodsGroupRealm("grp0002", "ПВС", mgrp1, "");
+        GoodsGroupRealm grp3 = new GoodsGroupRealm("grp0003", "Кабельные каналы", mgrp2, "");
+        GoodsGroupRealm grp4 = new GoodsGroupRealm("grp0004", "Металлорукав РЗЦ", mgrp2, "");
+        GoodsGroupRealm grp5 = new GoodsGroupRealm("grp0005", "Металлорукав РЗЦ-Х", mgrp2, "");
+        GoodsGroupRealm grp6 = new GoodsGroupRealm("grp0006", "Розетки", mgrp3, "");
+        GoodsGroupRealm grp7 = new GoodsGroupRealm("grp0007", "Выключатели", mgrp3, "");
+        GoodsGroupRealm grp8 = new GoodsGroupRealm("grp0008", "LED Лампы", mgrp4, "");
+        GoodsGroupRealm grp9 = new GoodsGroupRealm("grp0009", "LED Панели", mgrp9, "");
         managedGroups.add(grp1);
         managedGroups.add(grp2);
         managedGroups.add(grp3);
@@ -111,103 +136,103 @@ public class DebugModule {
 
 
         CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net");
-        temp.getDebt().add(new DebtRealm(temp,"USD",1250,1250,true));
-        temp.getDebt().add(new DebtRealm(temp,"UAH",2700,100,true));
-        temp.getDebt().add(new DebtRealm(temp,"UAH",3500,150,false));
-        temp.getNotes().add(new NoteRealm(temp, "note0101", dateFormat.parse("2018-05-01"),"Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
-        temp.getNotes().add(new NoteRealm(temp, "note0102",dateFormat.parse("2018-07-05"),"Договорились о поставке крупной партии металлорукава"));
-        temp.getTasks().add(new TaskRealm(temp, "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH,false,""));
-        temp.getTasks().add(new TaskRealm(temp, "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH,false,""));
-        temp.getTasks().add(new TaskRealm(temp, "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL,false,""));
-        temp.getTasks().add(new TaskRealm(temp, "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL,true,"Отправил открытку и СМС-ку"));
-        temp.getPlan().add(new OrderPlanRealm(temp, cat1, 1500f));
-        temp.getPlan().add(new OrderPlanRealm(temp, cat2, 5000f));
-        temp.getPlan().add(new OrderPlanRealm(temp, cat3, 3500f));
-        temp.getVisits().add(new VisitRealm(temp, "visit00001", dateFormat.parse("2018-08-01"), true));
-        temp.getVisits().add(new VisitRealm(temp, "visit00002", dateFormat.parse("2018-08-05"), true));
-        temp.getVisits().add(new VisitRealm(temp, "visit00003", dateFormat.parse("2018-08-09"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00004", dateFormat.parse("2018-08-12"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00005", dateFormat.parse("2018-08-15"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00006", dateFormat.parse("2018-08-16"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00007", dateFormat.parse("2018-08-21"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00008", dateFormat.parse("2018-08-25"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00009", dateFormat.parse("2018-08-31"), false));
+        managedDebtRealms.add(new DebtRealm(temp,"USD",1250,1250,true));
+        managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
+        managedDebtRealms.add(new DebtRealm(temp,"UAH",3500,150,false));
+        managedNoteRealms.add(new NoteRealm(temp, "note0101", dateFormat.parse("2018-05-01"),"Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
+        managedNoteRealms.add(new NoteRealm(temp, "note0102",dateFormat.parse("2018-07-05"),"Договорились о поставке крупной партии металлорукава"));
+        managedTaskRealms.add(new TaskRealm(temp, "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH,false,""));
+        managedTaskRealms.add(new TaskRealm(temp, "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH,false,""));
+        managedTaskRealms.add(new TaskRealm(temp, "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL,false,""));
+        managedTaskRealms.add(new TaskRealm(temp, "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL,true,"Отправил открытку и СМС-ку"));
+        managedPlanRealms.add(new OrderPlanRealm(temp, cat1, 1500f));
+        managedPlanRealms.add(new OrderPlanRealm(temp, cat2, 5000f));
+        managedPlanRealms.add(new OrderPlanRealm(temp, cat3, 3500f));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00001", dateFormat.parse("2018-08-01"), true));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00002", dateFormat.parse("2018-08-05"), true));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00003", dateFormat.parse("2018-08-09"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00004", dateFormat.parse("2018-08-12"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00005", dateFormat.parse("2018-08-15"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00006", dateFormat.parse("2018-08-16"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00007", dateFormat.parse("2018-08-21"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00008", dateFormat.parse("2018-08-25"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00009", dateFormat.parse("2018-08-31"), false));
         managedCustomers.add(temp);
 
-        OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1520f, "Заказ взял, клиет должен уточнить по количеству");
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item1, 10f, 12.5f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item21, 1f, 500f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item3, 5f, 30f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item5, 25f, 29.8f));
+        OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "Заказ взял, клиет должен уточнить по количеству");
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item1, 10f, 12.5f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item21, 1f, 500f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item3, 5f, 30f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item5, 25f, 29.8f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, 10020.50f, "Отгрузка на среду, платит по факту");
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item11, 10f, 81.95f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item16, 30f, 90f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item22, 5f, 1300.2f));
+        tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, "UAH", "Отгрузка на среду, платит по факту");
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 10f, 81.95f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 30f, 90f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 5f, 1300.2f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, 6013.75f, "Отгрузка на среду, оплата на месте по факту");
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item6, 1000f, 4.5f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item17, 35f, 43.25f));
+        tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, "UAH", "Отгрузка на среду, оплата на месте по факту");
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item6, 1000f, 4.5f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item17, 35f, 43.25f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 57770.00f, "Нужно привезти в пятницу, берет под клиента.");
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item10, 1500f, 9.5f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item2, 2000f, 20f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
+        tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "Нужно привезти в пятницу, берет под клиента.");
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 1500f, 9.5f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 2000f, 20f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
         managedOrders.add(tmpOrder);
 
         //--------------------------
         temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm");
-        temp.getDebt().add(new DebtRealm(temp,"UAH",500,18,false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00010", dateFormat.parse("2018-08-05"), true));
-        temp.getVisits().add(new VisitRealm(temp, "visit00011", dateFormat.parse("2018-08-09"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00012", dateFormat.parse("2018-08-12"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00013", dateFormat.parse("2018-08-15"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00014", dateFormat.parse("2018-08-20"), false));
+        managedDebtRealms.add(new DebtRealm(temp,"UAH",500,18,false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00010", dateFormat.parse("2018-08-05"), true));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00011", dateFormat.parse("2018-08-09"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00012", dateFormat.parse("2018-08-12"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00013", dateFormat.parse("2018-08-15"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00014", dateFormat.parse("2018-08-20"), false));
         managedCustomers.add(temp);
 
-        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, 1652.15f, "");
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item16, 3f, 90f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f));
+        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "");
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 3f, 90f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f));
         managedOrders.add(tmpOrder);
 
         //--------------------------
         temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
-        temp.getNotes().add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
-        temp.getNotes().add(new NoteRealm(temp, "note0302",dateFormat.parse("2018-07-01"),"Обсудили условия поставки провода на объекты"));
+        managedNoteRealms.add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
+        managedNoteRealms.add(new NoteRealm(temp, "note0302",dateFormat.parse("2018-07-01"),"Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","");
-        temp.getDebt().add(new DebtRealm(temp,"UAH",2700,100,true));
-        temp.getDebt().add(new DebtRealm(temp,"USD",150,150,false));
+        managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
+        managedDebtRealms.add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
         temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com");
-        temp.getVisits().add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-01"), true));
-        temp.getVisits().add(new VisitRealm(temp, "visit00016", dateFormat.parse("2018-08-10"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-15"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00018", dateFormat.parse("2018-08-25"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00019", dateFormat.parse("2018-08-30"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-01"), true));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00016", dateFormat.parse("2018-08-10"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-15"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00018", dateFormat.parse("2018-08-25"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00019", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","");
-        temp.getDebt().add(new DebtRealm(temp,"USD",130,130,true));
-        temp.getDebt().add(new DebtRealm(temp,"UAH",250,9.50f,false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00020", dateFormat.parse("2018-08-01"), true));
-        temp.getVisits().add(new VisitRealm(temp, "visit00021", dateFormat.parse("2018-08-05"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00022", dateFormat.parse("2018-08-15"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00023", dateFormat.parse("2018-08-25"), false));
-        temp.getVisits().add(new VisitRealm(temp, "visit00024", dateFormat.parse("2018-08-30"), false));
+        managedDebtRealms.add(new DebtRealm(temp,"USD",130,130,true));
+        managedDebtRealms.add(new DebtRealm(temp,"UAH",250,9.50f,false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00020", dateFormat.parse("2018-08-01"), true));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00021", dateFormat.parse("2018-08-05"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00022", dateFormat.parse("2018-08-15"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00023", dateFormat.parse("2018-08-25"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00024", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
 
-        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, 8945.00f, "плановый заказ");
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item2, 200f, 20f));
-        tmpOrder.getLines().add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
+        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "плановый заказ");
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 200f, 20f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
         managedOrders.add(tmpOrder);
 
 
@@ -217,6 +242,14 @@ public class DebugModule {
         realm.executeTransaction(db -> db.insertOrUpdate(managedItems));
         realm.executeTransaction(db -> db.insertOrUpdate(managedCustomers));
         realm.executeTransaction(db -> db.insertOrUpdate(managedOrders));
+        realm.executeTransaction(db -> db.insertOrUpdate(managedDebtRealms));
+        realm.executeTransaction(db -> db.insertOrUpdate(managedVisitRealms));
+        realm.executeTransaction(db -> db.insertOrUpdate(managedTaskRealms));
+        realm.executeTransaction(db -> db.insertOrUpdate(managedNoteRealms));
+        realm.executeTransaction(db -> db.insertOrUpdate(managedPlanRealms));
+        realm.executeTransaction(db -> db.insertOrUpdate(managedOrderLines));
         realm.close();
+
+        
     }
 }

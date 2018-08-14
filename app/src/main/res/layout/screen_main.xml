@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sokolua.manager.ui.screens.main.MainView
                 xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 style="@style/MainScreen"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -18,7 +19,8 @@
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:targetApi="lollipop">
 
             <ImageView
                 android:id="@+id/goods_img"
@@ -43,7 +45,8 @@
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:targetApi="lollipop">
 
             <ImageView
                 android:id="@+id/customers_img"
@@ -69,7 +72,8 @@
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:targetApi="lollipop">
 
             <ImageView
                 android:id="@+id/route_img"
@@ -94,7 +98,8 @@
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:targetApi="lollipop">
 
             <ImageView
                 android:id="@+id/orders_img"

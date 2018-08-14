@@ -11,10 +11,8 @@ import android.util.AttributeSet;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 
@@ -24,8 +22,6 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
     @BindView(R.id.customer_notes_list)
     RecyclerView mCustomerNotesList;
 
-    @Inject
-    CustomerInfoScreen.Presenter mPresenter;
 
     public CustomerInfoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

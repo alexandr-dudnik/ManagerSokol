@@ -7,14 +7,9 @@ import android.util.AttributeSet;
 
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
-
-import javax.inject.Inject;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 
 public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
-    @Inject
-    RoutesScreen.Presenter mPresenter;
-
 
     public RoutesView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

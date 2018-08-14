@@ -2,7 +2,10 @@ package com.sokolua.manager.data.managers;
 
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
+import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
+import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
+import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
@@ -12,6 +15,8 @@ import com.sokolua.manager.di.components.DataManagerComponent;
 import com.sokolua.manager.di.modules.LocalModule;
 import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
+
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -128,7 +133,69 @@ public class DataManager {
     public Observable<OrderRealm> getOrders() {
         return mRealmManager.getAllOrders();
     }
+
+
+    public void setDeliveryDate(OrderRealm currentOrder, Date mDate) {
+        mRealmManager.setDeliveryDate(currentOrder, mDate);
+    }
+
+    public void updateOrderItemPrice(OrderRealm order, ItemRealm item, Float value) {
+        mRealmManager.updateOrderItemPrice(order, item, value);
+    }
+
+    public void updateOrderItemQty(OrderRealm order, ItemRealm item, Float value) {
+        mRealmManager.updateOrderItemQty(order, item, value);
+    }
+
+    public void removeOrderItem(OrderRealm order, ItemRealm item) {
+        mRealmManager.removeOrderItem(order, item);
+    }
+
+    public Observable<OrderLineRealm> getOrderLines(OrderRealm order) {
+        return mRealmManager.getOrderLinesList(order);
+    }
+
+    public void updateOrderStatus(OrderRealm order, int orderStatus) {
+        mRealmManager.updateOrderStatus(order, orderStatus);
+    }
+
+    public void clearOrderLines(OrderRealm order) {
+        mRealmManager.clearOrderLines(order);
+    }
+
+    public OrderRealm getCartForCustomer(CustomerRealm customer) {
+        return mRealmManager.getCartForCustomer(customer) ;
+    }
+
+    public void updateOrderComment(OrderRealm order, String comment) {
+        mRealmManager.updateOrderComment(order, comment);
+    }
+
+    public void updateOrderPayment(OrderRealm order, int payment) {
+        mRealmManager.updateOrderPayment(order, payment);
+    }
+
+    public void addItemToCart(OrderRealm customerCart, ItemRealm item, float newQty, float newPrice) {
+        mRealmManager.addItemToCart(customerCart, item, newQty, newPrice);
+    }
+
+    public OrderRealm getOrderById(String orderId) {
+        return mRealmManager.getOrderById(orderId);
+    }
+
     //endregion ================== Orders =========================
 
+
+    //region ===================== Goods =========================
+    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent) {
+        return mRealmManager.getGroupList(parent);
+    }
+
+    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
+        return mRealmManager.getItemList(parent, filter);
+    }
+
+
+    //endregion ================== Goods =========================
 }
 

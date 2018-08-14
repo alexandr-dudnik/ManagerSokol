@@ -5,14 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
-import com.sokolua.manager.ui.activities.RootActivity;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import flow.Flow;
@@ -23,9 +19,6 @@ public class CustomerView extends AbstractView<CustomerScreen.Presenter> {
 
     private CustomerPagerAdapter mAdapter;
 
-
-    @Inject
-    CustomerScreen.Presenter mPresenter;
 
     public CustomerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

@@ -13,10 +13,12 @@ import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.OrderListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import dagger.Provides;
+import flow.Flow;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order_list)
@@ -106,13 +108,13 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 //                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
 //                        @Override
 //                        public boolean onQueryTextSubmit(String query) {
-//                            setOrderListFilter(query);
+//                            setGoodsListFilter(query);
 //                            return true;
 //                        }
 //
 //                        @Override
 //                        public boolean onQueryTextChange(String newText) {
-//                            setOrderListFilter(newText);
+//                            setGoodsListFilter(newText);
 //                            return true;
 //                        }
 //                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
@@ -122,7 +124,9 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
 
-
+        public void openOrder(OrderRealm order) {
+            Flow.get(getView()).set(new OrderScreen(order));
+        }
     }
 
     //endregion ================== Presenter =========================

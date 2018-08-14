@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.di.DaggerService;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 
 import javax.inject.Inject;
 

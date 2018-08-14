@@ -9,8 +9,8 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.ReactiveRecyclerAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderRealm> {
 
@@ -30,6 +31,7 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
     @BindView(R.id.order_amount_text)     TextView mOrderAmountText;
     @BindView(R.id.order_comment_text)    TextView mOrderCommentText;
     @BindView(R.id.order_delivery_text)   TextView mDeliveryDateText;
+    @BindView(R.id.order_currency_text)   TextView mCurrencyText;
 
 
     @BindDrawable(R.drawable.ic_cart)    Drawable cartDrawable;
@@ -88,12 +90,16 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
                 break;
         }
 
-        mOrderAmountText.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format)+" "+App.getStringRes(R.string.national_currency),currentItem.getTotal()));
+        mOrderAmountText.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format),currentItem.getTotal()));
+        mCurrencyText.setText(currentItem.getCurrency());
         mOrderCommentText.setText(currentItem.getComments());
 
 
     }
 
-
+    @OnClick(R.id.order_placeholder)
+    void onClick(View view){
+        mPresenter.openOrder(currentItem);
+    }
 
 }

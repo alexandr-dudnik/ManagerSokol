@@ -1,9 +1,12 @@
 package com.sokolua.manager.mvp.views;
 
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
-
+import android.view.MenuItem;
 
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 
@@ -16,4 +19,12 @@ public interface IActionBarView {
     void setMenuItem(List<MenuItemHolder> items);
     void setTabLayout(ViewPager tabs);
     void removeTabLayout();
+
+    default void tintMenuIcon(Context context, MenuItem item, @ColorRes int color) {
+        Drawable normalDrawable = item.getIcon();
+        Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
+        DrawableCompat.setTint(wrapDrawable, context.getResources().getColor(color));
+
+        item.setIcon(wrapDrawable);
+    }
 }

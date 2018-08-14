@@ -2,11 +2,14 @@ package com.sokolua.manager.data.storage.realm;
 
 import java.io.Serializable;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 public class OrderLineRealm extends RealmObject implements Serializable {
+    @PrimaryKey
+    @Required
+    private String lineId;
     private OrderRealm order;
     private ItemRealm item;
     private Float quantity=0f;
@@ -20,9 +23,10 @@ public class OrderLineRealm extends RealmObject implements Serializable {
         this.item = item;
         this.quantity = quantity;
         this.price = price;
+        this.lineId = order.getId()+"#"+item.getItemId();
     }
 
-//region ===================== Getters =========================
+    //region ===================== Getters =========================
 
     public ItemRealm getItem() {
         return item;
@@ -38,6 +42,18 @@ public class OrderLineRealm extends RealmObject implements Serializable {
 
     public OrderRealm getOrder() {
         return order;
+    }
+
+    //endregion ================== Getters =========================
+
+    //region ===================== Setters =========================
+
+    public void setQuantity(Float quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setPrice(Float price) {
+        this.price = price;
     }
 
     //endregion ================== Getters =========================

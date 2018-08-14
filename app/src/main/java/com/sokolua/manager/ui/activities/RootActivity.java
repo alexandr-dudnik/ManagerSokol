@@ -41,6 +41,7 @@ import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
 import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
+import com.sokolua.manager.ui.screens.goods.GoodsScreen;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.ui.screens.order_list.OrderListScreen;
 import com.sokolua.manager.ui.screens.routes.RoutesScreen;
@@ -253,14 +254,16 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     private void addMenuItem(Menu menu, MenuItemHolder menuItem) {
         MenuItem item;
         if (menuItem.getItemType() == ConstantManager.MENU_ITEM_TYPE_SEARCH){
-            getMenuInflater().inflate(R.menu.search_menu, menu);
-            item = menu.findItem(R.id.search);
-            item.setTitle(menuItem.getItemTitle());
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView) item.getActionView();
-            searchView.setQueryHint(App.getStringRes(R.string.search_hint));
-            searchView.setOnQueryTextListener(menuItem.getQueryListener());
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            if (searchManager != null) {
+                getMenuInflater().inflate(R.menu.search_menu, menu);
+                item = menu.findItem(R.id.search);
+                item.setTitle(menuItem.getItemTitle());
+                SearchView searchView = (SearchView) item.getActionView();
+                searchView.setQueryHint(App.getStringRes(R.string.search_hint));
+                searchView.setOnQueryTextListener(menuItem.getQueryListener());
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            }
             return;
         }
 
@@ -277,7 +280,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         int flags;
         switch (menuItem.getItemType()){
             case ConstantManager.MENU_ITEM_TYPE_ACTION:
-                flags = MenuItem.SHOW_AS_ACTION_ALWAYS;
+                flags = MenuItem.SHOW_AS_ACTION_IF_ROOM;
                 break;
              default:
                  flags = MenuItem.SHOW_AS_ACTION_NEVER;
@@ -286,6 +289,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 .setIcon(menuItem.getIconResId())
                 .setOnMenuItemClickListener(menuItem.getListener());
 
+        this.tintMenuIcon(this, item, R.color.menu_item_icon_color);
     }
 
     @Override
@@ -367,6 +371,9 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 break;
             case R.id.bottomBarRoute:
                 key = new RoutesScreen();
+                break;
+            case R.id.bottomBarGoods:
+                key = new GoodsScreen();
                 break;
         }
 

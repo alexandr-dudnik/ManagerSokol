@@ -12,16 +12,18 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
     private String groupId;
     @Required
     private String name;
+    private GoodsGroupRealm parent;
     private String imageURI;
 
 
     public GoodsGroupRealm() {
     }
 
-    public GoodsGroupRealm(String groupId, String groupName, String imageURI) {
+    public GoodsGroupRealm(String groupId, String groupName, GoodsGroupRealm parent, String imageURI) {
         this.groupId = groupId;
         this.name = groupName;
         this.imageURI = imageURI;
+        this.parent = parent;
     }
 
 //region ================================ Getters ==================================
@@ -38,5 +40,9 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
         return imageURI;
     }
 
-//endregion ============================= Getters ==================================
+    public GoodsGroupRealm getParent() {
+        return parent;
+    }
+
+    //endregion ============================= Getters ==================================
 }

@@ -20,7 +20,8 @@
 
     <string name="date_format">dd.MM.yyyy</string>
     <string name="numeric_format">%1$.2f</string>
-    <string name="national_currency">грн</string>
+    <string name="numeric_format_int">%1$.0f</string>
+    <string name="national_currency">UAH</string>
 
     <string name="search_hint">Поиск…</string>
 
@@ -60,10 +61,37 @@
     <string name="customer_task_individual">Индивидуальные</string>
     <string name="customer_order_plan_header">План заказа на посещение</string>
     <string name="customer_order_list_header">Заказы клиента</string>
+    <string name="customer_enter_task_result_hint">Укажите результат выполнения задачи…</string>
+
+    <!-- Orders screen -->
     <string name="payment_type_cash">ЧП</string>
     <string name="payment_type_official">ООО</string>
     <string name="delivery_date_prefix">на:</string>
 
-    <!-- Orders screen -->
+    <!-- Goods screen -->
+    <string name="item_wh_rest_label">СФ</string>
+    <string name="item_cwh_rest_label">ЦС</string>
+    <string name="item_official_rest_label">БН</string>
+    <string name="item_base_price_label">Прайс</string>
+    <string name="item_min_price_label">Мин.</string>
+    <string name="order_title">Заказ</string>
+    <string name="cart_title">Корзина</string>
+    <string name="order_delivery_date_title">Дата отгрузки</string>
+    <string name="order_currency_title">Валюта</string>
+    <string name="order_amount_title">Сумма заказа</string>
+    <string name="order_type_title">Форма оплаты</string>
+    <string name="order_comment_title">Комментарий к заказу</string>
+    <string name="order_items_header_article">Артикул</string>
+    <string name="order_items_header_name">Наименование</string>
+    <string name="order_items_header_price">Цена</string>
+    <string name="order_items_header_quantity">Кол-во</string>
+    <string name="error_low_price">Введенное значение цены меньше минимальной!</string>
+    <string name="action_send_order">Отправить заказ</string>
+    <string name="error_empty_order">Отправка не удалась! Заказ клиента пуст!</string>
+    <string name="error_wrong_delivery">Отправка не удалась! Дата заказа позже даты доставки!</string>
+    <string name="action_clear_order">Очистить</string>
+    <string name="order_items_counter_title">Товаров</string>
+    <string name="button_negative_text">Cancel</string>
+    <string name="button_positive_text">Ok</string>
 
 </resources>
