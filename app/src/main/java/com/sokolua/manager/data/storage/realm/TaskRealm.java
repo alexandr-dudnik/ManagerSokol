@@ -1,11 +1,9 @@
 package com.sokolua.manager.data.storage.realm;
 
-import com.sokolua.manager.data.managers.ConstantManager;
-
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import io.realm.annotations.LinkingObjects;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -16,6 +14,7 @@ public class TaskRealm extends RealmObject implements Serializable {
     private CustomerRealm customer;
     @Required
     private String text;
+    @Index
     private int taskType;
     private boolean done = false;
     private String result="";

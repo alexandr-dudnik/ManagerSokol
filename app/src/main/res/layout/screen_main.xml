@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sokolua.manager.ui.screens.main.MainView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                style="@style/MainScreen"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MainScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-    <GridLayout
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
-
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
         <RelativeLayout
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:orientation="vertical"
-            tools:targetApi="lollipop">
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
 
             <ImageView
                 android:id="@+id/goods_img"
@@ -37,16 +37,11 @@
                 android:text="@string/menu_goods"
                 />
         </RelativeLayout>
-
         <RelativeLayout
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_row="0"
-            android:layout_column="1"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:orientation="vertical"
-            tools:targetApi="lollipop">
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
 
             <ImageView
                 android:id="@+id/customers_img"
@@ -65,57 +60,62 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="0dp"
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_row="1"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:orientation="vertical"
-            tools:targetApi="lollipop">
+            android:layout_weight="1"
+            >
 
-            <ImageView
-                android:id="@+id/route_img"
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_above="@id/route_text"
-                android:layout_margin="@dimen/main_page_image_margin"
-                android:scaleType="centerCrop"
-                android:src="@drawable/main_route"/>
+                android:layout_weight="1"
+                >
 
-            <TextView
-                android:id="@+id/route_text"
-                style="@style/MainScreen.Text"
-                android:text="@string/menu_route"
-                />
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/route_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/route_text"
+                    android:layout_margin="@dimen/main_page_image_margin"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/main_route"/>
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_row="1"
-            android:layout_column="1"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
-            android:orientation="vertical"
-            tools:targetApi="lollipop">
+                <TextView
+                    android:id="@+id/route_text"
+                    style="@style/MainScreen.Text"
+                    android:text="@string/menu_route"
+                    />
+            </RelativeLayout>
 
-            <ImageView
-                android:id="@+id/orders_img"
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_above="@id/orders_text"
-                android:layout_margin="@dimen/main_page_image_margin"
-                android:scaleType="centerCrop"
-                android:src="@drawable/main_orders"/>
+                android:layout_weight="1"
+                >
 
-            <TextView
-                style="@style/MainScreen.Text"
-                android:id="@+id/orders_text"
-                android:text="@string/menu_orders"
-                />
+                <ImageView
+                    android:id="@+id/orders_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/orders_text"
+                    android:layout_margin="@dimen/main_page_image_margin"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/main_orders"/>
 
-        </RelativeLayout>
-    </GridLayout>
+                <TextView
+                    android:id="@+id/orders_text"
+                    style="@style/MainScreen.Text"
+                    android:text="@string/menu_orders"
+                    />
+
+            </RelativeLayout>
+
+        </TableRow>
+
+    </TableLayout>
+
+
 </com.sokolua.manager.ui.screens.main.MainView>

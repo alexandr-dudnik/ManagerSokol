@@ -60,7 +60,7 @@ public class CustomerDebtViewHolder extends ReactiveRecyclerAdapter.ReactiveView
                 mDebtTypeText.setText(currentItem.getHeaderText());
             }
         }else{
-            if (mDebtCurrency != null && currentItem.getDebt() != null) {
+            if (mDebtValueSum !=null && mDebtCurrency != null && currentItem.getDebt() != null) {
                 mDebtCurrency.setText(currentItem.getDebt().getCurrency());
                 mDebtValueSum.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format),currentItem.getDebt().getAmount()));
             }

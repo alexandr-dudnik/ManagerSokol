@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-
 import com.sokolua.manager.R;
 import com.sokolua.manager.mortar.ScreenScoper;
 import com.sokolua.manager.utils.UiHelper;
@@ -50,7 +49,7 @@ public class TreeKeyDispatcher implements Dispatcher, KeyChanger {
         State outState = traversal.origin == null ? null : traversal.getState(traversal.origin.top());
         outKey = outState ==null ? null : outState.getKey();
 
-        mRootFrame = (FrameLayout) mActivity.findViewById(R.id.root_frame);
+        mRootFrame = mActivity.findViewById(R.id.root_frame);
 
         if (inKey.equals(outKey)){
             callback.onTraversalCompleted();
@@ -101,23 +100,15 @@ public class TreeKeyDispatcher implements Dispatcher, KeyChanger {
 
             mRootFrame.addView(newView);
 
-            UiHelper.waitForMeasure(newView, new UiHelper.OnMeasureCallBack() {
-                @Override
-                public void onMeasure(View view, int width, int height) {
-                    runAnimation(mRootFrame, oldView, newView, direction, new TraversalCallback() { //start animation
-
-                        @Override
-                        public void onTraversalCompleted() {
-                            //animation completed - do thmsg.
-                            if ((outKey != null) && !(inKey instanceof TreeKey)) {
-                                ((AbstractScreen) outKey).unregisterScope();
-                            }
-
-                            callback.onTraversalCompleted();
-                        }
-                    });
+            //start animation
+            UiHelper.waitForMeasure(newView, (view, width, height) -> runAnimation(mRootFrame, oldView, newView, direction, () -> {
+                //animation completed - do thmsg.
+                if ((outKey != null) && !(inKey instanceof TreeKey)) {
+                    ((AbstractScreen) outKey).unregisterScope();
                 }
-            });
+
+                callback.onTraversalCompleted();
+            }));
         }
     }
 

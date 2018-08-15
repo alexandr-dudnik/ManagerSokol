@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sokolua.manager.R;
-import com.sokolua.manager.data.storage.dto.CustomerDto;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.ui.screens.customer.info.CustomerInfoScreen;

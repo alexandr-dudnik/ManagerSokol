@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -22,7 +22,6 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@color/color_primary_dark</item>
-        <item name="android:colorControlNormal" tools:targetApi="lollipop">@color/color_primary_dark</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
@@ -42,7 +41,7 @@
     </style>
 
     <style name="SplashTheme" parent="AppTheme.NoActionBar.FullScreen">
-        <item name="android:windowBackground">@drawable/ic_logo_bird</item>
+        <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
 
@@ -117,20 +116,16 @@
 
     <style name="customer_list_icon.exclamation" parent="customer_list_icon">
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentStart" tools:targetApi="jelly_bean_mr1">true</item>
         <item name="android:layout_marginLeft">@dimen/cust_list_item_margin</item>
-        <item name="android:layout_marginStart" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
         <item name="android:tint">@color/color_orange</item>
     </style>
     <style name="customer_list_icon.call" parent="customer_list_icon">
         <item name="android:layout_marginRight">@dimen/cust_list_item_margin</item>
-        <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
         <item name="android:tint">@color/color_white</item>
         <item name="android:background">@color/color_green</item>
     </style>
     <style name="customer_list_icon.map" parent="customer_list_icon">
         <item name="android:layout_marginRight">@dimen/cust_list_item_margin</item>
-        <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/cust_list_item_margin</item>
         <item name="android:tint">@color/color_green</item>
     </style>
 
@@ -164,7 +159,6 @@
         <item name="android:layout_margin">@dimen/customer_info_margin</item>
         <item name="android:padding">@dimen/customer_info_margin</item>
         <item name="android:background">@drawable/rounded_corners_shape</item>
-        <item name="android:backgroundTint" tools:targetApi="lollipop">@color/color_gray_lighter</item>
     </style>
     <style name="customer_note_icon">
         <item name="android:layout_width">20dp</item>
@@ -197,6 +191,22 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/color_accent</item>
         <item name="android:layout_marginBottom">@dimen/customer_info_margin</item>
+    </style>
+
+    <style name="login_input_text">
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:inputType">text</item>
+        <item name="android:hint">@string/user_name_hint</item>
+        <item name="android:textColorHint">@color/color_gray</item>
+        <item name="android:background">@color/color_white</item>
+    </style>
+
+    <style name="password_input_text">
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:inputType">text</item>
+        <item name="android:hint">@string/user_password_hint</item>
+        <item name="android:textColorHint">@color/color_gray</item>
+        <item name="android:background">@color/color_white</item>
     </style>
 
 

@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.minimize.android:rxrecycler-adapter:1.2.2'
     implementation 'com.jakewharton.rxbinding:rxbinding:1.0.1'
 
-    implementation 'sun.bob:mcalendarview:1.0.0'
+   // implementation 'sun.bob:mcalendarview:1.0.0'
 
     //implementation 'com.birbit:android-priority-jobqueue:2.0.1'
 

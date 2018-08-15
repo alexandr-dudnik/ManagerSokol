@@ -143,7 +143,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         }
 
         public void callToCustomer(CustomerRealm customer) {
-            if (!IntentStarter.openMap(customer.getPhone()) && getRootView()!= null){
+            if (!IntentStarter.openCaller(customer.getPhone()) && getRootView()!= null){
                 getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
             }
         }

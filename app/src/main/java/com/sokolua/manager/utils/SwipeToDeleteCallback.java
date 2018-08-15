@@ -14,11 +14,12 @@ import android.view.View;
 import com.sokolua.manager.R;
 
 public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
+
     private Paint clearPaint;
     private int backgroundColor;
-    private Drawable deleteIcon;
     private int intrinsicWidth;
     private int intrinsicHeight;
+    private Drawable deleteIcon;
     private Drawable background;
 
 
@@ -44,9 +45,9 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
     }
 
     public SwipeToDeleteCallback(Context context){
-        super(0, ItemTouchHelper.START | ItemTouchHelper.END);
+        super(0, ItemTouchHelper.START | ItemTouchHelper.END | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
 
-        deleteIcon = ContextCompat.getDrawable(App.getContext(), R.drawable.ic_delete);
+        deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
         intrinsicWidth = deleteIcon.getIntrinsicWidth();
         intrinsicHeight = deleteIcon.getIntrinsicHeight();
         background = new ColorDrawable();
@@ -57,7 +58,7 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        /**
+        /*
          * To disable "swipe" for specific item return 0 here.
          * For example:
          * if (viewHolder?.itemViewType == YourAdapter.SOME_TYPE) return 0
@@ -105,4 +106,5 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
     private void clearCanvas(Canvas c, Float left, Float top, Float right, Float bottom) {
         c.drawRect(left, top, right, bottom, clearPaint);
     }
+
 }

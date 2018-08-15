@@ -3,6 +3,7 @@ package com.sokolua.manager.utils;
 import android.app.Application;
 import android.content.Context;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AppCompatDelegate;
 
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.data.managers.DebugModule;
@@ -33,6 +34,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         createAppComponent();
         createRootActivityComponent();

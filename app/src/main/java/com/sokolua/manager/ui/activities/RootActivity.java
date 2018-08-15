@@ -387,7 +387,10 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void onBackPressed() {
-        if (getCurrentScreen() != null && Flow.get(this).getHistory().size()<=1){
+        if (getCurrentScreen() == null  || getCurrentScreen().viewOnBackPressed()){
+            return;
+        }
+        if (Flow.get(this).getHistory().size()<=1){
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(App.getStringRes(R.string.question_quit))
                     .setCancelable(false)
@@ -401,7 +404,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                     .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {});
             alert.show();
         }else {
-            if (!getCurrentScreen().viewOnBackPressed() && !Flow.get(this).goBack()) {
+            if (!Flow.get(this).goBack()) {
                 super.onBackPressed();
             }
         }

@@ -3,8 +3,6 @@ package com.sokolua.manager.mvp.presenters;
 import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
 
-import com.sokolua.manager.data.managers.ConstantManager;
-
 import java.util.ArrayList;
 import java.util.List;
 

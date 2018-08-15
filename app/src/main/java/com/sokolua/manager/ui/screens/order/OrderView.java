@@ -103,6 +103,12 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
                 public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                     mPresenter.removeLine(((OrderLineViewHolder) viewHolder).getCurrentItem());
                 }
+
+                @Override
+                public boolean isItemViewSwipeEnabled() {
+                    return true;
+                }
+
             });
         }
 
@@ -137,9 +143,9 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
                 mComment.setVisibility(VISIBLE);
                 mCommentText.setVisibility(GONE);
                 mFooter.setVisibility(VISIBLE);
-                if (itemTouchHelper != null) {
-                    itemTouchHelper.attachToRecyclerView(mItems);
-                }
+//                if (itemTouchHelper != null) {
+//                    itemTouchHelper.attachToRecyclerView(mItems);
+//                }
                 break;
             case ConstantManager.ORDER_STATUS_DELIVERED:
                 mStatusImage.setImageDrawable(deliveredDrawable);

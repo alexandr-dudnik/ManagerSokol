@@ -11,7 +11,7 @@
     <!--corners android:radius="10dp" /-->
 
      <!--Background-->
-    <!--solid android:color="@color/color_gray_light"/-->
+    <solid android:color="@color/transparent"/>
 
      <!--Add your desired padding-->
     <!--padding

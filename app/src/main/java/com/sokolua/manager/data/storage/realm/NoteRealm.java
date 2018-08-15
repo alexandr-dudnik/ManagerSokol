@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 

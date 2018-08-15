@@ -45,14 +45,13 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
     @Override
     public ReactiveViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, int pViewType) {
         ReactiveViewHolderFactory.ViewAndHolder<T> viewAndHolder = viewHolderFactory.createViewAndHolder(parent, pViewType);
-        ReactiveViewHolder<T> viewHolder = viewAndHolder.viewHolder;
 
 //        RxView.clicks(viewAndHolder.view)
 //                .takeUntil(RxView.detaches(parent))
 //                .map(aVoid -> viewHolder.getCurrentItem())
 //                .subscribe(mViewClickSubject);
 
-        return viewHolder;
+        return viewAndHolder.viewHolder;
     }
 
     @Override

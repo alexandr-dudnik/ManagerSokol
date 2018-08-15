@@ -1,22 +1,13 @@
 package com.sokolua.manager.mvp.presenters;
 
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.MenuItemHoverListener;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-
-//import com.skill_branch.graduate.mvp.models.AccountModel;
 
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
@@ -26,10 +17,10 @@ import com.sokolua.manager.utils.App;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import mortar.Presenter;
 import mortar.bundler.BundleService;
+
+//import com.skill_branch.graduate.mvp.models.AccountModel;
 
 
 public class RootPresenter extends Presenter<IRootView> {

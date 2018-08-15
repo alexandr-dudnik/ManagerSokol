@@ -13,7 +13,6 @@ import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.DaggerDataManagerComponent;
 import com.sokolua.manager.di.components.DataManagerComponent;
 import com.sokolua.manager.di.modules.LocalModule;
-import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
 
 import java.util.Date;
@@ -39,7 +38,7 @@ public class DataManager {
             dmComponent = DaggerDataManagerComponent.builder()
                     .appComponent(App.getAppComponent())
                     .localModule(new LocalModule())
-                    .networkModule(new NetworkModule())
+                    //.networkModule(new NetworkModule())
                     .build();
             DaggerService.registerComponent(DataManagerComponent.class, dmComponent);
         }
