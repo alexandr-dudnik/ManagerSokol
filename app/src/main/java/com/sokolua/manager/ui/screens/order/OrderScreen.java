@@ -31,6 +31,10 @@ import java.util.Locale;
 import dagger.Provides;
 import flow.Flow;
 import io.reactivex.Observable;
+import io.realm.RealmChangeListener;
+import io.realm.RealmModel;
+import io.realm.RealmObjectChangeListener;
+import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order)
@@ -94,6 +98,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderLineRealm> linesViewHolder;
         ReactiveRecyclerAdapter linesAdapter;
+        private RealmChangeListener<RealmResults<OrderLineRealm>> lineChangeListener;
+        private RealmObjectChangeListener<RealmModel> orderChangeListener;
 
         public Presenter() {
         }
@@ -118,12 +124,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             };
             linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder);
             updateLines();
-
-            currentOrder.getLines().addChangeListener(orderLineRealms -> updateLines());
-
             getView().setLinesAdapter(linesAdapter);
+            lineChangeListener = orderLineRealms -> Presenter.this.updateLines();
+            currentOrder.getLines().addChangeListener(lineChangeListener);
 
-            currentOrder.addChangeListener((realmModel, changeSet) -> {
+
+            orderChangeListener = (realmModel, changeSet) -> {
                 if (changeSet == null) {
                     return;
                 }
@@ -149,7 +155,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     getView().setStatus(currentOrder.getStatus());
                     initActionBar();
                 }
-            });
+            };
+            currentOrder.addChangeListener(orderChangeListener);
         }
 
         private void updateLines(){
@@ -160,8 +167,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         @Override
         public void dropView(OrderView view) {
-            currentOrder.removeAllChangeListeners();
-            currentOrder.getLines().removeAllChangeListeners();
+            currentOrder.removeChangeListener(orderChangeListener);
+            currentOrder.getLines().removeChangeListener(lineChangeListener);
             super.dropView(view);
         }
 

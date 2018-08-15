@@ -11,6 +11,7 @@ import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
+import com.sokolua.manager.data.storage.realm.VisitRealm;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -343,6 +344,16 @@ public class RealmManager {
                 .where(OrderRealm.class)
                 .equalTo("id", orderId)
                 .findFirst();
+    }
+
+    public Observable<CustomerRealm> getCustomersByVisitDate(Date day) {
+        return Observable.fromIterable(
+                    getQueryRealmInstance()
+                    .where(VisitRealm.class)
+                    .equalTo("date", day)
+                    .sort("customer.name", Sort.ASCENDING)
+                    .findAll()
+        ).map(VisitRealm::getCustomer);
     }
 }
 

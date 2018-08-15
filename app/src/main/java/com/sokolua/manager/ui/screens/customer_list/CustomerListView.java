@@ -16,8 +16,7 @@ import com.sokolua.manager.utils.App;
 import butterknife.BindView;
 
 public class CustomerListView extends AbstractView<CustomerListScreen.Presenter> {
-    @BindView(R.id.customer_list)
-    RecyclerView mCustomerList;
+    @BindView(R.id.customer_list)    RecyclerView mCustomerList;
 
 
     public CustomerListView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -42,6 +41,7 @@ public class CustomerListView extends AbstractView<CustomerListScreen.Presenter>
     public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
         mCustomerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mCustomerList.setAdapter(mAdapter);
+
     }
 
 }

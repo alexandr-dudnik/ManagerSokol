@@ -121,6 +121,10 @@ public class DataManager {
         mRealmManager.updateCustomerTask(taskId, checked, result);
     }
 
+    public Observable<CustomerRealm> getCustomersByVisitDate(Date day) {
+        return mRealmManager.getCustomersByVisitDate(day);
+    }
+
 
 
     //endregion ================== Customers =========================

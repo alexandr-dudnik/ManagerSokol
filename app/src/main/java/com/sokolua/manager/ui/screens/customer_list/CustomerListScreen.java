@@ -149,9 +149,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         }
 
         public void openCustomerCard(CustomerRealm customer){
-            if (getRootView()!= null) {
-                Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
-            }
+            Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
         }
 
         //endregion ================== Event Actions =========================

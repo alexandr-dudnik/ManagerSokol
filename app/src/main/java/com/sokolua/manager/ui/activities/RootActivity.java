@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -385,9 +387,25 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void onBackPressed() {
-        if (getCurrentScreen() != null && !getCurrentScreen().viewOnBackPressed() && !Flow.get(this).goBack()) {
-            super.onBackPressed();
+        if (getCurrentScreen() != null && Flow.get(this).getHistory().size()<=1){
+            AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                    .setTitle(App.getStringRes(R.string.question_quit))
+                    .setCancelable(false)
+                    .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            this.finishAndRemoveTask();
+                        }else{
+                            this.finishAffinity();
+                        }
+                    })
+                    .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {});
+            alert.show();
+        }else {
+            if (!getCurrentScreen().viewOnBackPressed() && !Flow.get(this).goBack()) {
+                super.onBackPressed();
+            }
         }
+
     }
 
     //endregion ================== Events =========================
