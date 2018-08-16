@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     style="@style/customer_note_block"
     >
-    <ImageView
-        android:id="@+id/delete_note_img"
-        style="@style/customer_note_icon"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        app:srcCompat="@drawable/ic_cancel"/>
     <TextView
         android:id="@+id/note_date_text"
         style="@style/customer_note_date"
-        android:layout_toLeftOf="@id/delete_note_img"
-        android:layout_toStartOf="@id/delete_note_img"
         tools:text="01.01.2018"/>
     <TextView
         android:id="@+id/note_data_text"
         style="@style/customer_note_data"
-        android:layout_below="@id/delete_note_img"
+        android:layout_below="@id/note_date_text"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."/>
 
 </RelativeLayout>

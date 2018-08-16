@@ -306,7 +306,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             .setView(view);
 
                     alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
-                        float newPrice = Float.parseFloat(inputPrice.getText().toString());
+                        float newPrice = Float.parseFloat(inputPrice.getText().toString().replace(",","."));
                         float newQty = Float.parseFloat(inputQty.getText().toString());
                         //check price
                         if (newPrice < selectedItem.getLowPrice()) {

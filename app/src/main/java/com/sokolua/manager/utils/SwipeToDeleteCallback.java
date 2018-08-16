@@ -3,7 +3,6 @@ package com.sokolua.manager.utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -50,8 +49,8 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
         deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete);
         intrinsicWidth = deleteIcon.getIntrinsicWidth();
         intrinsicHeight = deleteIcon.getIntrinsicHeight();
-        background = new ColorDrawable();
-        backgroundColor = App.getColorRes(R.color.color_red);
+        backgroundColor = ContextCompat.getColor(context, R.color.color_red);
+        background = new ColorDrawable(backgroundColor);
         clearPaint = new Paint();
     }
 
@@ -74,6 +73,12 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
 
     @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        int deleteIconTop;
+        int deleteIconMargin;
+        int deleteIconLeft;
+        int deleteIconRight;
+        int deleteIconBottom;
+
         View itemView = viewHolder.itemView;
         int itemHeight = itemView.getHeight();
         boolean isCanceled = dX == 0f && !isCurrentlyActive;
@@ -85,17 +90,30 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
         }
 
         // Draw the red delete background
-        background.setColorFilter(backgroundColor, PorterDuff.Mode.SRC);
-        background.setBounds(itemView.getRight() + (int)dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        background.draw(c);
+        background.setAlpha((int)(255*Math.abs(dX)/itemView.getWidth()));
 
-        // Calculate position of delete icon
-        int deleteIconTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
-        int deleteIconMargin = (itemHeight - intrinsicHeight) / 2;
-        int deleteIconLeft = itemView.getRight() - deleteIconMargin - intrinsicWidth;
-        int deleteIconRight = itemView.getRight() - deleteIconMargin;
-        int deleteIconBottom = deleteIconTop + intrinsicHeight;
+        if (dX<0) {
+            background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            background.draw(c);
 
+            // Calculate position of delete icon
+            deleteIconTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
+            deleteIconMargin = (itemHeight - intrinsicHeight) / 2;
+            deleteIconLeft = itemView.getRight() - deleteIconMargin - intrinsicWidth;
+            deleteIconRight = itemView.getRight() - deleteIconMargin;
+            deleteIconBottom = deleteIconTop + intrinsicHeight;
+        }else{
+            background.setBounds(0 , itemView.getTop(), (int) dX, itemView.getBottom());
+            background.draw(c);
+
+            // Calculate position of delete icon
+            deleteIconTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
+            deleteIconMargin = (itemHeight - intrinsicHeight) / 2;
+            deleteIconLeft = deleteIconMargin ;
+            deleteIconRight = deleteIconMargin + intrinsicWidth;
+            deleteIconBottom = deleteIconTop + intrinsicHeight;
+
+        }
         // Draw the delete icon
         deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
         deleteIcon.draw(c);
@@ -106,5 +124,6 @@ public abstract class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallba
     private void clearCanvas(Canvas c, Float left, Float top, Float right, Float bottom) {
         c.drawRect(left, top, right, bottom, clearPaint);
     }
+
 
 }

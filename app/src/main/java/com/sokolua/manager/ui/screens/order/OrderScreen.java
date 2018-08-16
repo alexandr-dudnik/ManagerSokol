@@ -238,7 +238,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 input.setRawInputType(Configuration.KEYBOARD_12KEY);
 
                 alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
-                    float newValue = Float.parseFloat(input.getText().toString());
+                    float newValue = Float.parseFloat(input.getText().toString().replace(",","."));
                     //check price
                     if (newValue < line.getItem().getLowPrice()) {
                         if (getRootView() != null) {
