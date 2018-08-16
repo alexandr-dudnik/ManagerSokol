@@ -124,9 +124,18 @@ public class DataManager {
         return mRealmManager.getCustomersByVisitDate(day);
     }
 
+    public void addNewNote(CustomerRealm customer, String note) {
+        mRealmManager.addNewNote(customer, note);
+    }
+
+    public void deleteNote(NoteRealm note) {
+        mRealmManager.deleteNote(note);
+    }
+
 
 
     //endregion ================== Customers =========================
+
 
     //region ===================== Orders =========================
     public Observable<OrderRealm> getCustomerOrders(String customerId) {

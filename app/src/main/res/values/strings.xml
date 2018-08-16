@@ -94,5 +94,6 @@
     <string name="button_negative_text">Cancel</string>
     <string name="button_positive_text">OK</string>
     <string name="question_quit">Завершить работу с приложением?</string>
+    <string name="add_new_note_title">Добавление новой заметки</string>
 
 </resources>

@@ -355,6 +355,20 @@ public class RealmManager {
                     .findAll()
         ).map(VisitRealm::getCustomer);
     }
+
+    public void addNewNote(CustomerRealm customer, String note) {
+        getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(new NoteRealm(customer, note)));
+    }
+
+    public void deleteNote(NoteRealm note) {
+        NoteRealm tmp = getQueryRealmInstance()
+                .where(NoteRealm.class)
+                .equalTo("noteId", note.getNoteId())
+                .findFirst();
+        if (tmp != null) {
+            getQueryRealmInstance().executeTransaction(db->tmp.deleteFromRealm());
+        }
+    }
 }
 
 

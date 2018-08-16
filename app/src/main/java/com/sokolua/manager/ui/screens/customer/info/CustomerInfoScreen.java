@@ -1,8 +1,11 @@
 package com.sokolua.manager.ui.screens.customer.info;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
@@ -172,7 +175,25 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         }
 
         public void deleteNote(NoteRealm note) {
-            //mModel.deleteNote(note);
+            mModel.deleteNote(note);
+        }
+
+        public void addNewNote() {
+            final EditText input = new EditText(getView().getContext());
+            input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
+                    .setTitle(App.getStringRes(R.string.order_items_header_price))
+                    .setMessage(App.getStringRes(R.string.add_new_note_title))
+                    .setCancelable(false)
+                    .setView(input)
+                    .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
+                        String newNote = input.getText().toString();
+                        mModel.addNewNote(mCustomer, newNote);
+                    })
+                    .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
+                    });
+            alert.show();
         }
     }
 }
