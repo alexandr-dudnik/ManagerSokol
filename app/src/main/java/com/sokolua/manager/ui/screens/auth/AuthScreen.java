@@ -52,14 +52,11 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            if (getView() != null) {
-                if (getRootView()!=null) {
-                    getRootView().hideBottomBar();
-                }
-            } else {
-                if (getRootView() != null) {
-                    getRootView().showError(new NullPointerException("Что-то пошло не так..."));
-                }
+            getView().setUserName(mModel.getUserName());
+            getView().setUserPassword(mModel.getUserPassword());
+
+            if (getRootView()!=null) {
+                getRootView().hideBottomBar();
             }
 
         }
@@ -80,25 +77,16 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         }
 
 
-        public boolean isUserNameValid(String userName) {
-
-            //return email.matches("^[a-z0-9_]([a-z0-9_-]+\\.*)+[a-z0-9_]@[a-z0-9_-]+(\\.[a-z0-9_-]+)*\\.[a-z]{2,6}$");
-            return !userName.isEmpty();
-        }
-
-        public boolean isPasswordValid(String pass) {
-            return pass.length() >= 8;
-        }
 
         @Override
         public void clickOnLogin() {
             if (getView() != null && getRootView() != null) {
-                if (!isUserNameValid((getView().getUserName()))) {
+                if (!mModel.isUserNameValid((getView().getUserName()))) {
                     getView().showInvalidUserName();
                     getRootView().showMessage(App.getStringRes(R.string.error_empty_login));
                     return;
                 }
-                if (!isPasswordValid(getView().getUserPassword())) {
+                if (!mModel.isPasswordValid(getView().getUserPassword())) {
                     getView().showInvalidPassword();
                     getRootView().showMessage(App.getStringRes(R.string.error_bad_password));
                     return;
@@ -109,6 +97,9 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                             getView().getUserPassword());
 
                     if (mModel.isUserAuth()) {
+                        if (getRootView() != null) {
+                            getRootView().showMessage(App.getStringRes(R.string.message_auth_success));
+                        }
                         Flow.get(getView()).replaceHistory(new MainScreen(), Direction.REPLACE);
                     }else {
                         getView().login_error();

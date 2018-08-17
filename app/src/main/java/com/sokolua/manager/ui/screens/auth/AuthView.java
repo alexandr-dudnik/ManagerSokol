@@ -18,14 +18,9 @@ import butterknife.OnClick;
 
 public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAuthView {
 
-    @BindView(R.id.login_btn)
-    Button mLoginBtn;
-
-    @BindView(R.id.user_name)
-    EditText mUserName;
-
-    @BindView(R.id.user_password)
-    EditText mUserPassword;
+    @BindView(R.id.login_btn)       Button mLoginBtn;
+    @BindView(R.id.user_name)       EditText mUserName;
+    @BindView(R.id.user_password)   EditText mUserPassword;
 
 
     public AuthView(Context context, AttributeSet attrs) {
@@ -39,11 +34,20 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
         }
     }
 
-    public void login_error(){
-        Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_animation);
-        mLoginBtn.startAnimation(shake);
+    @Override
+    public boolean viewOnBackPressed() {
+        return false;
     }
 
+
+
+    public void setUserName(String userName) {
+        this.mUserName.setText(userName);
+    }
+
+    public void setUserPassword(String userPassword) {
+        this.mUserPassword.setText(userPassword);
+    }
 
 
     //region ===================== Events =========================
@@ -80,8 +84,10 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
     }
 
     @Override
-    public boolean viewOnBackPressed() {
-        return false;
+    public void login_error(){
+        Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_animation);
+        mLoginBtn.startAnimation(shake);
     }
+
     //endregion ===================== IAuthView =========================
 }

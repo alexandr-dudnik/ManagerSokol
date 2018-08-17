@@ -115,7 +115,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
                             setCustomerListFilter(query);
@@ -127,7 +127,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                             setCustomerListFilter(newText);
                             return true;
                         }
-                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
+                    }))
                     .setTitle(App.getStringRes(R.string.menu_customers))
                     .build();
 

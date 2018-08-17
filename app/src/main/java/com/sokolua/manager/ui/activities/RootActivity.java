@@ -348,10 +348,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
         void inject(RootPresenter presenter);
 
-        //AccountModel getAccountModel();
-
         RootPresenter getRootPresenter();
-
 
         Picasso getPicasso();
     }

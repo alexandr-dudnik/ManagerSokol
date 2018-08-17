@@ -67,14 +67,35 @@ public class DataManager {
     //region ===================== UserInfo =========================
 
     public boolean isUserAuth() {
-        //TODO check auth token in shared preferences
-        // TODO: 20.06.2018 send check auth String
+        userAuth = !mPreferencesManager.getUserAuthToken().isEmpty();
         return userAuth;
     }
 
-    public void setUserAuth(boolean state){
-        userAuth = state;
+//    public void setUserAuth(boolean state){
+//        userAuth = state;
+//    }
+
+    public String getUserName() {
+        return mPreferencesManager.getUserName();
     }
+
+    public void updateUserName(String login) {
+        mPreferencesManager.updateUserName(login);
+    }
+
+    public String getUserPassword() {
+        return mPreferencesManager.getUserPassword();
+    }
+
+    public void updateUserPassword(String pass) {
+        mPreferencesManager.updateUserPassword(pass);
+    }
+
+    public void setUserAuthToken(String token) {
+        mPreferencesManager.updateUserAuthToken(token);
+    }
+
+
     //endregion ================== UserInfo =========================
 
     
@@ -209,5 +230,30 @@ public class DataManager {
 
 
     //endregion ================== Goods =========================
+
+
+    //region ===================== Preferences =========================
+
+    public String getServerAddress() {
+        return mPreferencesManager.getServerAddress();
+    }
+
+    public void updateServerAddress(String address) {
+        mPreferencesManager.updateServerAddress(address);
+    }
+
+
+    public Boolean getAutoSynchronize() {
+        return mPreferencesManager.getAutoSynchronize();
+    }
+
+    public void updateAutoSynchronize(Boolean sync) {
+        mPreferencesManager.updateAutoSynchronize(sync);
+    }
+
+
+
+    //endregion ================== Preferences =========================
+
 }
 

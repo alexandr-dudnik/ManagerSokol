@@ -2,6 +2,7 @@ package com.sokolua.manager.di.modules;
 
 
 import com.sokolua.manager.di.scopes.DaggerScope;
+import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 
@@ -18,9 +19,8 @@ public class RootModule {
         return new RootPresenter();
     }
 
-//    @Provides
-//    @RootScope
-//    AccountModel provideAccountModel(){
-//        return new AccountModel();
-//    }
+    @Provides
+    AuthModel provideAccountModel(){
+        return new AuthModel();
+    }
 }

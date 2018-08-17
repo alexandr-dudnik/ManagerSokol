@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 
+import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.activities.SplashActivity;
@@ -17,16 +18,16 @@ import com.sokolua.manager.utils.App;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import mortar.Presenter;
 import mortar.bundler.BundleService;
-
-//import com.skill_branch.graduate.mvp.models.AccountModel;
 
 
 public class RootPresenter extends Presenter<IRootView> {
 
-    //@Inject
-    //AccountModel mAccountModel;
+    @Inject
+    AuthModel mAuthModel;
 
     private static int DEFAULT_MODE = 0;
     private static int TAB_MODE = 1;

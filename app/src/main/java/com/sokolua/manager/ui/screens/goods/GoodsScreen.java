@@ -238,7 +238,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(currentCart!=null)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
                             setGoodsListFilter(query);
@@ -250,7 +250,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             setGoodsListFilter(newText);
                             return true;
                         }
-                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
+                    }))
                     .setTitle(App.getStringRes(R.string.menu_goods))
                     .build();
 

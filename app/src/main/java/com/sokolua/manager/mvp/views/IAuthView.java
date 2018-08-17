@@ -6,4 +6,6 @@ public interface IAuthView extends IView {
 
     void showInvalidUserName();
     void showInvalidPassword();
+
+    void login_error();
 }
