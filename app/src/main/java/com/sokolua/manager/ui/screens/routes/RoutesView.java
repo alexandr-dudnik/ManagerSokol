@@ -28,8 +28,6 @@ public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
     @BindView(R.id.customer_list)  RecyclerView mCustomerList;
     @BindViews({R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7}) List<AppCompatButton> mButtons;
 
-    private int defBackground;
-
     public RoutesView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -49,6 +47,7 @@ public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
         Calendar cal = Calendar.getInstance();
         cal.setFirstDayOfWeek(Calendar.MONDAY);
         int dw = cal.get(Calendar.DAY_OF_WEEK)-cal.getFirstDayOfWeek();
+        dw = dw<0?(7+dw):dw;
         dayClick(mButtons.get(dw));
     }
 

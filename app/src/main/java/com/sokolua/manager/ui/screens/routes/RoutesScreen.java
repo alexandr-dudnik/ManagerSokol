@@ -140,6 +140,7 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
             cal.set(Calendar.MILLISECOND,0);
 
             int curD = cal.get(Calendar.DAY_OF_WEEK)-cal.getFirstDayOfWeek();
+            curD = curD<0?(7+curD):curD;
             cal.add(Calendar.DAY_OF_MONTH, day-curD);
 
 

@@ -1,6 +1,10 @@
 package com.sokolua.manager.mvp.models;
 
-import java.util.UUID;
+import android.util.Base64;
+
+import com.sokolua.manager.data.network.res.UserRes;
+
+import io.reactivex.Observable;
 
 public class AuthModel extends AbstractModel {
 
@@ -23,10 +27,9 @@ public class AuthModel extends AbstractModel {
         return mDataManager.isUserAuth();
     }
 
-    public void loginUser(String login, String pass) {
-        mDataManager.updateUserName(login);
-        mDataManager.updateUserPassword(pass);
-        mDataManager.setUserAuthToken(UUID.randomUUID().toString());
+    public Observable<UserRes> loginUser(String login, String pass) {
+        return mDataManager.loginUser(login, Base64.encodeToString(pass.getBytes(), Base64.DEFAULT));
+
     }
 
     public String getUserName() {
@@ -35,5 +38,20 @@ public class AuthModel extends AbstractModel {
 
     public String getUserPassword() {
         return mDataManager.getUserPassword();
+    }
+
+    public String getManagerName() {
+        return mDataManager.getManagerName();
+    }
+
+    public void updateUserData(UserRes userRes) {
+        mDataManager.updateUserData(userRes);
+    }
+
+    public void ClearUserData() {
+        updateUserData(new UserRes("","",""));
+        mDataManager.updateUserPassword("");
+        mDataManager.updateUserName("");
+        mDataManager.clearDataBase();
     }
 }

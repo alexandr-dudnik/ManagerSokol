@@ -8,7 +8,6 @@ import com.sokolua.manager.ui.activities.RootActivity;
 
 import dagger.Provides;
 
-//import com.skill_branch.graduate.mvp.models.AccountModel;
 
 
 @dagger.Module
@@ -20,6 +19,7 @@ public class RootModule {
     }
 
     @Provides
+    @DaggerScope(RootActivity.class)
     AuthModel provideAccountModel(){
         return new AuthModel();
     }

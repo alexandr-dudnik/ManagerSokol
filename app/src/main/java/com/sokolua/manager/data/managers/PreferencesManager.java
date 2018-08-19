@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.sokolua.manager.R;
+import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
 public class PreferencesManager {
@@ -14,6 +16,8 @@ public class PreferencesManager {
     private static final String USER_NAME = "user_name";
     private static final String USER_PASSWORD = "user_password";
     private static final String USER_AUTH_TOKEN = "user_auth_token";
+    private static final String USER_AUTH_TOKEN_EXPIRATION = "user_auth_token_exp";
+    private static final String USER_MANAGER_NAME = "manager_name";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -80,9 +84,26 @@ public class PreferencesManager {
         return mSharedPreferences.getString(USER_AUTH_TOKEN, "");
     }
 
-    public void updateUserAuthToken(String pass) {
+    public String getUserAuthTokenExpiration() {
+        return mSharedPreferences.getString(USER_AUTH_TOKEN_EXPIRATION, "1900-01-01 00:00:00");
+    }
+
+    public void updateUserAuthToken(String pass, String expires) {
         SharedPreferences.Editor spEditor = mSharedPreferences.edit();
         spEditor.putString(USER_AUTH_TOKEN, pass );
+        spEditor.putString(USER_AUTH_TOKEN_EXPIRATION, pass );
         spEditor.apply();
     }
+
+    public String getManagerName() {
+        return mSharedPreferences.getString(USER_MANAGER_NAME, App.getStringRes(R.string.default_manager_name));
+    }
+
+    public void updateManagerName(String managerName) {
+        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+        spEditor.putString(USER_MANAGER_NAME, managerName );
+        spEditor.apply();
+    }
+
+
 }

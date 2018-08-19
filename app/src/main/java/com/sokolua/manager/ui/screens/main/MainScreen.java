@@ -6,12 +6,15 @@ import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
+import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.models.MainModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.settings.SettingsScreen;
 import com.sokolua.manager.utils.App;
+
+import javax.inject.Inject;
 
 import dagger.Provides;
 import flow.Flow;
@@ -46,6 +49,11 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
             return new Presenter();
         }
 
+        @Provides
+        @DaggerScope(MainScreen.class)
+        AuthModel provideAuthModel() {
+            return new AuthModel();
+        }
     }
 
 
@@ -62,6 +70,8 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<MainView, MainModel> {
 
+        @Inject
+        AuthModel mAuthModel;
 
         public Presenter() {
         }
@@ -71,6 +81,10 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
+
+            if (getRootView() != null) {
+                getRootView().setBottomBarVisibility(true);
+            }
         }
 
 
@@ -82,7 +96,7 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
                         Flow.get(getView()).set(new SettingsScreen());
                         return true;
                     }, ConstantManager.MENU_ITEM_TYPE_ACTION))
-                    .setTitle("Вася Пупкин") //TODO - Имя менеджера
+                    .setTitle(mAuthModel.getManagerName())
                     .build();
 
             //mRootPresenter.hideFab();

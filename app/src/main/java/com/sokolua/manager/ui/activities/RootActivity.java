@@ -206,17 +206,21 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
 
     @Override
-    public void showBottomBar() {
-        mBottomBar.setTranslationY(0);
-        mBottomBar.setVisibility(View.VISIBLE);
+    public void setBottomBarVisibility(boolean state) {
+        if (state){
+            mBottomBar.setTranslationY(0);
+            mBottomBar.setVisibility(View.VISIBLE);
+        }else{
+            mBottomBar.setTranslationY(mBottomBar.getHeight());
+            mBottomBar.setVisibility(View.GONE);
+        }
     }
-
 
     @Override
-    public void hideBottomBar() {
-        mBottomBar.setTranslationY(mBottomBar.getHeight());
-        mBottomBar.setVisibility(View.GONE);
+    public boolean getBottomBarVisibility() {
+        return mBottomBar.getVisibility() == View.VISIBLE;
     }
+
 
     //endregion ================== IRootView =========================
 

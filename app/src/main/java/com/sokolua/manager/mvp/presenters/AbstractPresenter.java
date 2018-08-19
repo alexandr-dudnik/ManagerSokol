@@ -28,11 +28,6 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
 
     protected CompositeDisposable mCompSubs;
 
-//    @Override
-//    protected void onEnterScope(MortarScope scope) {
-//        super.onEnterScope(scope);
-//        initDagger(scope);
-//    }
 
     @Override
     protected void onLoad(Bundle savedInstanceState) {
@@ -49,9 +44,9 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
         super.dropView(view);
     }
 
-//    protected abstract void initDagger(MortarScope scope);
 
     protected abstract void initActionBar();
+
 
     @Nullable
     protected IRootView getRootView(){

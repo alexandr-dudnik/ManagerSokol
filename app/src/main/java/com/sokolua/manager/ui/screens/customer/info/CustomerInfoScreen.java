@@ -183,7 +183,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 
             AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
-                    .setTitle(App.getStringRes(R.string.order_items_header_price))
+                    .setTitle(App.getStringRes(R.string.customer_info_notes))
                     .setMessage(App.getStringRes(R.string.add_new_note_title))
                     .setCancelable(false)
                     .setView(input)

@@ -16,6 +16,7 @@ import com.sokolua.manager.mvp.models.SettingsModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.utils.App;
 
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.Provides;
+import flow.Direction;
+import flow.Flow;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -108,7 +111,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_syncronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ACTION))
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ACTION))
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_logout), R.drawable.ic_logout, logoutClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .setTitle(App.getStringRes(R.string.menu_settings))
                     .build();
@@ -118,12 +121,12 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @NonNull
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
             return item -> {
-                Observable obs = Observable.just(true)
+                Observable<Boolean> obs = Observable.just(true)
                         .delay(3, TimeUnit.SECONDS)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         ;
-                obs.subscribe(new Observer() {
+                obs.subscribe(new Observer<Boolean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         if (getRootView() != null) {
@@ -132,9 +135,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     }
 
                     @Override
-                    public void onNext(Object o) {
-
-                    }
+                    public void onNext(Boolean aBoolean) {  }
 
                     @Override
                     public void onError(Throwable e) {
@@ -164,7 +165,10 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .setCancelable(false)
                         .setPositiveButton(R.string.button_positive_text, ((dialog, which) -> {
                             if (getRootView() != null) {
+                                mAuthModel.ClearUserData();
+                                Flow.get(getView()).replaceHistory(new AuthScreen(), Direction.REPLACE);
                                 getRootView().showMessage(App.getStringRes(R.string.message_logout));
+
                             }
                         }))
                         .setNegativeButton(R.string.button_negative_text, ((dialog, which) -> {
@@ -185,32 +189,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
 
         public void checkAuth() {
-            if (getView() != null && getRootView() != null) {
-                if (!mAuthModel.isUserNameValid((getView().getUserName()))) {
-                    getView().showInvalidUserName();
-                    getRootView().showMessage(App.getStringRes(R.string.error_empty_login));
-                    return;
-                }
-                if (!mAuthModel.isPasswordValid(getView().getUserPassword())) {
-                    getView().showInvalidPassword();
-                    getRootView().showMessage(App.getStringRes(R.string.error_bad_password));
-                    return;
-                }
-
-                //TODO auth user
-                mAuthModel.loginUser(getView().getUserName(),
-                        getView().getUserPassword());
-
-                if (mAuthModel.isUserAuth()) {
-                    if (getRootView() != null) {
-                        getRootView().showMessage(App.getStringRes(R.string.message_auth_success));
-                    }
-                }else {
-                    getView().login_error();
-                    getRootView().showMessage(App.getStringRes(R.string.error_auth_error));
-                }
-
-            }
+            mRootPresenter.doUserLogin(getView().getUserName(),getView().getUserPassword());
         }
     }
 
