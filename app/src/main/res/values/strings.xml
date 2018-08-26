@@ -105,5 +105,7 @@
     <string name="message_auth_success">Авторизация прошла успешно!</string>
     <string name="error_access_denied">Доступ запрещен!</string>
     <string name="default_manager_name">Вася Пупкин</string>
+    <string name="customer_info_category_header">Класс по обороту</string>
+    <string name="customer_info_category_no_category">НЕТ</string>
 
 </resources>

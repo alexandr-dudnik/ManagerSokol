@@ -1,7 +1,5 @@
 package com.sokolua.manager.mvp.models;
 
-import android.util.Base64;
-
 import com.sokolua.manager.data.network.res.UserRes;
 
 import io.reactivex.Observable;
@@ -28,7 +26,7 @@ public class AuthModel extends AbstractModel {
     }
 
     public Observable<UserRes> loginUser(String login, String pass) {
-        return mDataManager.loginUser(login, Base64.encodeToString(pass.getBytes(), Base64.DEFAULT));
+        return mDataManager.loginUser(login, pass);
 
     }
 

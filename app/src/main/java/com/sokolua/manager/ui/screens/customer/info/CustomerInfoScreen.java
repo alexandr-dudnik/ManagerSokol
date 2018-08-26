@@ -111,6 +111,11 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             if (!mCustomer.getContactName().isEmpty()) {
                 mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header), mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
             }
+            if (!mCustomer.getContactName().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), mCustomer.getCategory(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            }else{
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), App.getStringRes(R.string.customer_info_category_no_category), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            }
             if (!mCustomer.getAddress().isEmpty()) {
                 mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header), mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
             }

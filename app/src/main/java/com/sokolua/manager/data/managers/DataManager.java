@@ -1,5 +1,6 @@
 package com.sokolua.manager.data.managers;
 
+import com.sokolua.manager.data.network.RestCallTransformer;
 import com.sokolua.manager.data.network.RestService;
 import com.sokolua.manager.data.network.error.AccessDenied;
 import com.sokolua.manager.data.network.error.AccessError;
@@ -21,17 +22,22 @@ import com.sokolua.manager.di.components.DataManagerComponent;
 import com.sokolua.manager.di.modules.LocalModule;
 import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.AppConfig;
 import com.sokolua.manager.utils.NetworkStatusChecker;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
 public class DataManager {
@@ -126,6 +132,7 @@ public class DataManager {
 
 
     public Observable<UserRes> loginUser(String userName, String password) {
+
         return mRestService.loginUser(new UserLoginReq(userName, password))
                 .flatMap(userResResponse -> {
                     switch (userResResponse.code()) {
@@ -293,6 +300,126 @@ public class DataManager {
         return mRealmManager.getItemList(parent, filter);
     }
 
+
+    public void updateGroupFromRemote(String groupId){
+        mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId)
+                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.io())
+                .doOnNext(group -> {
+//                    if (!productRes.isActive()) {
+//                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
+//                    }
+                })
+                //.filter(PhotoCardRes::isActive) //только активные товары
+                .doOnNext(group ->  mRealmManager.saveGoodGroupToRealm(group)) //Save data on disk
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .doOnNext(retryCount -> {
+                        })
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .doOnNext(delay -> {
+                        })
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                .flatMap(group -> Observable.empty())
+                .subscribe()
+               ;
+
+    }
+
+    public Observable<GoodsGroupRealm> updateGroupsFromRemote(){
+        mRealmManager.clearGoodsGroups();
+        List<String> groupsToUpdate = new ArrayList<>();
+        return mRestService.getGoodsGroupList(mPreferencesManager.getUserAuthToken())
+                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .flatMap(Observable::fromIterable) //List of ProductRes
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.io())
+                .doOnNext(group -> {
+//                    if (!productRes.isActive()) {
+//                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
+//                    }
+                })
+                //.filter(PhotoCardRes::isActive) //только активные товары
+                .doOnNext(group -> mRealmManager.saveGoodGroupToRealm(group)) //Save data on disk
+                .doOnNext(group -> groupsToUpdate.add(group.getId()))
+//                .retryWhen(errorObservable -> errorObservable
+//                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+//                        .doOnNext(retryCount -> {
+//                        })
+//                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+//                        .doOnNext(delay -> {
+//                        })
+//                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                .doOnComplete(() ->
+                        Observable.fromIterable(groupsToUpdate)
+                                .doOnNext(this::updateGroupFromRemote)
+                                .subscribe()
+                )
+                .flatMap(group -> Observable.empty());
+
+    }
+
+
+    public Observable<ItemRealm> updateItemsFromRemote(){
+        mRealmManager.clearGoods();
+        List<String> itemsToUpdate = new ArrayList<>();
+        return mRestService.getGoodsList(mPreferencesManager.getUserAuthToken())
+                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .flatMap(Observable::fromIterable) //List of ProductRes
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.io())
+                .doOnNext(item -> {
+//                    if (!productRes.isActive()) {
+//                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
+//                    }
+                })
+                //.filter(PhotoCardRes::isActive) //только активные товары
+                .doOnNext(item -> mRealmManager.saveGoodItemToRealm(item)) //Save data on disk
+                .doOnNext(item -> itemsToUpdate.add(item.getId())) //Save data on disk
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .doOnNext(retryCount -> {
+                        })
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .doOnNext(delay -> {
+                        })
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                .doOnComplete(() ->
+                        Observable.fromIterable(itemsToUpdate)
+                                .doOnNext(this::updateGoodItemFromRemote)
+                                .subscribe()
+                )
+                .flatMap(item -> Observable.empty());
+
+    }
+
+
+    public void updateGoodItemFromRemote(String itemId){
+        mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
+                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.io())
+                .doOnNext(item -> {
+//                    if (!productRes.isActive()) {
+//                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
+//                    }
+                })
+                //.filter(PhotoCardRes::isActive) //только активные товары
+                .doOnNext(item ->  mRealmManager.saveGoodItemToRealm(item)) //Save data on disk
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .doOnNext(retryCount -> {
+                        })
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .doOnNext(delay -> {
+                        })
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                .flatMap(item -> Observable.empty())
+                .subscribe()
+                ;
+
+    }
 
     //endregion ================== Goods =========================
 

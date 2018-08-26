@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.ObjectChangeSet;
 
 public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<ItemRealm> {
 
@@ -44,15 +45,29 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
     public void setCurrentItem(ItemRealm currentItem) {
         super.setCurrentItem(currentItem);
 
+        currentItem.addChangeListener((ItemRealm item, ObjectChangeSet changeSet) ->{
+            if (changeSet.isDeleted()){
+                currentItem.removeAllChangeListeners();
+            }else{
+                updateFields(item);
+            }
+        } );
+        updateFields(currentItem);
+    }
+
+    public void updateFields(ItemRealm currentItem){
         mArticle.setText(currentItem.getArtNumber());
-        mBrand.setText(currentItem.getBrand().getName());
+        mBrand.setText(currentItem.getBrand()!=null?currentItem.getBrand().getName():"");
         mRestWH.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),currentItem.getRestStore()));
         mRestCWH.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),currentItem.getRestDistr()));
-        mRestOF.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),currentItem.getRestOfficial()));
+        if (currentItem.getRestOfficial()>999999) {
+            mRestOF.setText("∞");
+        }else{
+            mRestOF.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestOfficial()));
+        }
         mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getBasePrice()));
         mMinPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getLowPrice()));
         mName.setText(currentItem.getName());
-
     }
 
     @OnClick(R.id.good_item_wrapper)

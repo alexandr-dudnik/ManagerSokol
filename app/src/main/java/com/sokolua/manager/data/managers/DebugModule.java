@@ -135,7 +135,7 @@ public class DebugModule {
         ItemRealm item22 = new ItemRealm("it00022", "Світлодіодна LED панель 36.0W 220В 3000lm 300х1200х8,5 IP 20", "83632", 1502.33f, 1006.78f, 25f, 150f, 300f, cat9, grp9, brand3);
 
 
-        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net");
+        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net", "A");
         managedDebtRealms.add(new DebtRealm(temp,"USD",1250,1250,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",3500,150,false));
@@ -185,7 +185,7 @@ public class DebugModule {
         managedOrders.add(tmpOrder);
 
         //--------------------------
-        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm");
+        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm", "C");
         managedDebtRealms.add(new DebtRealm(temp,"UAH",500,18,false));
         managedVisitRealms.add(new VisitRealm(temp, "visit00010", dateFormat.parse("2018-08-05"), true));
         managedVisitRealms.add(new VisitRealm(temp, "visit00011", dateFormat.parse("2018-08-09"), false));
@@ -201,16 +201,16 @@ public class DebugModule {
         managedOrders.add(tmpOrder);
 
         //--------------------------
-        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua");
+        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua", "A");
         managedNoteRealms.add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
         managedNoteRealms.add(new NoteRealm(temp, "note0302",dateFormat.parse("2018-07-01"),"Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
         //--------------------------
-        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","");
+        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","", "D");
         managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
         managedDebtRealms.add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
-        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com");
+        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com", "X");
         managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-01"), true));
         managedVisitRealms.add(new VisitRealm(temp, "visit00016", dateFormat.parse("2018-08-10"), false));
         managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-15"), false));
@@ -218,7 +218,7 @@ public class DebugModule {
         managedVisitRealms.add(new VisitRealm(temp, "visit00019", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
         //--------------------------
-        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","");
+        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","", "");
         managedDebtRealms.add(new DebtRealm(temp,"USD",130,130,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",250,9.50f,false));
         managedVisitRealms.add(new VisitRealm(temp, "visit00020", dateFormat.parse("2018-08-01"), true));

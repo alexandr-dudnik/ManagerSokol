@@ -3,6 +3,7 @@ package com.sokolua.manager.data.network;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
+import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.UserRes;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface RestService {
     @POST("auth")
@@ -20,4 +22,13 @@ public interface RestService {
 
     @GET("groups")
     Observable<Response<List<GoodGroupRes>>> getGoodsGroupList(@Header(ConstantManager.HEADER_TOKEN)String token);
+
+    @GET("groups/{group_id}")
+    Observable<Response<GoodGroupRes>> getGoodsGroup(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("group_id")String groupId);
+
+    @GET("goods")
+    Observable<Response<List<GoodItemRes>>> getGoodsList(@Header(ConstantManager.HEADER_TOKEN)String token);
+
+    @GET("goods/{good_id}")
+    Observable<Response<GoodItemRes>> getGoodItem(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("good_id")String goodId);
 }

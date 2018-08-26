@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatDelegate;
 
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.data.managers.DebugModule;
+import com.sokolua.manager.data.storage.realm.RealmMigrations;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.components.DaggerAppComponent;
@@ -20,6 +21,7 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import java.text.ParseException;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
@@ -49,7 +51,15 @@ public class App extends Application {
                 .build(RootActivity.class.getName());
 
 
-        Realm.init(this);
+
+        final RealmConfiguration configuration = new RealmConfiguration.Builder()
+                .name("sokol.manager.realm")
+                .schemaVersion(1)
+                .migration(new RealmMigrations())
+                .build();
+        Realm.setDefaultConfiguration(configuration);
+        Realm.getInstance(configuration);
+
 
         if (BuildConfig.DEBUG) {
             try {

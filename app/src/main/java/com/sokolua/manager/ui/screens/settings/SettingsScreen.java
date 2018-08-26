@@ -19,8 +19,6 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.utils.App;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import dagger.Provides;
@@ -121,12 +119,18 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @NonNull
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
             return item -> {
-                Observable<Boolean> obs = Observable.just(true)
-                        .delay(3, TimeUnit.SECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        ;
-                obs.subscribe(new Observer<Boolean>() {
+                Observable.mergeDelayError(
+                        mModel.updateAllGroupsFromRemote()
+//                                .flatMap(group -> mModel.updateGoodGroupFromRemote(group.getGroupId()))
+                                .map(group -> group.isLoaded())
+                        ,
+                        mModel.updateAllGoodItemsFromRemote()
+  //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
+                                .map(good_item -> good_item.isLoaded())
+                    )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<Boolean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         if (getRootView() != null) {

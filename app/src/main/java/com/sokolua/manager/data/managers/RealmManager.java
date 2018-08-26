@@ -2,8 +2,12 @@ package com.sokolua.manager.data.managers;
 
 import android.support.annotation.Nullable;
 
+import com.sokolua.manager.data.network.res.GoodGroupRes;
+import com.sokolua.manager.data.network.res.GoodItemRes;
+import com.sokolua.manager.data.storage.realm.BrandsRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
+import com.sokolua.manager.data.storage.realm.GoodsCategoryRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
@@ -36,9 +40,10 @@ public class RealmManager {
         Set<Class<? extends RealmModel>> schemaClasses = realmConfiguration.getRealmObjectClasses();
 
         getQueryRealmInstance().executeTransaction(db->{
-            for (Class<? extends RealmModel> model : schemaClasses) {
-                db.delete(model);
-            }
+//            for (Class<? extends RealmModel> model : schemaClasses) {
+//                db.delete(model);
+//            }
+            db.deleteAll();
         });
     }
 
@@ -385,6 +390,108 @@ public class RealmManager {
     }
 
 
+
+    public void saveGoodGroupToRealm(GoodGroupRes groupRes) {
+        Realm curInstance = Realm.getDefaultInstance();
+        GoodsGroupRealm mParent=null;
+        if (groupRes.getParent() != null && !groupRes.getParent().isEmpty()) {
+            mParent = curInstance
+                    .where(GoodsGroupRealm.class)
+                    .equalTo("groupId", groupRes.getParent())
+                    .findFirst();
+            if (mParent == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(groupRes.getParent(),"no_name",null,null)));
+                mParent = curInstance
+                        .where(GoodsGroupRealm.class)
+                        .equalTo("groupId", groupRes.getParent())
+                        .findFirst();
+            }
+        }
+
+        String mImageURL ="";
+        if (groupRes.getImage() != null) {
+            //TODO: parse image from base64 string groupRes.getImage()
+            mImageURL ="";
+        }
+
+        GoodsGroupRealm newGroup = new GoodsGroupRealm(groupRes.getId(), groupRes.getName(), mParent, mImageURL);
+        curInstance.executeTransaction(db -> db.insertOrUpdate(newGroup));
+        curInstance.close();
+    }
+
+    public void saveGoodItemToRealm(GoodItemRes goodItem) {
+        Realm curInstance = Realm.getDefaultInstance();
+        GoodsGroupRealm mParent=null;
+        if (goodItem.getGroupId() != null && !goodItem.getGroupId().isEmpty()) {
+            mParent = curInstance
+                    .where(GoodsGroupRealm.class)
+                    .equalTo("groupId", goodItem.getGroupId())
+                    .findFirst();
+            if (mParent == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(goodItem.getGroupId(),"no_name",null,null)));
+                mParent = curInstance
+                        .where(GoodsGroupRealm.class)
+                        .equalTo("groupId", goodItem.getGroupId())
+                        .findFirst();
+            }
+        }
+
+        BrandsRealm mBrand = null;
+        if (goodItem.getBrand() != null && goodItem.getBrand().getId() != null && !goodItem.getBrand().getId().isEmpty()) {
+            mBrand = curInstance
+                    .where(BrandsRealm.class)
+                    .equalTo("brandId", goodItem.getBrand().getId())
+                    .findFirst();
+            if (mBrand == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new BrandsRealm(goodItem.getBrand().getId(),goodItem.getBrand().getName(),null)));
+                mBrand = curInstance
+                        .where(BrandsRealm.class)
+                        .equalTo("brandId", goodItem.getBrand().getId())
+                        .findFirst();
+            }
+        }
+
+        GoodsCategoryRealm mCat = null;
+        if (goodItem.getBrand() != null && goodItem.getCategory().getId() != null && !goodItem.getCategory().getId().isEmpty()) {
+            mCat = curInstance
+                    .where(GoodsCategoryRealm.class)
+                    .equalTo("categoryId", goodItem.getCategory().getId())
+                    .findFirst();
+            if (mParent == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsCategoryRealm(goodItem.getCategory().getId(),goodItem.getCategory().getName(),null)));
+                mCat = curInstance
+                        .where(GoodsCategoryRealm.class)
+                        .equalTo("categoryId", goodItem.getCategory().getId())
+                        .findFirst();
+            }
+        }
+
+        ItemRealm newItem = new ItemRealm(
+                goodItem.getId(),
+                goodItem.getName(),
+                goodItem.getArticle(),
+                goodItem.getPrice()!=null?goodItem.getPrice().getBase():0f,
+                goodItem.getPrice()!=null?goodItem.getPrice().getMin():0f,
+                goodItem.getRest()!=null?goodItem.getRest().getStore():0f,
+                goodItem.getRest()!=null?goodItem.getRest().getDistribution():0f,
+                goodItem.getRest()!=null?goodItem.getRest().getOfficial():0f,
+                mCat,
+                mParent,
+                mBrand
+                );
+        curInstance.executeTransaction(db -> db.insertOrUpdate(newItem));
+        curInstance.close();
+
+    }
+
+
+    public void clearGoodsGroups() {
+        Realm.getDefaultInstance().executeTransaction(db -> db.delete(GoodsGroupRealm.class));
+    }
+
+    public void clearGoods() {
+        Realm.getDefaultInstance().executeTransaction(db -> db.delete(ItemRealm.class));
+    }
 }
 
 
