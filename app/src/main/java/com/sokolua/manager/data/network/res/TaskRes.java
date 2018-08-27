@@ -3,9 +3,9 @@ package com.sokolua.manager.data.network.res;
 public class TaskRes {
     public String id;
     public String text;
-    public String type;
+    public Integer type;
 
-    public TaskRes(String id, String text, String type) {
+    public TaskRes(String id, String text, Integer type) {
         this.id = id;
         this.text = text;
         this.type = type;
@@ -21,7 +21,7 @@ public class TaskRes {
         return text;
     }
 
-    public String getType() {
+    public Integer getType() {
         return type;
     }
 
@@ -38,7 +38,7 @@ public class TaskRes {
         this.text = text;
     }
 
-    public void setType(String type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

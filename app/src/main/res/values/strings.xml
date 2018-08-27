@@ -21,7 +21,7 @@
     <string name="date_format">dd.MM.yyyy</string>
     <string name="numeric_format">%1$.2f</string>
     <string name="numeric_format_int">%1$.0f</string>
-    <string name="national_currency">UAH</string>
+    <string name="national_currency">ГРН</string>
 
     <string name="search_hint">Поиск…</string>
 
