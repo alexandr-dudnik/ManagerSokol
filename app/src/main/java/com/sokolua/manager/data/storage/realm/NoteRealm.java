@@ -12,6 +12,7 @@ public class NoteRealm extends RealmObject implements Serializable {
     @PrimaryKey
     @Required
     private String noteId;
+    private String externalId;
     private CustomerRealm customer ;
     @Required
     private Date date;
@@ -23,6 +24,7 @@ public class NoteRealm extends RealmObject implements Serializable {
     public NoteRealm(CustomerRealm customer, String noteId, Date date, String data) {
         this.customer = customer;
         this.noteId = noteId;
+        this.externalId = noteId;
         this.date = date;
         this.data = data;
     }

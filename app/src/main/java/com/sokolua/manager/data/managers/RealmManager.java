@@ -2,8 +2,11 @@ package com.sokolua.manager.data.managers;
 
 import android.support.annotation.Nullable;
 
+import com.sokolua.manager.data.network.res.CustomerRes;
+import com.sokolua.manager.data.network.res.DebtRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
+import com.sokolua.manager.data.network.res.NoteRes;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
@@ -17,15 +20,16 @@ import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.data.storage.realm.VisitRealm;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.realm.Case;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmModel;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -35,24 +39,36 @@ public class RealmManager {
 
     private Realm mRealmInstance;
 
-    public void clearDataBase() {
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().build();
-        Set<Class<? extends RealmModel>> schemaClasses = realmConfiguration.getRealmObjectClasses();
-
-        getQueryRealmInstance().executeTransaction(db->{
-//            for (Class<? extends RealmModel> model : schemaClasses) {
-//                db.delete(model);
-//            }
-            db.deleteAll();
-        });
-    }
-
     private Realm getQueryRealmInstance() {
         if (mRealmInstance == null || mRealmInstance.isClosed()) {
             mRealmInstance = Realm.getDefaultInstance();
         }
         return mRealmInstance;
     }
+
+    //region =======================  DataBase cleanup  =========================
+
+    public void clearDataBase() {
+        getQueryRealmInstance().executeTransaction(db-> db.deleteAll());
+    }
+
+
+    public void clearGoodsGroups() {
+        Realm.getDefaultInstance().executeTransaction(db -> db.delete(GoodsGroupRealm.class));
+    }
+
+    public void clearGoods() {
+        Realm.getDefaultInstance().executeTransaction(db -> db.delete(ItemRealm.class));
+    }
+
+    public void clearCustomers() {
+        Realm.getDefaultInstance().executeTransaction(db -> db.delete(CustomerRealm.class));
+    }
+
+
+    //endregion ====================  DataBase cleanup  =========================
+
+
 
 
     public Observable<CustomerRealm> getCustomersFromRealm(String filter){
@@ -419,62 +435,62 @@ public class RealmManager {
         curInstance.close();
     }
 
-    public void saveGoodItemToRealm(GoodItemRes goodItem) {
+    public void saveGoodItemToRealm(GoodItemRes goodItemRes) {
         Realm curInstance = Realm.getDefaultInstance();
         GoodsGroupRealm mParent=null;
-        if (goodItem.getGroupId() != null && !goodItem.getGroupId().isEmpty()) {
+        if (goodItemRes.getGroupId() != null && !goodItemRes.getGroupId().isEmpty()) {
             mParent = curInstance
                     .where(GoodsGroupRealm.class)
-                    .equalTo("groupId", goodItem.getGroupId())
+                    .equalTo("groupId", goodItemRes.getGroupId())
                     .findFirst();
             if (mParent == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(goodItem.getGroupId(),"no_name",null,null)));
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(goodItemRes.getGroupId(),"no_name",null,null)));
                 mParent = curInstance
                         .where(GoodsGroupRealm.class)
-                        .equalTo("groupId", goodItem.getGroupId())
+                        .equalTo("groupId", goodItemRes.getGroupId())
                         .findFirst();
             }
         }
 
         BrandsRealm mBrand = null;
-        if (goodItem.getBrand() != null && goodItem.getBrand().getId() != null && !goodItem.getBrand().getId().isEmpty()) {
+        if (goodItemRes.getBrand() != null && goodItemRes.getBrand().getId() != null && !goodItemRes.getBrand().getId().isEmpty()) {
             mBrand = curInstance
                     .where(BrandsRealm.class)
-                    .equalTo("brandId", goodItem.getBrand().getId())
+                    .equalTo("brandId", goodItemRes.getBrand().getId())
                     .findFirst();
             if (mBrand == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new BrandsRealm(goodItem.getBrand().getId(),goodItem.getBrand().getName(),null)));
+                curInstance.executeTransaction(db->db.insertOrUpdate(new BrandsRealm(goodItemRes.getBrand().getId(),goodItemRes.getBrand().getName(),null)));
                 mBrand = curInstance
                         .where(BrandsRealm.class)
-                        .equalTo("brandId", goodItem.getBrand().getId())
+                        .equalTo("brandId", goodItemRes.getBrand().getId())
                         .findFirst();
             }
         }
 
         GoodsCategoryRealm mCat = null;
-        if (goodItem.getBrand() != null && goodItem.getCategory().getId() != null && !goodItem.getCategory().getId().isEmpty()) {
+        if (goodItemRes.getBrand() != null && goodItemRes.getCategory().getId() != null && !goodItemRes.getCategory().getId().isEmpty()) {
             mCat = curInstance
                     .where(GoodsCategoryRealm.class)
-                    .equalTo("categoryId", goodItem.getCategory().getId())
+                    .equalTo("categoryId", goodItemRes.getCategory().getId())
                     .findFirst();
             if (mParent == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsCategoryRealm(goodItem.getCategory().getId(),goodItem.getCategory().getName(),null)));
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsCategoryRealm(goodItemRes.getCategory().getId(),goodItemRes.getCategory().getName(),null)));
                 mCat = curInstance
                         .where(GoodsCategoryRealm.class)
-                        .equalTo("categoryId", goodItem.getCategory().getId())
+                        .equalTo("categoryId", goodItemRes.getCategory().getId())
                         .findFirst();
             }
         }
 
         ItemRealm newItem = new ItemRealm(
-                goodItem.getId(),
-                goodItem.getName(),
-                goodItem.getArticle(),
-                goodItem.getPrice()!=null?goodItem.getPrice().getBase():0f,
-                goodItem.getPrice()!=null?goodItem.getPrice().getMin():0f,
-                goodItem.getRest()!=null?goodItem.getRest().getStore():0f,
-                goodItem.getRest()!=null?goodItem.getRest().getDistribution():0f,
-                goodItem.getRest()!=null?goodItem.getRest().getOfficial():0f,
+                goodItemRes.getId(),
+                goodItemRes.getName(),
+                goodItemRes.getArticle(),
+                goodItemRes.getPrice()!=null?goodItemRes.getPrice().getBase():0f,
+                goodItemRes.getPrice()!=null?goodItemRes.getPrice().getMin():0f,
+                goodItemRes.getRest()!=null?goodItemRes.getRest().getStore():0f,
+                goodItemRes.getRest()!=null?goodItemRes.getRest().getDistribution():0f,
+                goodItemRes.getRest()!=null?goodItemRes.getRest().getOfficial():0f,
                 mCat,
                 mParent,
                 mBrand
@@ -484,14 +500,41 @@ public class RealmManager {
 
     }
 
+    public void saveCustomerToRealm(CustomerRes customerRes){
 
-    public void clearGoodsGroups() {
-        Realm.getDefaultInstance().executeTransaction(db -> db.delete(GoodsGroupRealm.class));
+        CustomerRealm newCust =  new CustomerRealm(
+                customerRes.getId(),
+                customerRes.getName(),
+                customerRes.getContact_name(),
+                customerRes.getAddress(),
+                customerRes.getPhone(),
+                customerRes.getEmail(),
+                customerRes.getCategory()
+                );
+
+        RealmList<DebtRealm> mDebt = new RealmList<>();
+        for (DebtRes debt : customerRes.getDebt()){
+            mDebt.add(new DebtRealm(newCust, debt.getCurrency(), debt.getAmount(), debt.getAmountUSD(), debt.isOutdated()));
+        }
+
+        RealmList<NoteRealm> mNotes = new RealmList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        for (NoteRes note : customerRes.getNotes()){
+            Date noteDate;
+            try {
+                noteDate = sdf.parse(note.getDate());
+            } catch (ParseException e) {
+                noteDate = Calendar.getInstance().getTime();
+            }
+            mNotes.add(new NoteRealm(newCust, note.getId(), noteDate, note.getText()));
+        }
+
+
+
     }
 
-    public void clearGoods() {
-        Realm.getDefaultInstance().executeTransaction(db -> db.delete(ItemRealm.class));
-    }
+
+
 }
 
 
