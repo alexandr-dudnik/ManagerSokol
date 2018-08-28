@@ -2,12 +2,17 @@ package com.sokolua.manager.data.managers;
 
 import android.support.annotation.Nullable;
 
+import com.sokolua.manager.data.network.res.CustomerDiscountRes;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.DebtRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.NoteRes;
+import com.sokolua.manager.data.network.res.OrderPlanRes;
+import com.sokolua.manager.data.network.res.TaskRes;
+import com.sokolua.manager.data.network.res.VisitRes;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
+import com.sokolua.manager.data.storage.realm.CustomerDiscountRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsCategoryRealm;
@@ -51,20 +56,6 @@ public class RealmManager {
     public void clearDataBase() {
         getQueryRealmInstance().executeTransaction(db-> db.deleteAll());
     }
-
-
-    public void clearGoodsGroups() {
-        Realm.getDefaultInstance().executeTransaction(db -> db.delete(GoodsGroupRealm.class));
-    }
-
-    public void clearGoods() {
-        Realm.getDefaultInstance().executeTransaction(db -> db.delete(ItemRealm.class));
-    }
-
-    public void clearCustomers() {
-        Realm.getDefaultInstance().executeTransaction(db -> db.delete(CustomerRealm.class));
-    }
-
 
     //endregion ====================  DataBase cleanup  =========================
 
@@ -501,11 +492,12 @@ public class RealmManager {
     }
 
     public void saveCustomerToRealm(CustomerRes customerRes){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
         CustomerRealm newCust =  new CustomerRealm(
                 customerRes.getId(),
                 customerRes.getName(),
-                customerRes.getContact_name(),
+                customerRes.getContactName(),
                 customerRes.getAddress(),
                 customerRes.getPhone(),
                 customerRes.getEmail(),
@@ -513,23 +505,107 @@ public class RealmManager {
                 );
 
         RealmList<DebtRealm> mDebt = new RealmList<>();
-        for (DebtRes debt : customerRes.getDebt()){
-            mDebt.add(new DebtRealm(newCust, debt.getCurrency(), debt.getAmount(), debt.getAmountUSD(), debt.isOutdated()));
+        if (customerRes.getDebt() != null) {
+            for (DebtRes debt : customerRes.getDebt()){
+                mDebt.add(new DebtRealm(newCust, debt.getCurrency(), debt.getAmount(), debt.getAmountUSD(), debt.isOutdated()));
+            }
         }
 
         RealmList<NoteRealm> mNotes = new RealmList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        for (NoteRes note : customerRes.getNotes()){
-            Date noteDate;
-            try {
-                noteDate = sdf.parse(note.getDate());
-            } catch (ParseException e) {
-                noteDate = Calendar.getInstance().getTime();
+        if (customerRes.getNotes() != null) {
+            for (NoteRes note : customerRes.getNotes()){
+                Date noteDate;
+                try {
+                    noteDate = sdf.parse(note.getDate());
+                } catch (ParseException e) {
+                    noteDate = Calendar.getInstance().getTime();
+                }
+                mNotes.add(new NoteRealm(newCust, note.getId(), noteDate, note.getText()));
             }
-            mNotes.add(new NoteRealm(newCust, note.getId(), noteDate, note.getText()));
         }
 
+        RealmList<TaskRealm> mTasks = new RealmList<>();
+        if (customerRes.getTasks() != null) {
+            for (TaskRes task : customerRes.getTasks()){
+                mTasks.add(new TaskRealm(newCust, task.getId(), task.getText(), task.getType()));
+            }
+        }
 
+        RealmList<OrderPlanRealm> mPlan = new RealmList<>();
+        RealmList<GoodsCategoryRealm> mCats = new RealmList<>();
+        if (customerRes.getPlan() != null) {
+            for (OrderPlanRes plan : customerRes.getPlan()){
+                GoodsCategoryRealm cat = Realm.getDefaultInstance().where(GoodsCategoryRealm.class).equalTo("categoryId", plan.getCategoryId()).findFirst();
+                if (cat == null){
+                    cat = new GoodsCategoryRealm(plan.getCategoryId(), plan.getCategoryName(), "");
+                    mCats.add(cat);
+                }
+                mPlan.add(new OrderPlanRealm(newCust, cat, plan.getAmount()));
+            }
+        }
+
+        RealmList<CustomerDiscountRealm> mDisc = new RealmList<>();
+        RealmList<ItemRealm> mItems = new RealmList<>();
+        if (customerRes.getDiscounts() != null) {
+            for (CustomerDiscountRes disc : customerRes.getDiscounts()){
+                if (disc.getType() == ConstantManager.DISCOUNT_TYPE_ITEM){
+                    ItemRealm item = Realm.getDefaultInstance().where(ItemRealm.class).equalTo("itemId", disc.getTargetId()).findFirst();
+                    if (item == null){
+                        for (ItemRealm itemIter : mItems) {
+                            if (itemIter.getItemId().equals(disc.getTargetId())) {
+                                item = itemIter;
+                                break;
+                            }
+                        }
+                        if (item == null) {
+                            item = new ItemRealm(disc.getTargetId(), disc.getTargetName(), "");
+                            mItems.add(item);
+                        }
+                    }
+                    mDisc.add(new CustomerDiscountRealm(newCust, item, disc.getPercent()));
+
+                }else{
+                    GoodsCategoryRealm cat = Realm.getDefaultInstance().where(GoodsCategoryRealm.class).equalTo("categoryId", disc.getTargetId()).findFirst();
+                    if (cat == null){
+                        for (GoodsCategoryRealm catIter : mCats) {
+                            if (catIter.getCategoryId().equals(disc.getTargetId())) {
+                                cat = catIter;
+                                break;
+                            }
+                        }
+                        if (cat == null) {
+                            cat = new GoodsCategoryRealm(disc.getTargetId(), disc.getTargetName(), "");
+                            mCats.add(cat);
+                        }
+                    }
+                    mDisc.add(new CustomerDiscountRealm(newCust, cat, disc.getPercent()));
+                }
+
+            }
+        }
+
+        RealmList<VisitRealm> mVisits = new RealmList<>();
+        if (customerRes.getVisits() != null) {
+            for (VisitRes visit : customerRes.getVisits()){
+                Date visitDate;
+                try {
+                    visitDate = sdf.parse(visit.getDate());
+                } catch (ParseException e) {
+                    visitDate = Calendar.getInstance().getTime();
+                }
+                mVisits.add(new VisitRealm(newCust, visit.getId(), visitDate, visit.isDone()));
+            }
+        }
+
+        Realm.getDefaultInstance().executeTransaction(db -> {
+            db.insertOrUpdate(newCust);
+            db.insertOrUpdate(mDebt);
+            db.insertOrUpdate(mNotes);
+            db.insertOrUpdate(mTasks);
+            db.insertOrUpdate(mPlan);
+            db.insertOrUpdate(mDisc);
+            db.insertOrUpdate(mVisits);
+        });
 
     }
 

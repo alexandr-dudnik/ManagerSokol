@@ -63,10 +63,10 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
                     mCustomerNameText.setText(currentItem.getCustomer().getName());
                 }
                 if (mMapPinImg != null) {
-                    mMapPinImg.setVisibility(currentItem.getCustomer().getAddress().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    mMapPinImg.setVisibility((currentItem.getCustomer().getAddress()==null || currentItem.getCustomer().getAddress().isEmpty())?View.INVISIBLE:View.VISIBLE);
                 }
                 if (mCallImg != null) {
-                    mCallImg.setVisibility(currentItem.getCustomer().getPhone().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    mCallImg.setVisibility((currentItem.getCustomer().getPhone()==null || currentItem.getCustomer().getPhone().isEmpty())?View.INVISIBLE:View.VISIBLE);
                 }
             }
         }

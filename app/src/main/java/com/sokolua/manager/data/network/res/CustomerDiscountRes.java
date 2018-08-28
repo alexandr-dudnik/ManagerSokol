@@ -19,11 +19,11 @@ public class CustomerDiscountRes {
         return type;
     }
 
-    public String getTarget_id() {
+    public String getTargetId() {
         return target_id;
     }
 
-    public String getTarget_name() {
+    public String getTargetName() {
         return target_name;
     }
 

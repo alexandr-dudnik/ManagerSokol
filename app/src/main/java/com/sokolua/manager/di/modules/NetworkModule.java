@@ -1,6 +1,7 @@
 package com.sokolua.manager.di.modules;
 
 import com.sokolua.manager.data.network.RestService;
+import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 import com.squareup.moshi.Moshi;
 
@@ -10,6 +11,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Cache;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
@@ -50,9 +53,17 @@ public class NetworkModule {
 
 
     private OkHttpClient createClient() {
+        int cacheSize = 10 * 1024 * 1024; // 10 MB
+        Cache cache = new Cache(App.getContext().getCacheDir(), cacheSize);
+
+        final Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequestsPerHost(AppConfig.MAX_CONCURRENT_REQUESTS);
+
         return new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .connectTimeout(AppConfig.MAX_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                .dispatcher(dispatcher)
+                .cache(cache)
                 .readTimeout(AppConfig.MAX_READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(AppConfig.MAX_WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
                 .build();

@@ -11,6 +11,6 @@ import io.reactivex.Observable;
 public class RoutesModel extends AbstractModel {
     public Observable<List<CustomerListItem>> getCustomersByVisitDate(Date day) {
         Observable<CustomerRealm> obs = mDataManager.getCustomersByVisitDate(day);
-        return obs.map(CustomerListItem::new).toList().toObservable();
+        return obs.isEmpty().blockingGet()?Observable.empty(): obs.map(CustomerListItem::new).toList().toObservable();
     }
 }

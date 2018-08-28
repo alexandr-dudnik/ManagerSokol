@@ -46,6 +46,21 @@ public class ItemRealm extends RealmObject implements Serializable{
         this.index = name.toLowerCase()+"#"+artNumber.toLowerCase();
     }
 
+    public ItemRealm(String itemId, String itemName, String artNumber) {
+        this.itemId = itemId;
+        this.name = itemName;
+        this.artNumber = artNumber;
+        this.basePrice = 0f;
+        this.lowPrice = 0f;
+        this.restStore = 0f;
+        this.restDistr = 0f;
+        this.restOfficial = 0f;
+        this.category = null;
+        this.group = null;
+        this.brand = null;
+        this.index = name.toLowerCase()+"#"+artNumber.toLowerCase();
+    }
+
     //region ===================== Getters =========================
 
     public String getItemId() {

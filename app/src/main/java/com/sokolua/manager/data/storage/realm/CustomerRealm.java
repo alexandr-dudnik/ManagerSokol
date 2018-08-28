@@ -60,19 +60,19 @@ public class CustomerRealm extends RealmObject implements Serializable{
     }
 
     public String getContactName() {
-        return contactName;
+        return contactName==null?"":contactName;
     }
 
     public String getAddress() {
-        return address;
+        return address==null?"":address;
     }
 
     public String getPhone() {
-        return phone;
+        return phone==null?"":phone;
     }
 
     public String getEmail() {
-        return email;
+        return email==null?"":email;
     }
 
     public RealmResults<DebtRealm> getDebt() {
@@ -100,7 +100,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
     }
 
     public String getCategory() {
-        return category;
+        return category==null?"":category;
     }
 
     //endregion ================== Getters =========================

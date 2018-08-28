@@ -7,6 +7,7 @@ public class AppConfig {
     public static final int MAX_CONNECTION_TIMEOUT = 5000;
     public static final int MAX_READ_TIMEOUT = 5000;
     public static final int MAX_WRITE_TIMEOUT = 5000;
+    public static final int MAX_CONCURRENT_REQUESTS = 2;
 
     public static final int MIN_CONSUMER_COUNT = 1;
     public static final int MAX_CONSUMER_COUNT = 3;

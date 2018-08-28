@@ -118,15 +118,20 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         @NonNull
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
+            mModel.clearDatabase();
             return item -> {
                 Observable.mergeDelayError(
                         mModel.updateAllGroupsFromRemote()
 //                                .flatMap(group -> mModel.updateGoodGroupFromRemote(group.getGroupId()))
-                                .map(group -> group.isLoaded())
+                                .map(group -> true)
                         ,
                         mModel.updateAllGoodItemsFromRemote()
   //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
-                                .map(good_item -> good_item.isLoaded())
+                                .map(good_item -> true)
+                        ,
+                        mModel.updateAllCustomersFromRemote()
+                                //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
+                                .map(customer -> true)
                     )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

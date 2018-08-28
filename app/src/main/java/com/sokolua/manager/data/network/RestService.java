@@ -36,6 +36,6 @@ public interface RestService {
     @GET("customers")
     Observable<Response<List<CustomerRes>>> getCustomerList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
-    @GET("goods/{customer_id}")
+    @GET("customers/{customer_id}")
     Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId);
 }

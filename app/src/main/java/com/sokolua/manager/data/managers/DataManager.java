@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
@@ -226,10 +227,9 @@ public class DataManager {
     }
 
 
-    public Observable<ItemRealm> updateCustomersFromRemote(){
-        mRealmManager.clearCustomers();
-        List<String> itemsToUpdate = new ArrayList<>();
-        return mRestService.getGoodsList(mPreferencesManager.getUserAuthToken())
+    public Observable<CustomerRealm> updateCustomersFromRemote(){
+        List<String> custToUpdate = new ArrayList<>();
+        return mRestService.getCustomerList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
                 .flatMap(Observable::fromIterable) //List of ProductRes
                 .subscribeOn(Schedulers.newThread())
@@ -240,8 +240,8 @@ public class DataManager {
 //                    }
                 })
                 //.filter(PhotoCardRes::isActive) //только активные товары
-                .doOnNext(item -> mRealmManager.saveGoodItemToRealm(item)) //Save data on disk
-                .doOnNext(item -> itemsToUpdate.add(item.getId())) //Save data on disk
+                .doOnNext(cust -> mRealmManager.saveCustomerToRealm(cust)) //Save data on disk
+                .doOnNext(cust -> custToUpdate.add(cust.getId())) //Save data on disk
                 .retryWhen(errorObservable -> errorObservable
                         .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
                         .doOnNext(retryCount -> {
@@ -251,8 +251,10 @@ public class DataManager {
                         })
                         .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnComplete(() ->
-                        Observable.fromIterable(itemsToUpdate)
-                                .doOnNext(this::updateGoodItemFromRemote)
+                        Observable.fromIterable(custToUpdate)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .flatMap(this::updateCustomerFromRemote)
                                 .subscribe()
                 )
                 .flatMap(item -> Observable.empty());
@@ -260,18 +262,18 @@ public class DataManager {
     }
 
 
-    public void updateGoodItemFromRemote(String itemId){
-        mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
+    public Observable<CustomerRealm> updateCustomerFromRemote(String customerId){
+        return mRestService.getCustomer(mPreferencesManager.getUserAuthToken(), customerId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(item -> {
 //                    if (!productRes.isActive()) {
 //                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
 //                    }
                 })
                 //.filter(PhotoCardRes::isActive) //только активные товары
-                .doOnNext(item ->  mRealmManager.saveGoodItemToRealm(item)) //Save data on disk
+                .doOnNext(cust ->  mRealmManager.saveCustomerToRealm(cust)) //Save data on disk
                 .retryWhen(errorObservable -> errorObservable
                         .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
                         .doOnNext(retryCount -> {
@@ -280,8 +282,7 @@ public class DataManager {
                         .doOnNext(delay -> {
                         })
                         .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(item -> Observable.empty())
-                .subscribe()
+                .flatMap(cust -> Observable.empty())
         ;
 
     }
@@ -361,11 +362,11 @@ public class DataManager {
     }
 
 
-    public void updateGroupFromRemote(String groupId){
-        mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId)
+    public Observable<GoodsGroupRealm> updateGroupFromRemote(String groupId){
+        return mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(group -> {
 //                    if (!productRes.isActive()) {
 //                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
@@ -382,13 +383,11 @@ public class DataManager {
                         })
                         .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .flatMap(group -> Observable.empty())
-                .subscribe()
                ;
 
     }
 
     public Observable<GoodsGroupRealm> updateGroupsFromRemote(){
-        mRealmManager.clearGoodsGroups();
         List<String> groupsToUpdate = new ArrayList<>();
         return mRestService.getGoodsGroupList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
@@ -413,7 +412,9 @@ public class DataManager {
 //                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnComplete(() ->
                         Observable.fromIterable(groupsToUpdate)
-                                .doOnNext(this::updateGroupFromRemote)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .flatMap(this::updateGroupFromRemote)
                                 .subscribe()
                 )
                 .flatMap(group -> Observable.empty());
@@ -422,7 +423,6 @@ public class DataManager {
 
 
     public Observable<ItemRealm> updateItemsFromRemote(){
-        mRealmManager.clearGoods();
         List<String> itemsToUpdate = new ArrayList<>();
         return mRestService.getGoodsList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
@@ -447,7 +447,9 @@ public class DataManager {
                         .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnComplete(() ->
                         Observable.fromIterable(itemsToUpdate)
-                                .doOnNext(this::updateGoodItemFromRemote)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .flatMap(this::updateGoodItemFromRemote)
                                 .subscribe()
                 )
                 .flatMap(item -> Observable.empty());
@@ -455,11 +457,11 @@ public class DataManager {
     }
 
 
-    public void updateGoodItemFromRemote(String itemId){
-        mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
+    public Observable<ItemRealm> updateGoodItemFromRemote(String itemId){
+        return mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(item -> {
 //                    if (!productRes.isActive()) {
 //                        mRealmManager.deleteFromRealm(ProductRealm.class, productRes.getId()); //удалить запись из локальной БД
@@ -476,7 +478,6 @@ public class DataManager {
                         })
                         .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .flatMap(item -> Observable.empty())
-                .subscribe()
                 ;
 
     }
