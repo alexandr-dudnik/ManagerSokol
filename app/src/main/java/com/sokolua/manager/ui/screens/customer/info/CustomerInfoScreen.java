@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import dagger.Provides;
 import io.reactivex.Observable;
 import io.realm.RealmChangeListener;
+import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import mortar.MortarScope;
 
@@ -83,6 +84,8 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         private ReactiveRecyclerAdapter mNotesAdapter;
         private ReactiveRecyclerAdapter.ReactiveViewHolderFactory<NoteRealm> viewAndHolderFactory;
         private RealmChangeListener<RealmResults<NoteRealm>> mNotesListener;
+        private CustomerInfoDataAdapter mDataAdapter;
+        private RealmObjectChangeListener<CustomerRealm> mCustomerChangeListener;
 
 
         public Presenter() {
@@ -104,28 +107,12 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
 
             //Data custom adapter
-            CustomerInfoDataAdapter mDataAdapter = new CustomerInfoDataAdapter();
-            if (!mCustomer.getName().isEmpty()) {
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header), mCustomer.getName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            }
-            if (!mCustomer.getContactName().isEmpty()) {
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header), mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            }
-            if (!mCustomer.getContactName().isEmpty()) {
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), mCustomer.getCategory(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            }else{
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), App.getStringRes(R.string.customer_info_category_no_category), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            }
-            if (!mCustomer.getAddress().isEmpty()) {
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header), mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP));
-            }
-            if (!mCustomer.getPhone().isEmpty()) {
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header), mCustomer.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL));
-            }
-            if (!mCustomer.getEmail().isEmpty()) {
-                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header), mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL));
-            }
+            mDataAdapter = new CustomerInfoDataAdapter();
             getView().setDataAdapter(mDataAdapter);
+            updateCustomerData();
+            mCustomerChangeListener = (realmModel, changeSet) -> updateCustomerData();
+            mCustomer.addChangeListener(mCustomerChangeListener);
+
 
             //Notes realm adapter
             viewAndHolderFactory = (parent, pViewType) -> {
@@ -144,6 +131,45 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
         }
 
+        private void updateCustomerData() {
+            CustomerInfoDataItem item;
+            item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header), mCustomer.getName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION);
+            if (!mCustomer.getName().isEmpty()) {
+                mDataAdapter.addItem(item);
+            }else{
+                mDataAdapter.removeItem(item);
+            }
+            item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header), mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION);
+            if (!mCustomer.getContactName().isEmpty()) {
+                mDataAdapter.addItem(item);
+            }else{
+                mDataAdapter.removeItem(item);
+            }
+            if (!mCustomer.getContactName().isEmpty()) {
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), mCustomer.getCategory(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            }else{
+                mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), App.getStringRes(R.string.customer_info_category_no_category), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
+            }
+            item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header), mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP);
+            if (!mCustomer.getAddress().isEmpty()) {
+                mDataAdapter.addItem(item);
+            }else{
+                mDataAdapter.removeItem(item);
+            }
+            item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header), mCustomer.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL);
+            if (!mCustomer.getPhone().isEmpty()) {
+                mDataAdapter.addItem(item);
+            }else{
+                mDataAdapter.removeItem(item);
+            }
+            item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header), mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL);
+            if (!mCustomer.getEmail().isEmpty()) {
+                mDataAdapter.addItem(item);
+            }else{
+                mDataAdapter.removeItem(item);
+            }
+        }
+
         void updateNotes(){
             mNotesAdapter.refreshList(mModel.getCustomerNotes(mCustomer.getCustomerId()));
         }
@@ -151,6 +177,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
         @Override
         public void dropView(CustomerInfoView view) {
+            mCustomer.removeChangeListener(mCustomerChangeListener);
             mCustomer.getNotes().removeChangeListener(mNotesListener);
             super.dropView(view);
         }

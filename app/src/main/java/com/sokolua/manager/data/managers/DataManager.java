@@ -261,7 +261,7 @@ public class DataManager {
                         Observable.fromIterable(custToUpdate)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(Schedulers.computation())
-                                .flatMap(this::updateCustomerFromRemote)
+                                .doOnNext(this::updateCustomerFromRemote)
                                 .retryWhen(errorObservable -> errorObservable
                                         .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
                                         .doOnNext(retryCount -> {
@@ -497,9 +497,9 @@ public class DataManager {
 //                    }
                 })
                 //.filter(PhotoCardRes::isActive) //только активные товары
+                .doOnNext(item -> itemsToUpdate.add(item.getId())) //Save data on disk
                 .doOnNext(item -> mRealmManager.saveGoodItemToRealm(item)) //Save data on disk
-//                .doOnNext(item -> itemsToUpdate.add(item.getId())) //Save data on disk
-                .flatMap(item -> updateGoodItemFromRemote(item.getId()))
+//                .flatMap(item -> updateGoodItemFromRemote(item.getId()))
                 .retryWhen(errorObservable -> errorObservable
                         .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
                         .doOnNext(retryCount -> {
@@ -508,21 +508,21 @@ public class DataManager {
                         .doOnNext(delay -> {
                         })
                         .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-//                .doOnComplete(() ->
-//                        Observable.fromIterable(itemsToUpdate)
-//                                .subscribeOn(Schedulers.io())
-//                                .observeOn(Schedulers.computation())
-//                                .doOnNext(this::updateGoodItemFromRemote)
-//                                .retryWhen(errorObservable -> errorObservable
-//                                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-//                                        .doOnNext(retryCount -> {
-//                                        })
-//                                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-//                                        .doOnNext(delay -> {
-//                                        })
-//                                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-//                                .subscribe()
-//                )
+                .doOnComplete(() ->
+                        Observable.fromIterable(itemsToUpdate)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.computation())
+                                .doOnNext(this::updateGoodItemFromRemote)
+                                .retryWhen(errorObservable -> errorObservable
+                                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                                        .doOnNext(retryCount -> {
+                                        })
+                                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                                        .doOnNext(delay -> {
+                                        })
+                                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                                .subscribe()
+                )
                 .flatMap(item -> Observable.empty());
 
     }

@@ -34,6 +34,8 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private final RealmResults<CustomerDiscountRealm> discounts = null;
     @LinkingObjects("customer")
     private final RealmResults<VisitRealm> visits = null;
+    @LinkingObjects("customer")
+    private final RealmResults<OrderRealm> orders = null;
 
     public CustomerRealm() {
     }
@@ -97,6 +99,10 @@ public class CustomerRealm extends RealmObject implements Serializable{
 
     public RealmResults<VisitRealm> getVisits() {
         return visits;
+    }
+
+    public RealmResults<OrderRealm> getOrders() {
+        return orders;
     }
 
     public String getCategory() {

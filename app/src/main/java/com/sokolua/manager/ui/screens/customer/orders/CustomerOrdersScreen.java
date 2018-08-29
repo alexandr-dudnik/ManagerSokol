@@ -22,6 +22,8 @@ import javax.inject.Inject;
 
 import dagger.Provides;
 import flow.Flow;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_orders)
@@ -77,6 +79,8 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
     public class Presenter extends AbstractPresenter<CustomerOrdersView, CustomerModel> {
         @Inject
         protected CustomerRealm mCustomer;
+        private RealmChangeListener<RealmResults<OrderPlanRealm>> mPlanListener;
+        private RealmChangeListener<RealmResults<OrderRealm>> mOrderListener;
 
 
         public Presenter() {
@@ -103,6 +107,8 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
             };
             ReactiveRecyclerAdapter mPlanAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerPlan(mCustomer.getCustomerId()), planViewAndHolderFactory);
             getView().setPlanAdapter(mPlanAdapter);
+            mPlanListener = orderPlanRealms -> mPlanAdapter.refreshList(mModel.getCustomerPlan(mCustomer.getCustomerId()));
+            mCustomer.getPlan().addChangeListener(mPlanListener);
 
             //Orders realm adapter
             ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> orderViewAndHolderFactory = (parent, pViewType) -> {
@@ -114,6 +120,16 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
             };
             ReactiveRecyclerAdapter mOrderAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerOrders(mCustomer.getCustomerId()), orderViewAndHolderFactory);
             getView().setOrdersAdapter(mOrderAdapter);
+            mOrderListener = ordersRealms -> mOrderAdapter.refreshList(mModel.getCustomerOrders(mCustomer.getCustomerId()));
+            mCustomer.getOrders().addChangeListener(mOrderListener);
+        }
+
+        @Override
+        public void dropView(CustomerOrdersView view) {
+            mCustomer.getPlan().removeChangeListener(mPlanListener);
+            mCustomer.getOrders().removeChangeListener(mOrderListener);
+
+            super.dropView(view);
         }
 
         @Override
