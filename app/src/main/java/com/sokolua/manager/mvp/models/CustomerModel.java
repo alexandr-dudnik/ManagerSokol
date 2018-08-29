@@ -15,6 +15,8 @@ import com.sokolua.manager.utils.App;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class CustomerModel extends AbstractModel {
 
@@ -87,5 +89,13 @@ public class CustomerModel extends AbstractModel {
 
     public void deleteNote(NoteRealm note) {
         mDataManager.deleteNote(note);
+    }
+
+    public void updateCustomerFromRemote(String customerId) {
+        Observable.just(customerId)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .doOnNext(id -> mDataManager.updateCustomerFromRemote(id))
+                .subscribe();
     }
 }

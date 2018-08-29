@@ -118,6 +118,10 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                                 Flow.get(getView()).set(new OrderScreen(cart));
                                 return false;
                             } , ConstantManager.MENU_ITEM_TYPE_ACTION))
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
+                        mModel.updateCustomerFromRemote(mCustomer.getCustomerId());
+                        return false;
+                    } , ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .build();
 
         }

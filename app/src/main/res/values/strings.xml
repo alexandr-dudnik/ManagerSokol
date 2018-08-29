@@ -107,5 +107,7 @@
     <string name="default_manager_name">Вася Пупкин</string>
     <string name="customer_info_category_header">Класс по обороту</string>
     <string name="customer_info_category_no_category">НЕТ</string>
+    <string name="button_yes_text">ДА</string>
+    <string name="button_no_text">No</string>
 
 </resources>

@@ -493,6 +493,7 @@ public class RealmManager {
 
     public void saveCustomerToRealm(CustomerRes customerRes){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Realm curInstance = Realm.getDefaultInstance();
 
         CustomerRealm newCust =  new CustomerRealm(
                 customerRes.getId(),
@@ -535,7 +536,7 @@ public class RealmManager {
         RealmList<GoodsCategoryRealm> mCats = new RealmList<>();
         if (customerRes.getPlan() != null) {
             for (OrderPlanRes plan : customerRes.getPlan()){
-                GoodsCategoryRealm cat = Realm.getDefaultInstance().where(GoodsCategoryRealm.class).equalTo("categoryId", plan.getCategoryId()).findFirst();
+                GoodsCategoryRealm cat = curInstance.where(GoodsCategoryRealm.class).equalTo("categoryId", plan.getCategoryId()).findFirst();
                 if (cat == null){
                     cat = new GoodsCategoryRealm(plan.getCategoryId(), plan.getCategoryName(), "");
                     mCats.add(cat);
@@ -549,7 +550,7 @@ public class RealmManager {
         if (customerRes.getDiscounts() != null) {
             for (CustomerDiscountRes disc : customerRes.getDiscounts()){
                 if (disc.getType() == ConstantManager.DISCOUNT_TYPE_ITEM){
-                    ItemRealm item = Realm.getDefaultInstance().where(ItemRealm.class).equalTo("itemId", disc.getTargetId()).findFirst();
+                    ItemRealm item = curInstance.where(ItemRealm.class).equalTo("itemId", disc.getTargetId()).findFirst();
                     if (item == null){
                         for (ItemRealm itemIter : mItems) {
                             if (itemIter.getItemId().equals(disc.getTargetId())) {
@@ -565,7 +566,7 @@ public class RealmManager {
                     mDisc.add(new CustomerDiscountRealm(newCust, item, disc.getPercent()));
 
                 }else{
-                    GoodsCategoryRealm cat = Realm.getDefaultInstance().where(GoodsCategoryRealm.class).equalTo("categoryId", disc.getTargetId()).findFirst();
+                    GoodsCategoryRealm cat = curInstance.where(GoodsCategoryRealm.class).equalTo("categoryId", disc.getTargetId()).findFirst();
                     if (cat == null){
                         for (GoodsCategoryRealm catIter : mCats) {
                             if (catIter.getCategoryId().equals(disc.getTargetId())) {
@@ -597,7 +598,7 @@ public class RealmManager {
             }
         }
 
-        Realm.getDefaultInstance().executeTransaction(db -> {
+        curInstance.executeTransaction(db -> {
             db.insertOrUpdate(newCust);
             db.insertOrUpdate(mDebt);
             db.insertOrUpdate(mNotes);
@@ -606,7 +607,7 @@ public class RealmManager {
             db.insertOrUpdate(mDisc);
             db.insertOrUpdate(mVisits);
         });
-
+        curInstance.close();
     }
 
 
