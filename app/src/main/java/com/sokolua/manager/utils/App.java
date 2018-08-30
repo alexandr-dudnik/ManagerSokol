@@ -55,7 +55,7 @@ public class App extends Application {
                 .migration(new RealmMigrations())
                 .build();
         Realm.setDefaultConfiguration(configuration);
-        Realm.getInstance(configuration);
+        //Realm.getInstance(configuration);
 
 
 //        if (BuildConfig.DEBUG) {

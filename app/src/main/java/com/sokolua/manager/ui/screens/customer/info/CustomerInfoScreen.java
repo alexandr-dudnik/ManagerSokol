@@ -110,7 +110,14 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             mDataAdapter = new CustomerInfoDataAdapter();
             getView().setDataAdapter(mDataAdapter);
             updateCustomerData();
-            mCustomerChangeListener = (realmModel, changeSet) -> updateCustomerData();
+            mCustomerChangeListener = (realmModel, changeSet) -> {
+
+                if (changeSet!=null && changeSet.isDeleted() || !realmModel.isValid() || !realmModel.isLoaded()){
+                    realmModel.removeAllChangeListeners();
+                }else {
+                    updateCustomerData();
+                }
+            };
             mCustomer.addChangeListener(mCustomerChangeListener);
 
 
@@ -126,7 +133,13 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             getView().setNoteAdapter(mNotesAdapter);
             updateNotes();
 
-            mNotesListener = noteRealms -> updateNotes();
+            mNotesListener = noteRealms -> {
+                if (!noteRealms.isValid() || !noteRealms.isLoaded()){
+                    noteRealms.removeAllChangeListeners();
+                }else {
+                    updateNotes();
+                }
+            };
             mCustomer.getNotes().addChangeListener(mNotesListener);
 
         }

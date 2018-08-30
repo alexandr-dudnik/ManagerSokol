@@ -46,7 +46,7 @@ public class AuthModel extends AbstractModel {
         mDataManager.updateUserData(userRes);
     }
 
-    public void ClearUserData() {
+    public void clearUserData() {
         updateUserData(new UserRes("","",""));
         mDataManager.updateUserPassword("");
         mDataManager.updateUserName("");

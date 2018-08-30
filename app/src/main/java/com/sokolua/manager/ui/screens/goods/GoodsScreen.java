@@ -192,8 +192,12 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 };
                 currentCart.addChangeListener(orderChangeListener);
                 orderLinesChangeListener = orderLineRealms -> {
-                            getView().setCartAmount(currentCart.getTotal());
-                            getView().setCartItemsCount(currentCart.getLines().size());
+                            if (!orderLineRealms.isLoaded() || !orderLineRealms.isValid()){
+                                orderLineRealms.removeAllChangeListeners();
+                            }else{
+                                getView().setCartAmount(currentCart.getTotal());
+                                getView().setCartItemsCount(currentCart.getLines().size());
+                            }
                         };
                 currentCart.getLines().addChangeListener(orderLinesChangeListener);
 

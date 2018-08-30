@@ -48,12 +48,14 @@ public class RealmManager {
         if (mRealmInstance == null || mRealmInstance.isClosed()) {
             mRealmInstance = Realm.getDefaultInstance();
         }
+        mRealmInstance.refresh();
         return mRealmInstance;
     }
 
     //region =======================  DataBase cleanup  =========================
 
     public void clearDataBase() {
+        getQueryRealmInstance().removeAllChangeListeners();
         getQueryRealmInstance().executeTransaction(db-> db.deleteAll());
     }
 
@@ -304,6 +306,7 @@ public class RealmManager {
                 .equalTo("item.itemId", item.getItemId())
                 .findFirst();
         if (line != null) {
+            line.removeAllChangeListeners();
             getQueryRealmInstance().executeTransaction(db -> line.deleteFromRealm());
         }
     }
@@ -322,6 +325,7 @@ public class RealmManager {
 
     public void clearOrderLines(OrderRealm order) {
         if (!order.getLines().isEmpty()){
+            order.getLines().removeAllChangeListeners();
             getQueryRealmInstance().executeTransaction(db -> order.getLines().deleteAllFromRealm());
         }
     }
@@ -392,6 +396,7 @@ public class RealmManager {
                 .equalTo("noteId", note.getNoteId())
                 .findFirst();
         if (tmp != null) {
+            tmp.removeAllChangeListeners();
             getQueryRealmInstance().executeTransaction(db->tmp.deleteFromRealm());
         }
     }
@@ -400,6 +405,7 @@ public class RealmManager {
 
     public void saveGoodGroupToRealm(GoodGroupRes groupRes) {
         Realm curInstance = Realm.getDefaultInstance();
+        curInstance.refresh();
         GoodsGroupRealm mParent=null;
         if (groupRes.getParent() != null && !groupRes.getParent().isEmpty()) {
             mParent = curInstance
@@ -428,6 +434,7 @@ public class RealmManager {
 
     public void saveGoodItemToRealm(GoodItemRes goodItemRes) {
         Realm curInstance = Realm.getDefaultInstance();
+        curInstance.refresh();
         GoodsGroupRealm mParent=null;
         if (goodItemRes.getGroupId() != null && !goodItemRes.getGroupId().isEmpty()) {
             mParent = curInstance
@@ -494,6 +501,7 @@ public class RealmManager {
     public void saveCustomerToRealm(CustomerRes customerRes){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Realm curInstance = Realm.getDefaultInstance();
+        curInstance.refresh();
 
         CustomerRealm newCust =  new CustomerRealm(
                 customerRes.getId(),

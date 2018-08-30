@@ -109,13 +109,9 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
             super.onLoad(savedInstanceState);
 
             customerChangeListener = (realmModel, changeSet) -> {
-                if (changeSet == null) {
-                    return;
-                }
-                if (changeSet.isDeleted()) {
+                if (!realmModel.isLoaded() || !realmModel.isValid() || changeSet != null && changeSet.isDeleted()) {
                     getView().viewOnBackPressed();
                 }
-
             };
             mCustomer.addChangeListener(customerChangeListener);
         }

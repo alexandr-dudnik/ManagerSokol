@@ -118,9 +118,9 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         @NonNull
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
-            mModel.clearDatabase();
             return item -> {
-                Observable.mergeDelayError(
+                mModel.clearDatabase();
+                Observable.concat(
                         mModel.updateAllGroupsFromRemote()
 //                                .flatMap(group -> mModel.updateGoodGroupFromRemote(group.getGroupId()))
                                 .map(group -> true)
@@ -174,7 +174,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .setCancelable(false)
                         .setPositiveButton(R.string.button_positive_text, ((dialog, which) -> {
                             if (getRootView() != null) {
-                                mAuthModel.ClearUserData();
+                                mAuthModel.clearUserData();
                                 Flow.get(getView()).replaceHistory(new AuthScreen(), Direction.REPLACE);
                                 getRootView().showMessage(App.getStringRes(R.string.message_logout));
 

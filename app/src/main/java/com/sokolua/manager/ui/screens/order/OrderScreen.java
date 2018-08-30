@@ -32,7 +32,6 @@ import dagger.Provides;
 import flow.Flow;
 import io.reactivex.Observable;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
 import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import mortar.MortarScope;
@@ -99,7 +98,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderLineRealm> linesViewHolder;
         ReactiveRecyclerAdapter linesAdapter;
         private RealmChangeListener<RealmResults<OrderLineRealm>> lineChangeListener;
-        private RealmObjectChangeListener<RealmModel> orderChangeListener;
+        private RealmObjectChangeListener<OrderRealm> orderChangeListener;
 
         public Presenter() {
         }
@@ -125,15 +124,26 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder);
             updateLines();
             getView().setLinesAdapter(linesAdapter);
-            lineChangeListener = orderLineRealms -> Presenter.this.updateLines();
+            lineChangeListener = orderLineRealms -> {
+                if (!orderLineRealms.isValid() || orderLineRealms.isLoaded()){
+                    orderLineRealms.removeAllChangeListeners();
+                }else{
+                    Presenter.this.updateLines();
+                }
+            };
             currentOrder.getLines().addChangeListener(lineChangeListener);
 
 
             orderChangeListener = (realmModel, changeSet) -> {
+                if (!realmModel.isLoaded() || !realmModel.isValid()){
+                    realmModel.removeAllChangeListeners();
+                    getView().viewOnBackPressed();
+                }
                 if (changeSet == null) {
                     return;
                 }
                 if (changeSet.isDeleted()) {
+                    realmModel.removeAllChangeListeners();
                     getView().viewOnBackPressed();
                 }
                 if (changeSet.isFieldChanged("comments")) {
