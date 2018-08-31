@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class OrderModel extends AbstractModel {
     public void setDeliveryDate(OrderRealm currentOrder, Date mDate) {
@@ -50,6 +52,10 @@ public class OrderModel extends AbstractModel {
     }
 
     public void updateOrderFromRemote(String orderId) {
-        mDataManager.updateOrderFromRemote(orderId);
+        Observable.just(orderId)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .doOnNext(id -> mDataManager.updateOrderFromRemote(orderId))
+                .subscribe();
     }
 }
