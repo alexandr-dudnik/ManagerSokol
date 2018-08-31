@@ -208,7 +208,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
                     mModel.clearOrderLines(currentOrder);
                     return false;
-                }, ConstantManager.MENU_ITEM_TYPE_ITEM));
+                }, ConstantManager.MENU_ITEM_TYPE_ITEM))
+                .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
+                    mModel.updateOrderFromRemote(currentOrder.getId());
+                    return false;
+                } , ConstantManager.MENU_ITEM_TYPE_ITEM))
+                ;
 
             }
 

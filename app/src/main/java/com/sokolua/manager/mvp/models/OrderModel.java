@@ -48,4 +48,8 @@ public class OrderModel extends AbstractModel {
     public void updateOrderPayment(OrderRealm order, int payment) {
         mDataManager.updateOrderPayment(order, payment);
     }
+
+    public void updateOrderFromRemote(String orderId) {
+        mDataManager.updateOrderFromRemote(orderId);
+    }
 }

@@ -8,7 +8,9 @@ import com.sokolua.manager.data.network.res.DebtRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.NoteRes;
+import com.sokolua.manager.data.network.res.OrderLineRes;
 import com.sokolua.manager.data.network.res.OrderPlanRes;
+import com.sokolua.manager.data.network.res.OrderRes;
 import com.sokolua.manager.data.network.res.TaskRes;
 import com.sokolua.manager.data.network.res.VisitRes;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
@@ -619,7 +621,59 @@ public class RealmManager {
     }
 
 
+    public void saveOrderToRealm(OrderRes orderRes) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Realm curInstance = Realm.getDefaultInstance();
+        curInstance.refresh();
 
+        CustomerRealm mCustomer = curInstance.where(CustomerRealm.class).equalTo("customerId", orderRes.getCustomerId()).findFirst();
+        if (mCustomer == null){
+            curInstance.close();
+            return;
+        }
+        Date orderDate;
+        Date deliveryDate;
+        try{
+             orderDate = sdf.parse(orderRes.getDate());
+        } catch (ParseException e) {
+            orderDate = Calendar.getInstance().getTime();
+        }
+        try{
+            deliveryDate = sdf.parse(orderRes.getDelivery());
+        } catch (ParseException e) {
+            deliveryDate = orderDate;
+        }
+
+        OrderRealm newOrder = new OrderRealm(
+                orderRes.getId(),
+                mCustomer,
+                orderDate,
+                deliveryDate,
+                (Boolean.parseBoolean(orderRes.getDelivered()) ? ConstantManager.ORDER_STATUS_DELIVERED : ConstantManager.ORDER_STATUS_IN_PROGRESS),
+                (orderRes.getPayment().equalsIgnoreCase("cash") ? ConstantManager.ORDER_PAYMENT_CASH : ConstantManager.ORDER_PAYMENT_OFFICIAL),
+                orderRes.getCurrency(),
+                orderRes.getComments()
+        );
+
+        RealmList<OrderLineRealm> lines = new RealmList<>();
+        if (orderRes.getLines() != null) {
+            for (OrderLineRes line : orderRes.getLines()){
+                ItemRealm mItem = curInstance.where(ItemRealm.class).equalTo("itemId", line.getItemId()).findFirst();
+                if (mItem == null) {
+                    mItem = new ItemRealm(line.getItemId(),line.getItemName(),"");
+                }
+                lines.add(new OrderLineRealm(newOrder, mItem, line.getQuantity(), line.getPrice()));
+            }
+        }
+
+        curInstance.executeTransaction(db->{
+            db.insertOrUpdate(newOrder);
+            db.insertOrUpdate(lines);
+        });
+
+        curInstance.close();
+    }
 }
+
 
 

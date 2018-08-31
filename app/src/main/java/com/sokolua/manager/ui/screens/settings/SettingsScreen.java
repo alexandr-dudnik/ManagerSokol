@@ -132,6 +132,10 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         mModel.updateAllCustomersFromRemote()
                                 //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
                                 .map(customer -> true)
+                        ,
+                        mModel.updateAllOrdersFromRemote()
+                                //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
+                                .map(order -> true)
                     )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

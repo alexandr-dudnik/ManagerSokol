@@ -5,6 +5,7 @@ import com.sokolua.manager.data.managers.ConstantManager;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -16,6 +17,7 @@ public class OrderRealm extends RealmObject implements Serializable{
     @Required
     @PrimaryKey
     private String id;
+    private String external_id;
     @Required
     private Date date;
     private Date delivery;
@@ -32,6 +34,7 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, String currency, String comments) {
         this.id = id;
+        this.external_id = id;
         this.customer = customer;
         this.date = date;
         this.delivery = delivery;
@@ -39,6 +42,18 @@ public class OrderRealm extends RealmObject implements Serializable{
         this.payment = payment;
         this.currency = currency;
         this.comments = comments;
+    }
+
+    public OrderRealm(CustomerRealm customer) {
+        this.id = UUID.randomUUID().toString();
+        this.external_id = "";
+        this.customer = customer;
+        this.date = Calendar.getInstance().getTime();
+        this.delivery = this.date;
+        this.status = ConstantManager.ORDER_STATUS_CART;
+        this.payment = ConstantManager.ORDER_PAYMENT_CASH;
+        this.currency = ConstantManager.MAIN_CURRENCY;
+        this.comments = "";
     }
 
     //region ================================ Getters ==================================

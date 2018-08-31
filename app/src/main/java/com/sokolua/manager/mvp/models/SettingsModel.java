@@ -3,6 +3,7 @@ package com.sokolua.manager.mvp.models;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 
 import io.reactivex.Observable;
 
@@ -38,6 +39,11 @@ public class SettingsModel extends AbstractModel {
     public Observable<CustomerRealm> updateAllCustomersFromRemote() {
         return mDataManager.updateCustomersFromRemote();
     }
+
+    public Observable<OrderRealm> updateAllOrdersFromRemote() {
+        return mDataManager.updateOrdersFromRemote();
+    }
+
 
     public void clearDatabase() {
         mDataManager.clearDataBase();
