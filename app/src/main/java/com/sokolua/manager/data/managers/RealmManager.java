@@ -649,7 +649,7 @@ public class RealmManager {
                 mCustomer,
                 orderDate,
                 deliveryDate,
-                (Boolean.parseBoolean(orderRes.getDelivered()) ? ConstantManager.ORDER_STATUS_DELIVERED : ConstantManager.ORDER_STATUS_IN_PROGRESS),
+                (Boolean.parseBoolean(orderRes.getDelivered()) ? ConstantManager.ORDER_STATUS_DELIVERED : ConstantManager.ORDER_STATUS_SENT),
                 (orderRes.getPayment().equalsIgnoreCase("cash") ? ConstantManager.ORDER_PAYMENT_CASH : ConstantManager.ORDER_PAYMENT_OFFICIAL),
                 orderRes.getCurrency(),
                 orderRes.getComments()
@@ -660,7 +660,7 @@ public class RealmManager {
             for (OrderLineRes line : orderRes.getLines()){
                 ItemRealm mItem = curInstance.where(ItemRealm.class).equalTo("itemId", line.getItemId()).findFirst();
                 if (mItem == null) {
-                    mItem = new ItemRealm(line.getItemId(),line.getItemName(),"");
+                    mItem = new ItemRealm(line.getItemId(),line.getItemName(),line.getItemArticle());
                 }
                 lines.add(new OrderLineRealm(newOrder, mItem, line.getQuantity(), line.getPrice()));
             }

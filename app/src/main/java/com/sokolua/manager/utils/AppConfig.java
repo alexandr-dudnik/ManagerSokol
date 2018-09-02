@@ -1,13 +1,12 @@
 package com.sokolua.manager.utils;
 
-import com.sokolua.manager.BuildConfig;
-
 public class AppConfig {
-    public static final String BASE_URL = "http://"+(BuildConfig.DEBUG?"10.10.20.58":"mail.sokolua.com:8880")+"/upp_general_82/hs/api/";
-    //public static final String BASE_URL = "http://89.28.206.94:38554/upp_general_82/hs/api/";
-    public static final int MAX_CONNECTION_TIMEOUT = 15000;
-    public static final int MAX_READ_TIMEOUT = 15000;
-    public static final int MAX_WRITE_TIMEOUT = 15000;
+    //public static final String BASE_URL = "http://"+(BuildConfig.DEBUG?"10.10.20.58":"mail.sokolua.com:8880")+"/upp_general_82/hs/api/";
+    //public static final String BASE_URL = "http://mail.sokolua.com:3854/upp_general_82/hs/api/";
+    public static final String BASE_URL = "http://mail.220tm.com:3854/upp_general_82/hs/api/";
+    public static final int MAX_CONNECTION_TIMEOUT = 5000;
+    public static final int MAX_READ_TIMEOUT = 5000;
+    public static final int MAX_WRITE_TIMEOUT = 5000;
     public static final int MAX_CONCURRENT_REQUESTS = 10;
 
     public static final int MIN_CONSUMER_COUNT = 1;

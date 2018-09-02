@@ -187,7 +187,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             RootPresenter.ActionBarBuilder abb = mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
-                    .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName());
+                    .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName())
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
+                        mModel.updateOrderFromRemote(currentOrder.getId());
+                        return false;
+                    } , ConstantManager.MENU_ITEM_TYPE_ITEM))
+                    ;
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
                     if (currentOrder.getLines().isEmpty()){
@@ -209,10 +214,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     mModel.clearOrderLines(currentOrder);
                     return false;
                 }, ConstantManager.MENU_ITEM_TYPE_ITEM))
-                .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
-                    mModel.updateOrderFromRemote(currentOrder.getId());
-                    return false;
-                } , ConstantManager.MENU_ITEM_TYPE_ITEM))
                 ;
 
             }
