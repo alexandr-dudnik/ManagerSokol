@@ -18,6 +18,7 @@ import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.AppConfig;
 
 import javax.inject.Inject;
 
@@ -98,10 +99,10 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            getView().setServerAddress(mModel.getServerAddress());
             getView().setAutoSynchronize(mModel.getAutoSynchronize());
             getView().setUserName(mAuthModel.getUserName());
             getView().setUserPassword(mAuthModel.getUserPassword());
+            getView().setServerList(AppConfig.API_SERVERS, mModel.getServerAddress());
         }
 
         @Override
@@ -203,6 +204,10 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void checkAuth() {
             mRootPresenter.doUserLogin(getView().getUserName(),getView().getUserPassword());
+        }
+
+        public void updateServer(String serverName) {
+            mModel.updateServerAddress(serverName);
         }
     }
 

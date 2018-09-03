@@ -2,18 +2,25 @@ package com.sokolua.manager.ui.screens.auth;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 
+import java.util.Arrays;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
+import butterknife.OnItemSelected;
 
 
 public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAuthView {
@@ -21,6 +28,7 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
     @BindView(R.id.login_btn)       Button mLoginBtn;
     @BindView(R.id.user_name)       EditText mUserName;
     @BindView(R.id.user_password)   EditText mUserPassword;
+    @BindView(R.id.server_name)     Spinner mServerName;
 
 
     public AuthView(Context context, AttributeSet attrs) {
@@ -49,6 +57,12 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
         this.mUserPassword.setText(userPassword);
     }
 
+    public void setServerList(String[] servers, String currentServer){
+        mServerName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
+        List<String> list = Arrays.asList(servers);
+        int idx = list.indexOf(currentServer);
+        mServerName.setSelection(idx<0?0:idx);
+    }
 
     //region ===================== Events =========================
 
@@ -56,6 +70,11 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
     @OnClick(R.id.login_btn)
     void loginClick(){
         mPresenter.clickOnLogin();
+    }
+
+    @OnItemSelected(R.id.server_name)
+    void serverChange(View view){
+        mPresenter.updateServer(mServerName.getSelectedItem().toString());
     }
 
     //endregion ================== Events =========================

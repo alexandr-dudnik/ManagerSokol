@@ -9,6 +9,25 @@
               tools:showIn="@layout/screen_auth">
 
     <TextView
+        android:id="@+id/server_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@string/roboto_medium"
+        android:text="@string/settings_server_address"
+        android:textAlignment="center"
+        android:textColor="@color/color_black"
+        android:textSize="18sp" />
+
+    <Spinner
+        android:id="@+id/server_name"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:spinnerMode="dropdown"
+        android:layout_marginLeft="@dimen/login_form_padding"
+        android:layout_marginRight="@dimen/login_form_padding"
+        />
+
+    <TextView
         android:id="@+id/login_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +39,8 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/user_name"
@@ -28,6 +48,7 @@
             android:layout_height="24dp"
             android:layout_marginLeft="@dimen/login_form_padding"
             android:layout_marginRight="@dimen/login_form_padding"
+            android:inputType="text"
             style="@style/login_input_text" />
     </android.support.design.widget.TextInputLayout>
 

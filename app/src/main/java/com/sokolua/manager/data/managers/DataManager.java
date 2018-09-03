@@ -4,9 +4,6 @@ import android.util.Log;
 
 import com.sokolua.manager.data.network.RestCallTransformer;
 import com.sokolua.manager.data.network.RestService;
-import com.sokolua.manager.data.network.error.AccessDenied;
-import com.sokolua.manager.data.network.error.AccessError;
-import com.sokolua.manager.data.network.error.ApiError;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
@@ -32,6 +29,7 @@ import com.sokolua.manager.utils.AppConfig;
 import com.sokolua.manager.utils.NetworkStatusChecker;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +43,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.HttpUrl;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -73,8 +72,31 @@ public class DataManager {
         }
         dmComponent.inject(this);
 
+        updateRetrofitBaseUrl();
+
         //updateLocalDataWithTimer();
     }
+
+    void updateRetrofitBaseUrl(){
+        String baseServer = mPreferencesManager.getServerAddress();
+
+        Field field = null;
+        try {
+            field = Retrofit.class.getDeclaredField("baseUrl");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            return;
+        }
+        field.setAccessible(true);
+        okhttp3.HttpUrl newHttpUrl = HttpUrl.parse(String.format(AppConfig.API_URL, baseServer));
+        try {
+            field.set(mRetrofit, newHttpUrl);
+            mRestService = mRetrofit.create(RestService.class);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static DataManager getInstance() {
         if (ourInstance == null) {
@@ -142,20 +164,11 @@ public class DataManager {
     public Observable<UserRes> loginUser(String userName, String password) {
 
         return mRestService.loginUser(new UserLoginReq(userName, password))
-                .flatMap(userResResponse -> {
-                    switch (userResResponse.code()) {
-                        case 200:
-                            updateUserName(userName);
-                            updateUserPassword(password);
-                            return Observable.just(userResResponse.body());
-                        case 401:
-                            return Observable.error(new AccessError());
-                        case 403:
-                            return Observable.error(new AccessDenied());
-                        default:
-                            return Observable.error(new ApiError(userResResponse.code()));
-
-                    }
+                .compose(new RestCallTransformer<>())
+                .flatMap(res -> {
+                    updateUserName(userName);
+                    updateUserPassword(password);
+                    return Observable.just(res);
                 });
     }
 
@@ -653,6 +666,7 @@ public class DataManager {
 
     public void updateServerAddress(String address) {
         mPreferencesManager.updateServerAddress(address);
+        updateRetrofitBaseUrl();
     }
 
 

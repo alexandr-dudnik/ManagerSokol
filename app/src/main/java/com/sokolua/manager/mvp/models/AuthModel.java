@@ -52,4 +52,12 @@ public class AuthModel extends AbstractModel {
         mDataManager.updateUserName("");
         mDataManager.clearDataBase();
     }
+
+    public String getServerName() {
+        return mDataManager.getServerAddress();
+    }
+
+    public void updateServerName(String serverName) {
+        mDataManager.updateServerAddress(serverName);
+    }
 }
