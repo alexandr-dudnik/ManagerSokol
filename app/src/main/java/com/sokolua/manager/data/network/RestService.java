@@ -26,33 +26,29 @@ public interface RestService {
     @GET("groups")
     Observable<Response<List<GoodGroupRes>>> getGoodsGroupList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
-//    @GET("groups/{group_id}")
-//    Observable<Response<GoodGroupRes>> getGoodsGroup(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("group_id")String groupId);
     @GET("groups/{group_id}")
+//    Observable<Response<GoodGroupRes>> getGoodsGroup(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("group_id")String groupId);
     Call<GoodGroupRes> getGoodsGroup(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("group_id")String groupId);
 
     @GET("goods")
     Observable<Response<List<GoodItemRes>>> getGoodsList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
-//    @GET("goods/{good_id}")
-//    Observable<Response<GoodItemRes>> getGoodItem(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("good_id")String goodId);
     @GET("goods/{good_id}")
+//    Observable<Response<GoodItemRes>> getGoodItem(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("good_id")String goodId);
     Call<GoodItemRes> getGoodItem(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("good_id")String goodId);
 
     @GET("customers")
     Observable<Response<List<CustomerRes>>> getCustomerList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
-//    @GET("customers/{customer_id}")
-//    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId);
     @GET("customers/{customer_id}")
+//    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId);
     Call<CustomerRes> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId);
 
 
     @GET("orders")
     Observable<Response<List<OrderRes>>> getOrderList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
-//    @GET("orders/{order_id}")
-//    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);
     @GET("orders/{order_id}")
+//    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);
     Call<OrderRes> getOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);
 }

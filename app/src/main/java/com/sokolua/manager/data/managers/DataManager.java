@@ -29,7 +29,6 @@ import com.sokolua.manager.utils.AppConfig;
 import com.sokolua.manager.utils.NetworkStatusChecker;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.HttpUrl;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -77,24 +75,10 @@ public class DataManager {
         //updateLocalDataWithTimer();
     }
 
-    void updateRetrofitBaseUrl(){
+    private void updateRetrofitBaseUrl(){
         String baseServer = mPreferencesManager.getServerAddress();
-
-        Field field = null;
-        try {
-            field = Retrofit.class.getDeclaredField("baseUrl");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return;
-        }
-        field.setAccessible(true);
-        okhttp3.HttpUrl newHttpUrl = HttpUrl.parse(String.format(AppConfig.API_URL, baseServer));
-        try {
-            field.set(mRetrofit, newHttpUrl);
-            mRestService = mRetrofit.create(RestService.class);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        mRetrofit =  mRetrofit.newBuilder().baseUrl(String.format(AppConfig.API_URL, baseServer)).build();
+        mRestService = mRetrofit.create(RestService.class);
     }
 
 

@@ -51,6 +51,8 @@ public class NetworkModule {
     }
 
 
+
+
     private OkHttpClient createClient() {
         final Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequestsPerHost(AppConfig.MAX_CONCURRENT_REQUESTS);
@@ -64,8 +66,7 @@ public class NetworkModule {
                 .readTimeout(AppConfig.MAX_READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(AppConfig.MAX_WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
                 .connectionPool(connectionPool)
-                .retryOnConnectionFailure(false)
-                .build();
+              .build();
 
     }
 
