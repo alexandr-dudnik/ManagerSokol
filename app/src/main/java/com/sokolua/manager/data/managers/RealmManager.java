@@ -674,11 +674,23 @@ public class RealmManager {
         curInstance.close();
     }
 
-    public void deleteOrder(OrderRealm order) {
-        getQueryRealmInstance().executeTransaction(db->{
-            order.removeAllChangeListeners();
-            order.deleteFromRealm();
+    public void deleteOrder(String orderId) {
+        Realm curInstance = Realm.getDefaultInstance();
+        OrderRealm tmpOrder = curInstance.where(OrderRealm.class).equalTo("id",orderId).findFirst();
+        if (tmpOrder == null) {
+            return;
+        }
+
+        RealmResults<OrderLineRealm> lines = curInstance.where(OrderLineRealm.class).equalTo("order.id", orderId).findAll();
+
+        lines.removeAllChangeListeners();
+        tmpOrder.removeAllChangeListeners();
+
+        curInstance.executeTransaction(db->{
+            lines.deleteAllFromRealm();
+            tmpOrder.deleteFromRealm();
         });
+        curInstance.close();
     }
 }
 

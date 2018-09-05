@@ -5,6 +5,7 @@ import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,7 +14,7 @@ public class SendOrderReq {
     private String delivery;
     private String customer_id;
     private String payment;
-    private List<OrderLineReq> lines;
+    private List<OrderLineReq> lines = new ArrayList<>();
     private String currency;
     private String comments;
 
@@ -59,7 +60,7 @@ public class SendOrderReq {
 
     //region =======================  OrderLine  =========================
 
-    class OrderLineReq{
+    static class OrderLineReq{
         private String item_id;
         private Float quantity;
         private Float price;

@@ -350,6 +350,7 @@ public class DataManager {
     }
 
     public void updateOrderStatus(OrderRealm order, int orderStatus) {
+        String orderId = order.getId();
         mRealmManager.updateOrderStatus(order, orderStatus);
         //TODO: remove - send order in service
         if (orderStatus == ConstantManager.ORDER_STATUS_IN_PROGRESS) {
@@ -362,20 +363,20 @@ public class DataManager {
                         try {
                             //noinspection ResultOfMethodCallIgnored
                             UUID.fromString(id);
-                            updateGoodItemFromRemote(id);
-                            mRealmManager.deleteOrder(order);
+                            updateOrderFromRemote(id);
+                            mRealmManager.deleteOrder(orderId);
                         }catch(Exception e){
                             e.printStackTrace();
                         }
                     })
-                    .retryWhen(errorObservable -> errorObservable
-                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                            .doOnNext(retryCount -> {
-                            })
-                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                            .doOnNext(delay -> {
-                            })
-                            .doOnNext(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+//                    .retryWhen(errorObservable -> errorObservable
+//                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+//                            .doOnNext(retryCount -> {
+//                            })
+//                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+//                            .doOnNext(delay -> {
+//                            })
+//                            .doOnNext(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                     .flatMap(item -> Observable.empty())
             .subscribe();
         }
