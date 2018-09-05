@@ -1,6 +1,7 @@
 package com.sokolua.manager.data.network;
 
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.network.req.SendOrderReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
@@ -17,6 +18,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface RestService {
@@ -47,6 +49,9 @@ public interface RestService {
 
     @GET("orders")
     Observable<Response<List<OrderRes>>> getOrderList(@Header(ConstantManager.HEADER_TOKEN)String token);
+
+    @PUT("orders")
+    Observable<Response<String>> sendOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Body SendOrderReq orderReq);
 
     @GET("orders/{order_id}")
 //    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);

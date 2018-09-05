@@ -45,11 +45,15 @@ public class OrderRealm extends RealmObject implements Serializable{
     }
 
     public OrderRealm(CustomerRealm customer) {
+        Calendar cal = Calendar.getInstance();
         this.id = UUID.randomUUID().toString();
         this.external_id = "";
         this.customer = customer;
-        this.date = Calendar.getInstance().getTime();
-        this.delivery = this.date;
+        this.date = cal.getTime();
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 0);
+        this.delivery = cal.getTime();
         this.status = ConstantManager.ORDER_STATUS_CART;
         this.payment = ConstantManager.ORDER_PAYMENT_CASH;
         this.currency = ConstantManager.MAIN_CURRENCY;

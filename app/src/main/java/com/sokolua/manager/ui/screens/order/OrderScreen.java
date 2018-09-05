@@ -189,7 +189,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .setBackArrow(true)
                     .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName())
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
-                        mModel.updateOrderFromRemote(currentOrder.getId());
+                        if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS){
+                            mModel.sendOrder(currentOrder);
+                            Flow.get(getView()).goBack();
+                        }else{
+                            mModel.updateOrderFromRemote(currentOrder.getId());
+                        }
                         return false;
                     } , ConstantManager.MENU_ITEM_TYPE_ITEM))
                     ;
@@ -201,13 +206,14 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                             return false;
                         }
                     }
-                    if (currentOrder.getDate().compareTo(currentOrder.getDelivery())>0){
+                    if (currentOrder.getDate().after(currentOrder.getDelivery())){
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.error_wrong_delivery));
                             return false;
                         }
                     }
                     mModel.sendOrder(currentOrder);
+                    Flow.get(getView()).goBack();
                     return false;
                 }, ConstantManager.MENU_ITEM_TYPE_ACTION))
                 .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.sokolua.manager.data.network.RestCallTransformer;
 import com.sokolua.manager.data.network.RestService;
+import com.sokolua.manager.data.network.req.SendOrderReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
@@ -36,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -349,6 +351,34 @@ public class DataManager {
 
     public void updateOrderStatus(OrderRealm order, int orderStatus) {
         mRealmManager.updateOrderStatus(order, orderStatus);
+        //TODO: remove - send order in service
+        if (orderStatus == ConstantManager.ORDER_STATUS_IN_PROGRESS) {
+            mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), new SendOrderReq(order))
+                    .compose(new RestCallTransformer<>())
+                    .flatMap(Observable::just)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(Schedulers.io())
+                    .doOnNext(id -> {
+                        try {
+                            //noinspection ResultOfMethodCallIgnored
+                            UUID.fromString(id);
+                            updateGoodItemFromRemote(id);
+                            mRealmManager.deleteOrder(order);
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    })
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .doOnNext(retryCount -> {
+                            })
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .doOnNext(delay -> {
+                            })
+                            .doOnNext(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(item -> Observable.empty())
+            .subscribe();
+        }
     }
 
     public void clearOrderLines(OrderRealm order) {

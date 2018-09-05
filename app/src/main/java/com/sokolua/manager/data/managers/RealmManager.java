@@ -673,6 +673,13 @@ public class RealmManager {
 
         curInstance.close();
     }
+
+    public void deleteOrder(OrderRealm order) {
+        getQueryRealmInstance().executeTransaction(db->{
+            order.removeAllChangeListeners();
+            order.deleteFromRealm();
+        });
+    }
 }
 
 
