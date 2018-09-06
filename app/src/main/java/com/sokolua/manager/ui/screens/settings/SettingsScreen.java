@@ -20,6 +20,8 @@ import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 
 import dagger.Provides;
@@ -121,23 +123,15 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
             return item -> {
                 mModel.clearDatabase();
-                Observable.concat(
-                        mModel.updateAllGroupsFromRemote()
-//                                .flatMap(group -> mModel.updateGoodGroupFromRemote(group.getGroupId()))
-                                .map(group -> true)
-                        ,
-                        mModel.updateAllGoodItemsFromRemote()
-  //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
-                                .map(good_item -> true)
-                        ,
-                        mModel.updateAllCustomersFromRemote()
-                                //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
-                                .map(customer -> true)
-                        ,
-                        mModel.updateAllOrdersFromRemote()
-                                //                              .flatMap(good_item -> mModel.updateGoodItemFromRemote(good_item.getItemId()))
-                                .map(order -> true)
-                    )
+
+                ArrayList<Observable<Boolean>> obs = new ArrayList<>();
+                obs.add(mModel.sendAllOrders());
+                obs.add(mModel.updateAllGroupsFromRemote().map(result -> true));
+                obs.add(mModel.updateAllGoodItemsFromRemote().map(result -> true));
+                obs.add(mModel.updateAllCustomersFromRemote().map(result -> true));
+                obs.add(mModel.updateAllOrdersFromRemote().map(result -> true));
+
+                Observable.concatEager(obs)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<Boolean>() {

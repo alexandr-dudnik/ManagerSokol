@@ -125,10 +125,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             updateLines();
             getView().setLinesAdapter(linesAdapter);
             lineChangeListener = orderLineRealms -> {
-                if (!orderLineRealms.isValid() || orderLineRealms.isLoaded()){
+                if (!orderLineRealms.isValid() || !orderLineRealms.isLoaded()){
                     orderLineRealms.removeAllChangeListeners();
                 }else{
-                    Presenter.this.updateLines();
+                    updateLines();
                 }
             };
             currentOrder.getLines().addChangeListener(lineChangeListener);
@@ -190,6 +190,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName())
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
                         if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS){
+                            currentOrder.removeChangeListener(orderChangeListener);
                             mModel.sendOrder(currentOrder);
                             Flow.get(getView()).goBack();
                         }else{
@@ -212,6 +213,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                             return false;
                         }
                     }
+                    currentOrder.removeChangeListener(orderChangeListener);
                     mModel.sendOrder(currentOrder);
                     Flow.get(getView()).goBack();
                     return false;

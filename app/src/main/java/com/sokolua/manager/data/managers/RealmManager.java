@@ -228,11 +228,7 @@ public class RealmManager {
     }
 
     public Observable<OrderRealm> getAllOrders() {
-        RealmResults<OrderRealm> res = getQueryRealmInstance()
-                .where(OrderRealm.class)
-                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
-                .findAll();
-        return Observable.fromIterable(res)
+        return Observable.fromIterable(getOrdersQuery())
                 .filter(item -> item.isLoaded()) //получаем только загруженные
                 .filter(ManagableObject::isValid)
                 ;
@@ -338,7 +334,8 @@ public class RealmManager {
                 .equalTo("status", ConstantManager.ORDER_STATUS_CART)
                 .findFirst();
         if (result == null){
-            OrderRealm tmp = new OrderRealm("cart_"+customer.getCustomerId(), customer, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_CASH, ConstantManager.MAIN_CURRENCY, "");
+            //OrderRealm tmp = new OrderRealm("cart_"+customer.getCustomerId(), customer, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_CASH, ConstantManager.MAIN_CURRENCY, "");
+            OrderRealm tmp = new OrderRealm(customer);
             getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(tmp));
             result = getCartForCustomer(customer);
         }
@@ -691,6 +688,25 @@ public class RealmManager {
             tmpOrder.deleteFromRealm();
         });
         curInstance.close();
+    }
+
+    public RealmResults<OrderRealm> getOrdersQuery() {
+        return getQueryRealmInstance()
+                .where(OrderRealm.class)
+                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
+                .findAll();
+    }
+
+    public Observable<OrderRealm> getOrdersToSend(String filter) {
+        RealmQuery<OrderRealm> query = getQueryRealmInstance()
+                .where(OrderRealm.class)
+                .equalTo("status", ConstantManager.ORDER_STATUS_IN_PROGRESS);
+        if (!filter.isEmpty()) {
+            query = query.equalTo("id", filter);
+        }
+        //List<OrderRealm> res = getQueryRealmInstance().copyFromRealm(query.findAll());
+        RealmResults<OrderRealm> res = query.findAll();
+        return Observable.fromIterable(res);
     }
 }
 

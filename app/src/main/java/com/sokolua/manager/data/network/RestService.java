@@ -7,6 +7,7 @@ import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.OrderRes;
+import com.sokolua.manager.data.network.res.OrderSendRes;
 import com.sokolua.manager.data.network.res.UserRes;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public interface RestService {
     Observable<Response<List<OrderRes>>> getOrderList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
     @PUT("orders")
-    Observable<Response<String>> sendOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Body SendOrderReq orderReq);
+    Observable<Response<OrderSendRes>> sendOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Body SendOrderReq orderReq);
 
     @GET("orders/{order_id}")
 //    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);

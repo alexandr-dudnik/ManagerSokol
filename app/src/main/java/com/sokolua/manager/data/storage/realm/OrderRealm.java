@@ -5,7 +5,6 @@ import com.sokolua.manager.data.managers.ConstantManager;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.RealmResults;
@@ -46,7 +45,7 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public OrderRealm(CustomerRealm customer) {
         Calendar cal = Calendar.getInstance();
-        this.id = UUID.randomUUID().toString();
+        this.id = "cart_"+customer.getCustomerId();
         this.external_id = "";
         this.customer = customer;
         this.date = cal.getTime();

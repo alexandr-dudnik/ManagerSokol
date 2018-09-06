@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class SendOrderReq {
+    private String id;
     private String date;
     private String delivery;
     private String customer_id;
@@ -20,6 +21,7 @@ public class SendOrderReq {
 
     public SendOrderReq(OrderRealm order) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        this.id = order.getId();
         this.date = sdf.format(order.getDate())+"T00:00:00";
         this.delivery = sdf.format(order.getDelivery())+"T00:00:00";
         this.customer_id = order.getCustomer().getCustomerId();
@@ -34,6 +36,10 @@ public class SendOrderReq {
 
     //region =======================  Getters  =========================
 
+
+    public String getId() {
+        return id;
+    }
     public String getDate() {
         return date;
     }
