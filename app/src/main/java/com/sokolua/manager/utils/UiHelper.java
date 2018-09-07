@@ -15,6 +15,8 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class UiHelper {
@@ -61,6 +63,30 @@ public class UiHelper {
                 }
         );
 
+    }
+
+    public static String saveImageFromBase64(final String imageSource, String name){
+        File cacheDir = App.getContext().getCacheDir();
+        String result = cacheDir.getPath() + "/" + name+".png";
+        FileOutputStream fos = null;
+        try {
+            if (imageSource != null) {
+                fos = new FileOutputStream(result);
+                //fos = App.getContext().openFileOutput(result, Context.MODE_PRIVATE);
+                byte[] decodedString = android.util.Base64.decode(imageSource, android.util.Base64.DEFAULT);
+                fos.write(decodedString);
+                fos.flush();
+                fos.close();
+            }
+
+        } catch (Exception e) {
+            return "";
+        } finally {
+            if (fos != null) {
+                fos = null;
+            }
+        }
+        return result;
     }
 
 

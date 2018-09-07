@@ -26,6 +26,7 @@ import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.data.storage.realm.VisitRealm;
+import com.sokolua.manager.utils.UiHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -324,7 +325,9 @@ public class RealmManager {
     }
 
     public void updateOrderStatus(OrderRealm order, int orderStatus) {
-        getQueryRealmInstance().executeTransaction(db -> order.setStatus(orderStatus));
+        Realm curInstance = Realm.getDefaultInstance();
+        curInstance.executeTransaction(db -> order.setStatus(orderStatus));
+        curInstance.close();
     }
 
     public void clearOrderLines(OrderRealm order) {
@@ -375,7 +378,7 @@ public class RealmManager {
     }
 
     public OrderRealm getOrderById(String orderId) {
-        return getQueryRealmInstance()
+        return Realm.getDefaultInstance()
                 .where(OrderRealm.class)
                 .equalTo("id", orderId)
                 .findFirst();
@@ -428,8 +431,7 @@ public class RealmManager {
 
         String mImageURL ="";
         if (groupRes.getImage() != null) {
-            //TODO: parse image from base64 string groupRes.getImage()
-            mImageURL ="";
+            mImageURL = UiHelper.saveImageFromBase64(groupRes.getImage(), groupRes.getId());
         }
 
         GoodsGroupRealm newGroup = new GoodsGroupRealm(groupRes.getId(), groupRes.getName(), mParent, mImageURL);
@@ -471,7 +473,7 @@ public class RealmManager {
         }
 
         GoodsCategoryRealm mCat = null;
-        if (goodItemRes.getBrand() != null && goodItemRes.getCategory().getId() != null && !goodItemRes.getCategory().getId().isEmpty()) {
+        if (goodItemRes.getCategory() != null && goodItemRes.getCategory().getId() != null && !goodItemRes.getCategory().getId().isEmpty()) {
             mCat = curInstance
                     .where(GoodsCategoryRealm.class)
                     .equalTo("categoryId", goodItemRes.getCategory().getId())
@@ -757,6 +759,27 @@ public class RealmManager {
 
     public NoteRealm getCustomerNoteById(String mId) {
         return Realm.getDefaultInstance().where(NoteRealm.class).equalTo("noteId", mId).findFirst();
+    }
+
+    public Float getCustomerDiscount(CustomerRealm customer, ItemRealm item) {
+        //try find discount for item
+        CustomerDiscountRealm discRealm = getQueryRealmInstance()
+                .where(CustomerDiscountRealm.class)
+                .equalTo("customer.customerId", customer.getCustomerId())
+                .equalTo("discountType", ConstantManager.DISCOUNT_TYPE_ITEM)
+                .equalTo("item.itemId", item.getItemId())
+                .findFirst();
+        if (discRealm == null && item.getCategory()!= null){
+            //no... try find discount for category
+            discRealm = getQueryRealmInstance()
+                    .where(CustomerDiscountRealm.class)
+                    .equalTo("customer.customerId", customer.getCustomerId())
+                    .equalTo("discountType", ConstantManager.DISCOUNT_TYPE_CATEGORY)
+                    .equalTo("category.categoryId", item.getCategory().getCategoryId())
+                    .findFirst();
+        }
+
+        return discRealm==null ? 0f : discRealm.getPercent();
     }
 }
 

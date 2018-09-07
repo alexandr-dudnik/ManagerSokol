@@ -7,9 +7,11 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
@@ -25,6 +27,7 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
+import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
 
@@ -70,8 +73,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @Provides
         @DaggerScope(GoodsScreen.class)
         String provideCustomerCart() {
-            return mCustomerOrderId;
+            return mCustomerOrderId==null?"":mCustomerOrderId;
         }
+
     }
 
 
@@ -86,6 +90,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         void inject(ItemViewHolder viewHolder);
 
+        Picasso getPicasso();
 //        OrderRealm  getCustomerCart();
     }
 
@@ -110,6 +115,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
     public class Presenter extends AbstractPresenter<GoodsView, GoodsModel> {
 
         OrderRealm currentCart;
+        CustomerRealm mCustomer;
 
         GoodsGroupRealm currentGroup = null;
 
@@ -135,6 +141,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             if (mCustomerOrderId!=null && !mCustomerOrderId.isEmpty()) {
                 currentCart = mModel.getOrderById(mCustomerOrderId);
+                mCustomer = currentCart.getCustomer();
             }
 
 
@@ -298,12 +305,21 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 //TODO: make screen with item card
             }else{
                 if (getRootView() != null) {
+                    Float itemBasePrice = selectedItem.getBasePrice();
+                    Float itemDiscount = getCustomerDiscount(selectedItem);
+                    Float itemPrice = getCustomerPrice(selectedItem);
+
                     LayoutInflater layoutInflater = ((Activity)getRootView()).getLayoutInflater();
                     View view = layoutInflater.inflate(R.layout.add_item_to_cart, null);
                     EditText inputPrice = view.findViewById(R.id.item_price);
-                    inputPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),selectedItem.getBasePrice()));
+                    inputPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemPrice));
                     EditText inputQty  = view.findViewById(R.id.item_quantity);
                     inputQty.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),1f));
+                    TextView textDiscount  = view.findViewById(R.id.item_discount);
+                    textDiscount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemDiscount));
+                    TextView textBasePrice  = view.findViewById(R.id.item_base_price);
+                    textBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemBasePrice));
+
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
                             .setTitle(selectedItem.getName())
@@ -336,6 +352,15 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             if (currentCart != null) {
                 Flow.get(getView()).set(new OrderScreen(currentCart));
             }
+        }
+
+        public Float getCustomerDiscount(ItemRealm item) {
+            return  mModel.getCustomerDiscount(mCustomer, item);
+        }
+
+        public Float getCustomerPrice(ItemRealm item) {
+            Float discount = getCustomerDiscount(item);
+            return  (float)(Math.round(item.getBasePrice() * (100 - discount))) / 100;
         }
     }
 

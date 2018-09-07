@@ -33,6 +33,10 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
 
     @Inject
     GoodsScreen.Presenter mPresenter;
+    @Inject
+    String cartId;
+
+
 
     public ItemViewHolder(View itemView) {
         super(itemView);
@@ -46,10 +50,12 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
         super.setCurrentItem(currentItem);
 
         currentItem.addChangeListener((ItemRealm item, ObjectChangeSet changeSet) ->{
-            if (changeSet.isDeleted()){
-                currentItem.removeAllChangeListeners();
-            }else{
-                updateFields(item);
+            if (changeSet != null) {
+                if (changeSet.isDeleted()) {
+                    currentItem.removeAllChangeListeners();
+                } else {
+                    updateFields(item);
+                }
             }
         } );
         updateFields(currentItem);
@@ -65,7 +71,11 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
         }else{
             mRestOF.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestOfficial()));
         }
-        mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getBasePrice()));
+        if (cartId == null || cartId.isEmpty()) {
+            mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getBasePrice()));
+        }else{
+            mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getCustomerPrice(currentItem)));
+        }
         mMinPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getLowPrice()));
         mName.setText(currentItem.getName());
     }

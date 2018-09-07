@@ -726,6 +726,10 @@ public class DataManager {
 //                    .subscribe();
     }
 
+    public Float getCustomerDiscount(CustomerRealm mCustomer, ItemRealm item) {
+        return mRealmManager.getCustomerDiscount(mCustomer, item);
+    }
+
     //endregion ================== Goods =========================
 
 
@@ -748,7 +752,6 @@ public class DataManager {
     public void updateAutoSynchronize(Boolean sync) {
         mPreferencesManager.updateAutoSynchronize(sync);
     }
-
 
     //endregion ================== Preferences =========================
 

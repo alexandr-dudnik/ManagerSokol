@@ -132,7 +132,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 obs.add(mModel.updateAllCustomersFromRemote().map(result -> true));
                 obs.add(mModel.updateAllOrdersFromRemote().map(result -> true));
 
-                Observable.concatEager(obs)
+                Observable.concat(obs)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<Boolean>() {
