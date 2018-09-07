@@ -136,5 +136,9 @@ public class OrderRealm extends RealmObject implements Serializable{
         this.comments = comments;
     }
 
+    public void setExternalId(String externalId) {
+        this.external_id = externalId;
+    }
+
     //endregion ================== Setters =========================
 }

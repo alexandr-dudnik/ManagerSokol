@@ -24,8 +24,8 @@ public class NoteRealm extends RealmObject implements Serializable {
 
     public NoteRealm(CustomerRealm customer, String noteId, Date date, String data) {
         this.customer = customer;
-        this.noteId = noteId;
-        this.externalId = noteId;
+        this.noteId = customer.getCustomerId()+"#"+noteId;
+        this.externalId = customer.getCustomerId()+"#"+noteId;
         this.date = date;
         this.data = data;
     }
@@ -33,6 +33,7 @@ public class NoteRealm extends RealmObject implements Serializable {
     public NoteRealm(CustomerRealm customer, String data) {
         this.customer = customer;
         this.noteId = UUID.randomUUID().toString();
+        this.externalId = "";
         this.date = Calendar.getInstance().getTime();
         this.data = data;
     }
@@ -59,4 +60,13 @@ public class NoteRealm extends RealmObject implements Serializable {
         return externalId;
     }
     //endregion ================== Getters =========================
+
+
+    //region ===================== Setters =========================
+
+    public void setExternalId(String externalId) {
+        this.externalId = customer.getCustomerId()+"#"+externalId;
+    }
+
+    //endregion ================== Setters =========================
 }

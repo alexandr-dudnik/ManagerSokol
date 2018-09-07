@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.sokolua.manager.data.network.RestCallTransformer;
 import com.sokolua.manager.data.network.RestService;
+import com.sokolua.manager.data.network.req.SendNoteReq;
 import com.sokolua.manager.data.network.req.SendOrderReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CustomerRes;
@@ -227,6 +228,8 @@ public class DataManager {
 
     public void addNewNote(CustomerRealm customer, String note) {
         mRealmManager.addNewNote(customer, note);
+
+        sendAllNotes(customer.getCustomerId());
     }
 
     public void deleteNote(NoteRealm note) {
@@ -280,6 +283,8 @@ public class DataManager {
 
     public void updateCustomerFromRemote(String customerId){
         try {
+            sendAllNotes(customerId);
+
             Response<CustomerRes> response = mRestService.getCustomer(mPreferencesManager.getUserAuthToken(), customerId).execute();
             if (response.isSuccessful()){
                 CustomerRes res = response.body();
@@ -315,6 +320,40 @@ public class DataManager {
 //                    .first(Observable.empty())
 //                    .subscribe();
     }
+
+    public Observable<Boolean> sendAllNotes(String filter) {
+        mRealmManager.getNotesToSend(filter)
+                .map(SendNoteReq::new)
+                .doOnNext(noteReq ->
+                        mRestService.sendNote(mPreferencesManager.getUserAuthToken(), noteReq.getCustomerId(), noteReq)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.computation())
+                                .compose(new RestCallTransformer<>())
+                                .doOnNext(ids -> {
+                                    try {
+                                        NoteRealm note = mRealmManager.getCustomerNoteById(ids.getOldId());
+                                        mRealmManager.updateNoteExternalId(note,ids.getNewId() );
+//                                        updateOrderFromRemote(ids.getNewId());
+//                                        mRealmManager.deleteOrder(ids.getOldId());
+                                    }catch(Exception e){
+                                        e.printStackTrace();
+                                    }
+                                })
+                                .retryWhen(errorObservable -> errorObservable
+                                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                                        .doOnNext(retryCount -> {
+                                        })
+                                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                                        .doOnNext(delay -> {
+                                        })
+                                        .doOnNext(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                                .subscribe()
+                )
+                .subscribe();
+
+        return Observable.just(true);
+    }
+
 
 
     //endregion ================== Customers =========================
@@ -472,8 +511,6 @@ public class DataManager {
 
     public Observable<Boolean> sendAllOrders(String filter) {
         mRealmManager.getOrdersToSend(filter)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
                 .map(SendOrderReq::new)
                 .doOnNext(orderRes ->
                     mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), orderRes)
@@ -484,22 +521,25 @@ public class DataManager {
                                 try {
                                     //noinspection ResultOfMethodCallIgnored
                                     UUID.fromString(ids.getNewId());
-                                    updateOrderFromRemote(ids.getNewId());
-                                    mRealmManager.deleteOrder(ids.getOldId());
+                                    OrderRealm mOrder = mRealmManager.getOrderById(ids.getOldId());
+                                    mRealmManager.updateOrderStatus(mOrder, ConstantManager.ORDER_STATUS_SENT);
+                                    mRealmManager.updateOrderExternalId(mOrder, ids.getNewId());
+//                                    updateOrderFromRemote(ids.getNewId());
+//                                    mRealmManager.deleteOrder(ids.getOldId());
                                 }catch(Exception e){
                                     e.printStackTrace();
                                 }
                             })
+                            .retryWhen(errorObservable -> errorObservable
+                                    .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                                    .doOnNext(retryCount -> {
+                                    })
+                                    .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                                    .doOnNext(delay -> {
+                                    })
+                                    .doOnNext(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                             .subscribe()
                 )
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .doOnNext(retryCount -> {
-                        })
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .doOnNext(delay -> {
-                        })
-                        .doOnNext(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .subscribe();
 
         return Observable.just(true);

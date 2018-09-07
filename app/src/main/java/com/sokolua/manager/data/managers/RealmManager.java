@@ -275,6 +275,11 @@ public class RealmManager {
         getQueryRealmInstance().executeTransaction(db -> order.setDelivery(mDate));
     }
 
+    public void updateOrderExternalId(OrderRealm order, String newId) {
+        getQueryRealmInstance().executeTransaction(db -> order.setExternalId(newId));
+    }
+
+
     public void updateOrderItemPrice(OrderRealm order, ItemRealm item, Float value) {
         OrderLineRealm line = getQueryRealmInstance()
                 .where(OrderLineRealm.class)
@@ -296,6 +301,7 @@ public class RealmManager {
             getQueryRealmInstance().executeTransaction(db -> line.setQuantity(value));
         }
     }
+
 
     public void removeOrderItem(OrderRealm order, ItemRealm item) {
         OrderLineRealm line = getQueryRealmInstance()
@@ -605,8 +611,22 @@ public class RealmManager {
             }
         }
 
+        RealmResults<TaskRealm> oldTasks = curInstance.where(TaskRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+        RealmResults<OrderPlanRealm> oldPlans = curInstance.where(OrderPlanRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+        RealmResults<DebtRealm> oldDebt = curInstance.where(DebtRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+        RealmResults<NoteRealm> oldNotes = curInstance.where(NoteRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+        RealmResults<CustomerDiscountRealm> oldDisc = curInstance.where(CustomerDiscountRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+        RealmResults<VisitRealm> oldVisits = curInstance.where(VisitRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+
         curInstance.executeTransaction(db -> {
             db.insertOrUpdate(newCust);
+            oldTasks.deleteAllFromRealm();
+            oldDebt.deleteAllFromRealm();
+            oldPlans.deleteAllFromRealm();
+            oldNotes.deleteAllFromRealm();
+            oldDisc.deleteAllFromRealm();
+            oldVisits.deleteAllFromRealm();
+
             db.insertOrUpdate(mDebt);
             db.insertOrUpdate(mNotes);
             db.insertOrUpdate(mTasks);
@@ -622,6 +642,9 @@ public class RealmManager {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Realm curInstance = Realm.getDefaultInstance();
         curInstance.refresh();
+
+        RealmResults<OrderRealm> diffOrders = curInstance.where(OrderRealm.class).equalTo("external_id", orderRes.getId()).notEqualTo("id", orderRes.getId()).findAll();
+        RealmResults<OrderLineRealm> diffOrderLines = curInstance.where(OrderLineRealm.class).equalTo("order.external_id", orderRes.getId()).notEqualTo("order.id", orderRes.getId()).findAll();
 
         CustomerRealm mCustomer = curInstance.where(CustomerRealm.class).equalTo("customerId", orderRes.getCustomerId()).findFirst();
         if (mCustomer == null){
@@ -663,7 +686,11 @@ public class RealmManager {
             }
         }
 
+        diffOrders.removeAllChangeListeners();
+        diffOrderLines.removeAllChangeListeners();
         curInstance.executeTransaction(db->{
+            diffOrders.deleteAllFromRealm();
+            diffOrderLines.deleteAllFromRealm();
             db.insertOrUpdate(newOrder);
             db.insertOrUpdate(lines);
         });
@@ -698,7 +725,7 @@ public class RealmManager {
     }
 
     public Observable<OrderRealm> getOrdersToSend(String filter) {
-        RealmQuery<OrderRealm> query = getQueryRealmInstance()
+        RealmQuery<OrderRealm> query = Realm.getDefaultInstance()
                 .where(OrderRealm.class)
                 .equalTo("status", ConstantManager.ORDER_STATUS_IN_PROGRESS);
         if (!filter.isEmpty()) {
@@ -707,6 +734,29 @@ public class RealmManager {
         //List<OrderRealm> res = getQueryRealmInstance().copyFromRealm(query.findAll());
         RealmResults<OrderRealm> res = query.findAll();
         return Observable.fromIterable(res);
+    }
+
+    public Observable<NoteRealm> getNotesToSend(String filter) {
+        RealmQuery<NoteRealm> query = Realm.getDefaultInstance()
+                .where(NoteRealm.class)
+                .equalTo("externalId", "");
+        if (!filter.isEmpty()) {
+            query = query.equalTo("customer.customerId", filter);
+        }
+        //List<OrderRealm> res = getQueryRealmInstance().copyFromRealm(query.findAll());
+        RealmResults<NoteRealm> res = query.findAll();
+        return Observable.fromIterable(res);
+    }
+
+    public void updateNoteExternalId(NoteRealm note, String newId) {
+        Realm curInstance = Realm.getDefaultInstance();
+        curInstance.executeTransaction(db-> note.setExternalId(newId));
+        curInstance.close();
+
+    }
+
+    public NoteRealm getCustomerNoteById(String mId) {
+        return Realm.getDefaultInstance().where(NoteRealm.class).equalTo("noteId", mId).findFirst();
     }
 }
 

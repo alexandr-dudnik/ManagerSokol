@@ -1,13 +1,14 @@
 package com.sokolua.manager.data.network;
 
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.network.req.SendNoteReq;
 import com.sokolua.manager.data.network.req.SendOrderReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.OrderRes;
-import com.sokolua.manager.data.network.res.OrderSendRes;
+import com.sokolua.manager.data.network.res.SendNewObjectRes;
 import com.sokolua.manager.data.network.res.UserRes;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public interface RestService {
 //    Observable<Response<GoodItemRes>> getGoodItem(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("good_id")String goodId);
     Call<GoodItemRes> getGoodItem(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("good_id")String goodId);
 
+
     @GET("customers")
     Observable<Response<List<CustomerRes>>> getCustomerList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
@@ -47,12 +49,16 @@ public interface RestService {
 //    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId);
     Call<CustomerRes> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId);
 
+    @PUT("customers/{customer_id}/notes")
+    Observable<Response<SendNewObjectRes>> sendNote(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendNoteReq noteReq);
+
+
 
     @GET("orders")
     Observable<Response<List<OrderRes>>> getOrderList(@Header(ConstantManager.HEADER_TOKEN)String token);
 
     @PUT("orders")
-    Observable<Response<OrderSendRes>> sendOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Body SendOrderReq orderReq);
+    Observable<Response<SendNewObjectRes>> sendOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Body SendOrderReq orderReq);
 
     @GET("orders/{order_id}")
 //    Observable<Response<CustomerRes>> getCustomer(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);

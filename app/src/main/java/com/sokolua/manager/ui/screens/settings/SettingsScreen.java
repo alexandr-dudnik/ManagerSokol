@@ -126,6 +126,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
                 ArrayList<Observable<Boolean>> obs = new ArrayList<>();
                 obs.add(mModel.sendAllOrders());
+                obs.add(mModel.sendAllNotes());
                 obs.add(mModel.updateAllGroupsFromRemote().map(result -> true));
                 obs.add(mModel.updateAllGoodItemsFromRemote().map(result -> true));
                 obs.add(mModel.updateAllCustomersFromRemote().map(result -> true));
