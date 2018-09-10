@@ -33,4 +33,13 @@ public class GoodsModel extends AbstractModel {
     public Float getCustomerDiscount(CustomerRealm mCustomer, ItemRealm item) {
         return mDataManager.getCustomerDiscount(mCustomer, item);
     }
+
+    public Observable<GoodsGroupRealm> updateAllGroupsFromRemote(){
+        return mDataManager.updateGroupsFromRemote();
+    }
+
+    public Observable<ItemRealm> updateAllGoodItemsFromRemote(){
+        return mDataManager.updateItemsFromRemote();
+    }
+
 }

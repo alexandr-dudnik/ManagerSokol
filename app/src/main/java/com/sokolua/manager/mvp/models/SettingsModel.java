@@ -28,10 +28,6 @@ public class SettingsModel extends AbstractModel {
         return mDataManager.updateGroupsFromRemote();
     }
 
-//    public Observable<GoodsGroupRealm> updateGoodGroupFromRemote(String groupId){
-//        return mDataManager.updateGroupFromRemote(groupId);
-//    }
-
     public Observable<ItemRealm> updateAllGoodItemsFromRemote(){
         return mDataManager.updateItemsFromRemote();
     }

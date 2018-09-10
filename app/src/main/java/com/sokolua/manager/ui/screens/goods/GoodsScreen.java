@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,11 +30,16 @@ import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import dagger.Provides;
 import flow.Flow;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmChangeListener;
 import io.realm.RealmModel;
 import io.realm.RealmObjectChangeListener;
@@ -249,6 +255,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(currentCart!=null)
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
@@ -265,6 +272,46 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .setTitle(App.getStringRes(R.string.menu_goods))
                     .build();
 
+        }
+
+        private MenuItem.OnMenuItemClickListener syncClickCallback() {
+            return item -> {
+                ArrayList<Observable<Boolean>> obs = new ArrayList<>();
+                obs.add(mModel.updateAllGroupsFromRemote().map(result -> true));
+                obs.add(mModel.updateAllGoodItemsFromRemote().map(result -> true));
+
+                Observable.concat(obs)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Boolean>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                if (getRootView() != null) {
+                                    ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().showLoad());
+                                }
+                            }
+
+                            @Override
+                            public void onNext(Boolean aBoolean) {  }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                if (getRootView() != null) {
+                                    ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
+                                    getRootView().showError(e);
+                                }
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                if (getRootView() != null) {
+                                    ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
+                                    getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
+                                }
+                            }
+                        });
+                return true;
+            };
         }
 
 
