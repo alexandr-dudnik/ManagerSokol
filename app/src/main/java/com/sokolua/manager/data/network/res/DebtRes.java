@@ -1,5 +1,8 @@
 package com.sokolua.manager.data.network.res;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class DebtRes {
     public String currency;
     public float amount;

@@ -70,7 +70,7 @@ public class RealmManager {
     public Observable<CustomerRealm> getCustomersFromRealm(String filter){
         RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance()
                 .where(CustomerRealm.class)
-                .contains("index", filter == null ? "": filter, Case.INSENSITIVE) //Ищем по индексному полю - пока индекс = наименование
+                .contains("index", filter == null ? "": filter.toLowerCase(), Case.INSENSITIVE) //Ищем по индексному полю - пока индекс = наименование
                 .sort("name")
                 .findAll();
 
@@ -264,7 +264,7 @@ public class RealmManager {
             res = getQueryRealmInstance().where(ItemRealm.class).equalTo("group.groupId", parent.getGroupId());
         }
         if (filter != null && !filter.isEmpty()){
-            res.contains("index", filter);
+            res.contains("index", filter.toLowerCase());
         }
         return Observable.fromIterable(res.sort("name", Sort.ASCENDING).findAll())
                 .filter(item -> item.isLoaded()) //получаем только загруженные
@@ -478,7 +478,7 @@ public class RealmManager {
                     .where(GoodsCategoryRealm.class)
                     .equalTo("categoryId", goodItemRes.getCategory().getId())
                     .findFirst();
-            if (mParent == null){
+            if (mCat == null){
                 curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsCategoryRealm(goodItemRes.getCategory().getId(),goodItemRes.getCategory().getName(),null)));
                 mCat = curInstance
                         .where(GoodsCategoryRealm.class)

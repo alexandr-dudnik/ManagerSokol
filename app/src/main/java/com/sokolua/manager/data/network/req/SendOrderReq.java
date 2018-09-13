@@ -1,5 +1,7 @@
 package com.sokolua.manager.data.network.req;
 
+import android.support.annotation.Keep;
+
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Keep
 public class SendOrderReq {
     private String id;
     private String date;

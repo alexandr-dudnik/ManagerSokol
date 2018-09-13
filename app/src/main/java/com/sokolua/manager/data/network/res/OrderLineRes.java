@@ -1,5 +1,8 @@
 package com.sokolua.manager.data.network.res;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class OrderLineRes {
     private String item_id;
     private String item_name;

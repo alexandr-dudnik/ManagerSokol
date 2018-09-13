@@ -1,5 +1,7 @@
 package com.sokolua.manager.data.storage.realm;
 
+import android.support.annotation.Keep;
+
 import com.sokolua.manager.data.managers.ConstantManager;
 
 import java.io.Serializable;
@@ -8,6 +10,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
+@Keep
 public class CustomerDiscountRealm extends RealmObject implements Serializable{
     @PrimaryKey
     @Required

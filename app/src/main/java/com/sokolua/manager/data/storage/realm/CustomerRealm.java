@@ -1,5 +1,7 @@
 package com.sokolua.manager.data.storage.realm;
 
+import android.support.annotation.Keep;
+
 import java.io.Serializable;
 
 import io.realm.RealmObject;
@@ -9,6 +11,7 @@ import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
+@Keep
 public class CustomerRealm extends RealmObject implements Serializable{
     @PrimaryKey
     @Required

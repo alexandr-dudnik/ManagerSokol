@@ -1,10 +1,13 @@
 package com.sokolua.manager.data.network.req;
 
+import android.support.annotation.Keep;
+
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+@Keep
 public class SendNoteReq {
     private String id;
     private String customer_id;
