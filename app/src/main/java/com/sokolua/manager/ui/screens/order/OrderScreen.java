@@ -32,7 +32,6 @@ import dagger.Provides;
 import flow.Flow;
 import io.reactivex.Observable;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
 import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import mortar.MortarScope;
@@ -99,7 +98,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderLineRealm> linesViewHolder;
         ReactiveRecyclerAdapter linesAdapter;
         private RealmChangeListener<RealmResults<OrderLineRealm>> lineChangeListener;
-        private RealmObjectChangeListener<RealmModel> orderChangeListener;
+        private RealmObjectChangeListener<OrderRealm> orderChangeListener;
 
         public Presenter() {
         }
@@ -125,15 +124,26 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder);
             updateLines();
             getView().setLinesAdapter(linesAdapter);
-            lineChangeListener = orderLineRealms -> Presenter.this.updateLines();
+            lineChangeListener = orderLineRealms -> {
+                if (!orderLineRealms.isValid() || !orderLineRealms.isLoaded()){
+                    orderLineRealms.removeAllChangeListeners();
+                }else{
+                    updateLines();
+                }
+            };
             currentOrder.getLines().addChangeListener(lineChangeListener);
 
 
             orderChangeListener = (realmModel, changeSet) -> {
+                if (!realmModel.isLoaded() || !realmModel.isValid()){
+                    realmModel.removeAllChangeListeners();
+                    getView().viewOnBackPressed();
+                }
                 if (changeSet == null) {
                     return;
                 }
                 if (changeSet.isDeleted()) {
+                    realmModel.removeAllChangeListeners();
                     getView().viewOnBackPressed();
                 }
                 if (changeSet.isFieldChanged("comments")) {
@@ -177,7 +187,18 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             RootPresenter.ActionBarBuilder abb = mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
-                    .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName());
+                    .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName())
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
+                        if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS){
+                            currentOrder.removeChangeListener(orderChangeListener);
+                            mModel.sendOrder(currentOrder);
+                            Flow.get(getView()).goBack();
+                        }else{
+                            mModel.updateOrderFromRemote(currentOrder.getId());
+                        }
+                        return false;
+                    } , ConstantManager.MENU_ITEM_TYPE_ITEM))
+                    ;
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
                     if (currentOrder.getLines().isEmpty()){
@@ -186,19 +207,22 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                             return false;
                         }
                     }
-                    if (currentOrder.getDate().compareTo(currentOrder.getDelivery())>0){
+                    if (currentOrder.getDate().after(currentOrder.getDelivery())){
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.error_wrong_delivery));
                             return false;
                         }
                     }
+                    currentOrder.removeChangeListener(orderChangeListener);
                     mModel.sendOrder(currentOrder);
+                    Flow.get(getView()).goBack();
                     return false;
                 }, ConstantManager.MENU_ITEM_TYPE_ACTION))
                 .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
                     mModel.clearOrderLines(currentOrder);
                     return false;
-                }, ConstantManager.MENU_ITEM_TYPE_ITEM));
+                }, ConstantManager.MENU_ITEM_TYPE_ITEM))
+                ;
 
             }
 

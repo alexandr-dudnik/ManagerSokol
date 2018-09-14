@@ -19,6 +19,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private String address = "";
     private String phone = "";
     private String email = "";
+    private String category = "";
     @Index
     private String index = "";
     @LinkingObjects("customer")
@@ -33,17 +34,20 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private final RealmResults<CustomerDiscountRealm> discounts = null;
     @LinkingObjects("customer")
     private final RealmResults<VisitRealm> visits = null;
+    @LinkingObjects("customer")
+    private final RealmResults<OrderRealm> orders = null;
 
     public CustomerRealm() {
     }
 
-    public CustomerRealm(String customerId, String name, String contactName, String address, String phone, String email) {
+    public CustomerRealm(String customerId, String name, String contactName, String address, String phone, String email, String category) {
         this.customerId = customerId;
         this.name = name;
         this.contactName = contactName;
         this.address = address;
         this.phone = phone;
         this.email = email;
+        this.category = category;
         this.index = name.toLowerCase();
     }
 
@@ -58,19 +62,19 @@ public class CustomerRealm extends RealmObject implements Serializable{
     }
 
     public String getContactName() {
-        return contactName;
+        return contactName==null?"":contactName;
     }
 
     public String getAddress() {
-        return address;
+        return address==null?"":address;
     }
 
     public String getPhone() {
-        return phone;
+        return phone==null?"":phone;
     }
 
     public String getEmail() {
-        return email;
+        return email==null?"":email;
     }
 
     public RealmResults<DebtRealm> getDebt() {
@@ -95,6 +99,14 @@ public class CustomerRealm extends RealmObject implements Serializable{
 
     public RealmResults<VisitRealm> getVisits() {
         return visits;
+    }
+
+    public RealmResults<OrderRealm> getOrders() {
+        return orders;
+    }
+
+    public String getCategory() {
+        return category==null?"":category;
     }
 
     //endregion ================== Getters =========================

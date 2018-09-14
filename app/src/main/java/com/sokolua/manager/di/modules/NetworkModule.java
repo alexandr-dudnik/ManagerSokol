@@ -10,6 +10,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.ConnectionPool;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
@@ -49,13 +51,22 @@ public class NetworkModule {
     }
 
 
+
+
     private OkHttpClient createClient() {
+        final Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequestsPerHost(AppConfig.MAX_CONCURRENT_REQUESTS);
+
+        ConnectionPool connectionPool = new ConnectionPool();
+
         return new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .connectTimeout(AppConfig.MAX_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                .dispatcher(dispatcher)
                 .readTimeout(AppConfig.MAX_READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(AppConfig.MAX_WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
-                .build();
+                .connectionPool(connectionPool)
+              .build();
 
     }
 

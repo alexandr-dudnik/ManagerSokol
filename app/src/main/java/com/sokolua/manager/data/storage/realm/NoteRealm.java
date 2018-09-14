@@ -3,6 +3,7 @@ package com.sokolua.manager.data.storage.realm;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -12,6 +13,7 @@ public class NoteRealm extends RealmObject implements Serializable {
     @PrimaryKey
     @Required
     private String noteId;
+    private String externalId;
     private CustomerRealm customer ;
     @Required
     private Date date;
@@ -22,14 +24,16 @@ public class NoteRealm extends RealmObject implements Serializable {
 
     public NoteRealm(CustomerRealm customer, String noteId, Date date, String data) {
         this.customer = customer;
-        this.noteId = noteId;
+        this.noteId = customer.getCustomerId()+"#"+noteId;
+        this.externalId = customer.getCustomerId()+"#"+noteId;
         this.date = date;
         this.data = data;
     }
 
     public NoteRealm(CustomerRealm customer, String data) {
         this.customer = customer;
-        this.noteId = "note_"+String.valueOf(Math.random());
+        this.noteId = UUID.randomUUID().toString();
+        this.externalId = "";
         this.date = Calendar.getInstance().getTime();
         this.data = data;
     }
@@ -52,5 +56,17 @@ public class NoteRealm extends RealmObject implements Serializable {
         return customer;
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
     //endregion ================== Getters =========================
+
+
+    //region ===================== Setters =========================
+
+    public void setExternalId(String externalId) {
+        this.externalId = customer.getCustomerId()+"#"+externalId;
+    }
+
+    //endregion ================== Setters =========================
 }

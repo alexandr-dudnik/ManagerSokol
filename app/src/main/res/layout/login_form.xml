@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/login_form_padding"
-    android:orientation="vertical"
-    tools:showIn="@layout/screen_auth">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_margin="@dimen/login_form_padding"
+              android:orientation="vertical"
+              tools:showIn="@layout/screen_auth">
+
+    <TextView
+        android:id="@+id/server_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@string/roboto_medium"
+        android:text="@string/settings_server_address"
+        android:textAlignment="center"
+        android:textColor="@color/color_black"
+        android:textSize="18sp" />
+
+    <Spinner
+        android:id="@+id/server_name"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:spinnerMode="dropdown"
+        android:layout_marginLeft="@dimen/login_form_padding"
+        android:layout_marginRight="@dimen/login_form_padding"
+        />
 
     <TextView
         android:id="@+id/login_caption"
@@ -20,27 +40,31 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/login_form_padding"
-        android:layout_marginRight="@dimen/login_form_padding">
+        >
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/user_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginLeft="@dimen/login_form_padding"
+            android:layout_marginRight="@dimen/login_form_padding"
+            android:inputType="text"
             style="@style/login_input_text" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/login_form_padding"
-        android:layout_marginRight="@dimen/login_form_padding"
-        android:layout_marginBottom="@dimen/login_form_padding">
+        app:passwordToggleEnabled="true"
+        >
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/user_password"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginLeft="@dimen/login_form_padding"
+            android:layout_marginRight="@dimen/login_form_padding"
+            android:layout_marginBottom="@dimen/login_form_padding"
             android:inputType="textWebPassword"
             style="@style/password_input_text" />
     </android.support.design.widget.TextInputLayout>

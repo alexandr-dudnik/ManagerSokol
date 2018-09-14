@@ -41,6 +41,22 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
     public void setCurrentItem(CustomerListItem currentItem) {
         super.setCurrentItem(currentItem);
 
+        updateFields(currentItem);
+//        if (currentItem.getCustomer() != null){
+//            RealmObjectChangeListener< CustomerRealm > listener = (customerRealm, changeSet) -> {
+//                if (changeSet == null){
+//                    return;
+//                }
+////                if (changeSet.isDeleted()){
+////                }
+//                updateFields(currentItem);
+//            };
+//            currentItem.getCustomer().addChangeListener(listener);
+//        }
+
+    }
+
+private void updateFields(CustomerListItem currentItem) {
         if (currentItem != null) {
             if (currentItem.isHeader() && mItemHeaderText != null){
                 mItemHeaderText.setText(currentItem.getHeaderText());
@@ -63,14 +79,13 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
                     mCustomerNameText.setText(currentItem.getCustomer().getName());
                 }
                 if (mMapPinImg != null) {
-                    mMapPinImg.setVisibility(currentItem.getCustomer().getAddress().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    mMapPinImg.setVisibility((currentItem.getCustomer().getAddress()==null || currentItem.getCustomer().getAddress().isEmpty())?View.INVISIBLE:View.VISIBLE);
                 }
                 if (mCallImg != null) {
-                    mCallImg.setVisibility(currentItem.getCustomer().getPhone().isEmpty()?View.INVISIBLE:View.VISIBLE);
+                    mCallImg.setVisibility((currentItem.getCustomer().getPhone()==null || currentItem.getCustomer().getPhone().isEmpty())?View.INVISIBLE:View.VISIBLE);
                 }
             }
         }
-
     }
 
     @Optional

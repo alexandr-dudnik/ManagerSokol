@@ -19,11 +19,9 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.activities.SplashActivity;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
-import com.sokolua.manager.utils.AppConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -106,7 +104,6 @@ public class RootPresenter extends Presenter<IRootView> {
 
         Observable<UserRes> obs = mAuthModel.loginUser(userName, password);
         obs.subscribeOn(Schedulers.io())
-                .debounce(AppConfig.MAX_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .take(1)
                 .subscribe(
@@ -128,7 +125,6 @@ public class RootPresenter extends Presenter<IRootView> {
                                 if (scr != null && scr instanceof IAuthView) {
                                     ((IAuthView) scr).login_error();
                                 }
-                                getView().showMessage(e.getMessage());
                             }
 
                             @Override

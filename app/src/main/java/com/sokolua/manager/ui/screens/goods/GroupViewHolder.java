@@ -1,6 +1,7 @@
 package com.sokolua.manager.ui.screens.goods;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,6 +10,7 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -26,6 +28,9 @@ public class GroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
 
     @Inject
     GoodsScreen.Presenter mPresenter;
+    @Inject
+    Picasso picasso;
+
 
     public GroupViewHolder(View itemView) {
         super(itemView);
@@ -38,8 +43,15 @@ public class GroupViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
     public void setCurrentItem(GoodsGroupRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-        mGroupImage.setImageDrawable(noImage);
-        mGroupName.setText(currentItem.getName());
+        if (currentItem.isValid() && currentItem.isLoaded()) {
+            if (currentItem.getImageURI()==null || currentItem.getImageURI().isEmpty()){
+                mGroupImage.setImageDrawable(noImage);
+            }else{
+                //UiHelper.getCachedImagePicasso(picasso, currentItem.getImageURI(), mGroupImage, noImage, true);
+                mGroupImage.setImageURI(Uri.parse(currentItem.getImageURI()));
+            }
+            mGroupName.setText(currentItem.getName());
+        }
 
     }
 

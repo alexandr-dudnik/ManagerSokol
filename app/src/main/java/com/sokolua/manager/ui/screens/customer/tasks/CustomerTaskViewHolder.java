@@ -62,22 +62,26 @@ public class CustomerTaskViewHolder extends ReactiveRecyclerAdapter.ReactiveView
             }
         } else {
             if (currentItem.getTask() != null) {
-                mTaskChangeListener = (taskRealm, changeSet) -> {
-                    if (mTaskChangeListener != null) {
-                        taskRealm.removeChangeListener(mTaskChangeListener);
-                    }
-                    setCurrentItem(new CustomerTaskItem(taskRealm));
-                };
-                currentItem.getTask().addChangeListener(mTaskChangeListener);
+                if (!currentItem.getTask().isValid() || !currentItem.getTask().isLoaded()){
+                    currentItem.getTask().removeAllChangeListeners();
+                } else {
+                    mTaskChangeListener = (taskRealm, changeSet) -> {
+                        if (mTaskChangeListener != null) {
+                            taskRealm.removeChangeListener(mTaskChangeListener);
+                        }
+                        setCurrentItem(new CustomerTaskItem(taskRealm));
+                    };
+                    currentItem.getTask().addChangeListener(mTaskChangeListener);
 
-                if (mTaskText != null) {
-                    mTaskText.setText(currentItem.getTask().getText());
-                }
-                if (mTaskDone != null) {
-                    mTaskDone.setChecked(currentItem.getTask().isDone());
-                }
-                if (mTaskComment != null) {
-                    mTaskComment.setText(currentItem.getTask().getResult());
+                    if (mTaskText != null) {
+                        mTaskText.setText(currentItem.getTask().getText());
+                    }
+                    if (mTaskDone != null) {
+                        mTaskDone.setChecked(currentItem.getTask().isDone());
+                    }
+                    if (mTaskComment != null) {
+                        mTaskComment.setText(currentItem.getTask().getResult());
+                    }
                 }
             }
         }

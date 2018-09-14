@@ -21,7 +21,7 @@
     <string name="date_format">dd.MM.yyyy</string>
     <string name="numeric_format">%1$.2f</string>
     <string name="numeric_format_int">%1$.0f</string>
-    <string name="national_currency">UAH</string>
+    <string name="national_currency">ГРН</string>
 
     <string name="search_hint">Поиск…</string>
 
@@ -105,5 +105,10 @@
     <string name="message_auth_success">Авторизация прошла успешно!</string>
     <string name="error_access_denied">Доступ запрещен!</string>
     <string name="default_manager_name">Вася Пупкин</string>
+    <string name="customer_info_category_header">Класс по обороту</string>
+    <string name="customer_info_category_no_category">НЕТ</string>
+    <string name="button_yes_text">ДА</string>
+    <string name="button_no_text">No</string>
+    <string name="item_discount_label">Скидка</string>
 
 </resources>

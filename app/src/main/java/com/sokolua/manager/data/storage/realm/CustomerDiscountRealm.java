@@ -29,6 +29,22 @@ public class CustomerDiscountRealm extends RealmObject implements Serializable{
         this.percent = percent;
         this.discountId = String.valueOf(discountType)+"#"+customer.getCustomerId()+"#"+(discountType== ConstantManager.DISCOUNT_TYPE_ITEM?item.getItemId():category.getCategoryId());
     }
+    public CustomerDiscountRealm(CustomerRealm customer, GoodsCategoryRealm category, Float percent) {
+        this.discountType = ConstantManager.DISCOUNT_TYPE_CATEGORY;
+        this.customer = customer;
+        this.category = category;
+        this.item = null;
+        this.percent = percent;
+        this.discountId = String.valueOf(discountType)+"#"+customer.getCustomerId()+"#"+(discountType== ConstantManager.DISCOUNT_TYPE_ITEM?item.getItemId():category.getCategoryId());
+    }
+    public CustomerDiscountRealm(CustomerRealm customer, ItemRealm item, Float percent) {
+        this.discountType = ConstantManager.DISCOUNT_TYPE_ITEM;
+        this.customer = customer;
+        this.category = null;
+        this.item = item;
+        this.percent = percent;
+        this.discountId = String.valueOf(discountType)+"#"+customer.getCustomerId()+"#"+(discountType== ConstantManager.DISCOUNT_TYPE_ITEM?item.getItemId():category.getCategoryId());
+    }
 
 
     //region ================================ Getters ==================================

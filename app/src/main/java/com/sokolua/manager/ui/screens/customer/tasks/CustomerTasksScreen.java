@@ -7,6 +7,8 @@ import android.view.View;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.data.storage.realm.DebtRealm;
+import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -19,6 +21,8 @@ import com.sokolua.manager.ui.screens.customer.CustomerScreen;
 import javax.inject.Inject;
 
 import dagger.Provides;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_tasks)
@@ -72,6 +76,8 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
     public class Presenter extends AbstractPresenter<CustomerTasksView, CustomerModel> {
         @Inject
         protected CustomerRealm mCustomer;
+        private RealmChangeListener<RealmResults<DebtRealm>> mDebtListener;
+        private RealmChangeListener<RealmResults<TaskRealm>> mTasksListener;
 
 
         public Presenter() {
@@ -105,6 +111,9 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
             };
             ReactiveRecyclerAdapter mDebtAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()), debtViewAndHolderFactory);
             getView().setDebtAdapter(mDebtAdapter);
+            mDebtListener = debtRealms -> mDebtAdapter.refreshList(mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()));
+            mCustomer.getDebt().addChangeListener(mDebtListener);
+
 
 
             //Task Realm adapter
@@ -122,6 +131,8 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
             };
             ReactiveRecyclerAdapter mTaskAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()), taskViewAndHolderFactory);
             getView().setTaskAdapter(mTaskAdapter);
+            mTasksListener = tasksRealms -> mTaskAdapter.refreshList(mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()));
+            mCustomer.getTasks().addChangeListener(mTasksListener);
 
 
         }

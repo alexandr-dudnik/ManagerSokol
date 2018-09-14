@@ -7,9 +7,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.sokolua.manager.R;
@@ -17,18 +19,22 @@ import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 
+import java.util.Arrays;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import butterknife.OnTextChanged;
+import butterknife.OnItemSelected;
 
 public class SettingsView extends AbstractView<SettingsScreen.Presenter> implements IAuthView{
 
-    @BindView(R.id.server_address_text)     EditText mServerAddress;
     @BindView(R.id.auto_sync_switch)        Switch mAutoSyncSwitch;
     @BindView(R.id.user_name)               EditText mUserName;
     @BindView(R.id.user_password)           EditText mUserPassword;
     @BindView(R.id.login_btn)               Button mLoginBtn;
+    @BindView(R.id.server_name)             Spinner mServerName;
+
 
     public SettingsView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -51,6 +57,13 @@ public class SettingsView extends AbstractView<SettingsScreen.Presenter> impleme
     @Override
     public boolean viewOnBackPressed() {
         return false ;
+    }
+
+    public void setServerList(String[] servers, String currentServer){
+        mServerName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
+        List<String> list = Arrays.asList(servers);
+        int idx = list.indexOf(currentServer);
+        mServerName.setSelection(idx<0?0:idx);
     }
 
 
@@ -85,10 +98,6 @@ public class SettingsView extends AbstractView<SettingsScreen.Presenter> impleme
 
     //region ===================== Synchronize =========================
 
-    public void setServerAddress(String serverAddress) {
-        mServerAddress.setText(serverAddress);
-    }
-
     public void setAutoSynchronize(Boolean autoSynchronize) {
         mAutoSyncSwitch.setChecked(autoSynchronize);
     }
@@ -106,11 +115,11 @@ public class SettingsView extends AbstractView<SettingsScreen.Presenter> impleme
 
 
     //region ===================== Events =========================
-
-    @OnTextChanged(R.id.server_address_text)
-    void serverAddressChanged(CharSequence s, int start, int count, int after){
-        mPresenter.updateServerAddress(mServerAddress.getText().toString());
+    @OnItemSelected(R.id.server_name)
+    void serverChange(View view){
+        mPresenter.updateServer(mServerName.getSelectedItem().toString());
     }
+
 
     @OnCheckedChanged(R.id.auto_sync_switch)
     void serverSyncChanged(CompoundButton buttonView, boolean isChecked){

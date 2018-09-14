@@ -31,6 +31,15 @@ public class TaskRealm extends RealmObject implements Serializable {
         this.result = result;
     }
 
+    public TaskRealm(CustomerRealm customer, String taskId,  String text, int taskType) {
+        this.taskId = taskId;
+        this.customer = customer;
+        this.text = text;
+        this.taskType = taskType;
+        this.done = false;
+        this.result = "";
+    }
+
     //region ===================== Getters =========================
 
     public CustomerRealm getCustomer() {

@@ -16,6 +16,7 @@ public class OrderRealm extends RealmObject implements Serializable{
     @Required
     @PrimaryKey
     private String id;
+    private String external_id;
     @Required
     private Date date;
     private Date delivery;
@@ -32,6 +33,7 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public OrderRealm(String id, CustomerRealm customer, Date date, Date delivery, int status, int payment, String currency, String comments) {
         this.id = id;
+        this.external_id = id;
         this.customer = customer;
         this.date = date;
         this.delivery = delivery;
@@ -39,6 +41,22 @@ public class OrderRealm extends RealmObject implements Serializable{
         this.payment = payment;
         this.currency = currency;
         this.comments = comments;
+    }
+
+    public OrderRealm(CustomerRealm customer) {
+        Calendar cal = Calendar.getInstance();
+        this.id = "cart_"+customer.getCustomerId();
+        this.external_id = "";
+        this.customer = customer;
+        this.date = cal.getTime();
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 0);
+        this.delivery = cal.getTime();
+        this.status = ConstantManager.ORDER_STATUS_CART;
+        this.payment = ConstantManager.ORDER_PAYMENT_CASH;
+        this.currency = ConstantManager.MAIN_CURRENCY;
+        this.comments = "";
     }
 
     //region ================================ Getters ==================================
@@ -116,6 +134,10 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public void setExternalId(String externalId) {
+        this.external_id = externalId;
     }
 
     //endregion ================== Setters =========================

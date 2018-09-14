@@ -195,7 +195,6 @@
 
     <style name="login_input_text">
         <item name="android:textColor">@color/color_black</item>
-        <item name="android:inputType">text</item>
         <item name="android:hint">@string/user_name_hint</item>
         <item name="android:textColorHint">@color/color_gray</item>
         <item name="android:background">@color/color_white</item>
@@ -203,10 +202,17 @@
 
     <style name="password_input_text">
         <item name="android:textColor">@color/color_black</item>
-        <item name="android:inputType">text</item>
         <item name="android:hint">@string/user_password_hint</item>
         <item name="android:textColorHint">@color/color_gray</item>
         <item name="android:background">@color/color_white</item>
+    </style>
+
+    <style name="login_server_select">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_black</item>
+        <!--item name="android:hint">@string/settings_server_address</item>
+        <item name="android:textColorHint">@color/color_gray</item-->
+        <item name="android:background">@drawable/server_spinner_background</item>
     </style>
 
 

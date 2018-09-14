@@ -26,6 +26,7 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
         this.parent = parent;
     }
 
+
 //region ================================ Getters ==================================
 
     public String getGroupId() {

@@ -26,7 +26,7 @@ public class DebtRealm extends RealmObject implements Serializable {
         this.amount = amount;
         this.amountUSD = amountUSD;
         this.outdated = outdated;
-        this.debtId = customer.getCustomerId()+"#"+currency;
+        this.debtId = customer.getCustomerId()+"#"+currency+"#"+(outdated?"!":"");
     }
 
 //region ===================== Getters =========================

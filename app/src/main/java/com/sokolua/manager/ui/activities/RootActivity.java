@@ -395,14 +395,14 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(App.getStringRes(R.string.question_quit))
                     .setCancelable(false)
-                    .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
+                    .setPositiveButton(App.getStringRes(R.string.button_yes_text), (dialog, whichButton) -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             this.finishAndRemoveTask();
                         }else{
                             this.finishAffinity();
                         }
                     })
-                    .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {});
+                    .setNegativeButton(App.getStringRes(R.string.button_no_text), (dialog, whichButton) -> {});
             alert.show();
         }else {
             if (!Flow.get(this).goBack()) {

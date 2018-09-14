@@ -11,6 +11,7 @@ import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.utils.AppConfig;
 
 import dagger.Provides;
 import mortar.MortarScope;
@@ -51,6 +52,7 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
 
             getView().setUserName(mModel.getUserName());
             getView().setUserPassword(mModel.getUserPassword());
+            getView().setServerList(AppConfig.API_SERVERS, mModel.getServerName());
 
             if (!mModel.getUserName().isEmpty() && !mModel.getUserPassword().isEmpty()){
                 clickOnLogin();
@@ -80,6 +82,9 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             return mModel.isUserAuth();
         }
 
+        public void updateServer(String serverName) {
+            mModel.updateServerName(serverName);
+        }
     }
     //endregion ================== Presenter =========================
 

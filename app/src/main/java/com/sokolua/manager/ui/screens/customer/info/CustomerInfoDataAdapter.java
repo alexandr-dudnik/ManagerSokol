@@ -56,6 +56,13 @@ public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDa
         }
     }
 
+    public void removeItem(CustomerInfoDataItem item){
+        if (items.contains(item)) {
+            items.remove(item);
+            notifyDataSetChanged();
+        }
+    }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.customer_info_header)

@@ -8,6 +8,7 @@ public class ConstantManager {
     public static final String FILE_PROVIDER_AUTHORITY = "com.sokolua.manager.fileprovider";
     public static final String HEADER_LAST_MODIFIED = "Last-Modified";
     public static final String HEADER_IF_MODIFIED_SINCE = "Is-Modified-Since";
+    public static final String HEADER_TOKEN = "token";
 
     public static final int DEBT_TYPE_WHOLE = 3;
     public static final int DEBT_TYPE_OUTDATED = 2;
@@ -36,4 +37,5 @@ public class ConstantManager {
     public static final int DISCOUNT_TYPE_CATEGORY = 1;
 
     public static final String MAIN_CURRENCY = App.getStringRes(R.string.national_currency);
+
 }

@@ -19,6 +19,8 @@ import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
 import flow.Flow;
+import io.realm.OrderedRealmCollectionChangeListener;
+import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order_list)
@@ -69,6 +71,8 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
     public class Presenter extends AbstractPresenter<OrderListView, OrderListModel> {
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> viewAndHolderFactory;
+        OrderedRealmCollectionChangeListener<RealmResults<OrderRealm>> orderChangeListener;
+        private RealmResults<OrderRealm> mQR;
 
         public Presenter() {
         }
@@ -91,10 +95,21 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
                 );
             };
 
-            setOrderListFilter("");
+
+            orderChangeListener = (orderRealms, changeSet) -> {
+                if (orderRealms.isValid() && orderRealms.isLoaded()) {
+                    setOrderListFilter();
+                }
+            };
+
+
+            mQR = mModel.getOrdersQuery();
+            mQR.addChangeListener(orderChangeListener);
+
+            setOrderListFilter();
         }
 
-        public void setOrderListFilter(String filter){
+        public void setOrderListFilter(){
 
             ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getOrderList(), viewAndHolderFactory);
 
@@ -123,6 +138,11 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         }
 
+        @Override
+        public void dropView(OrderListView view) {
+            mQR.removeChangeListener(orderChangeListener);
+            super.dropView(view);
+        }
 
         public void openOrder(OrderRealm order) {
             Flow.get(getView()).set(new OrderScreen(order));

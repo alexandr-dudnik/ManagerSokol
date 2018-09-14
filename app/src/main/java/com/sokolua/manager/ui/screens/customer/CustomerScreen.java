@@ -25,6 +25,7 @@ import com.sokolua.manager.utils.App;
 import dagger.Provides;
 import flow.Flow;
 import flow.TreeKey;
+import io.realm.RealmObjectChangeListener;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer)
@@ -92,6 +93,8 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<CustomerView, CustomerModel>{
 
+        private RealmObjectChangeListener<CustomerRealm> customerChangeListener;
+
         public Presenter() {
         }
 
@@ -104,6 +107,19 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
+
+            customerChangeListener = (realmModel, changeSet) -> {
+                if (!realmModel.isLoaded() || !realmModel.isValid() || changeSet != null && changeSet.isDeleted()) {
+                    getView().viewOnBackPressed();
+                }
+            };
+            mCustomer.addChangeListener(customerChangeListener);
+        }
+
+        @Override
+        public void dropView(CustomerView view) {
+            mCustomer.removeChangeListener(customerChangeListener);
+            super.dropView(view);
         }
 
         @Override
@@ -118,6 +134,10 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                                 Flow.get(getView()).set(new OrderScreen(cart));
                                 return false;
                             } , ConstantManager.MENU_ITEM_TYPE_ACTION))
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
+                        mModel.updateCustomerFromRemote(mCustomer.getCustomerId());
+                        return false;
+                    } , ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .build();
 
         }
