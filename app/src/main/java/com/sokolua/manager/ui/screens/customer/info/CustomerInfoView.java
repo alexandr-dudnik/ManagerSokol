@@ -64,11 +64,13 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
     public void setNoteAdapter(ReactiveRecyclerAdapter mNoteAdapter) {
         mCustomerNotesList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mCustomerNotesList.setAdapter(mNoteAdapter);
+        mCustomerNotesList.setHasFixedSize(true);
     }
 
     public void setDataAdapter(CustomerInfoDataAdapter mDataAdapter) {
         mCustomerInfoList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
         mCustomerInfoList.setAdapter(mDataAdapter);
+        mCustomerNotesList.setHasFixedSize(true);
     }
 
     @OnClick(R.id.note_add_image)

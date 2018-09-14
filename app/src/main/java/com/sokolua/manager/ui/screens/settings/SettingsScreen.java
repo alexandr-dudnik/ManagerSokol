@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.managers.DebugModule;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -123,6 +124,21 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
             return item -> {
                 mModel.clearDatabase();
+
+                if (mAuthModel.getUserName().equals(AppConfig.TEST_USERNAME)){
+                    try {
+                        DebugModule.mock_RealmDB();
+                        if (getRootView() != null) {
+                            getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
+                        }
+                    }catch (Exception e){
+                        if (getRootView() != null) {
+                            getRootView().showError(e);
+                        }
+                    }
+                    return true;
+                }
+
 
                 ArrayList<Observable<Boolean>> obs = new ArrayList<>();
                 obs.add(mModel.sendAllOrders());

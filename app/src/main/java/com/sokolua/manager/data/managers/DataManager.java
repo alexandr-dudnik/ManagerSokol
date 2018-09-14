@@ -151,6 +151,12 @@ public class DataManager {
 
     public Observable<UserRes> loginUser(String userName, String password) {
 
+        if (userName.equals(AppConfig.TEST_USERNAME) && password.equals(AppConfig.TEST_USERPASSWORD)){
+            updateUserName(userName);
+            updateUserPassword(password);
+            return Observable.just(DebugModule.loginUser(userName, password));
+        }
+
         return mRestService.loginUser(new UserLoginReq(userName, password))
                 .compose(new RestCallTransformer<>())
                 .flatMap(res -> {
@@ -238,6 +244,10 @@ public class DataManager {
 
 
     public Observable<CustomerRealm> updateCustomersFromRemote(){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return Observable.empty();
+        }
+        
         List<String> custToUpdate = new ArrayList<>();
         return mRestService.getCustomerList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
@@ -282,6 +292,10 @@ public class DataManager {
 
 
     public void updateCustomerFromRemote(String customerId){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return;
+        }
+        
         try {
             sendAllNotes(customerId);
 
@@ -322,6 +336,10 @@ public class DataManager {
     }
 
     public Observable<Boolean> sendAllNotes(String filter) {
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return Observable.empty();
+        }
+
         mRealmManager.getNotesToSend(filter)
                 .map(SendNoteReq::new)
                 .doOnNext(noteReq ->
@@ -424,6 +442,10 @@ public class DataManager {
 
 
     public Observable<OrderRealm> updateOrdersFromRemote(){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return Observable.empty();
+        }
+        
         List<String> ordersToUpdate = new ArrayList<>();
         return mRestService.getOrderList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
@@ -468,6 +490,10 @@ public class DataManager {
 
 
     public void updateOrderFromRemote(String customerId){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return;
+        }
+        
         try {
             Response<OrderRes> response = mRestService.getOrder(mPreferencesManager.getUserAuthToken(), customerId).execute();
             if (response.isSuccessful()){
@@ -510,6 +536,9 @@ public class DataManager {
     }
 
     public Observable<Boolean> sendAllOrders(String filter) {
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return Observable.empty();
+        }
         mRealmManager.getOrdersToSend(filter)
                 .map(SendOrderReq::new)
                 .doOnNext(orderRes ->
@@ -560,6 +589,9 @@ public class DataManager {
 
 
     public void updateGroupFromRemote(String groupId){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return;
+        }
         try {
             Response<GoodGroupRes> response = mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId).execute();
             if (response.isSuccessful()){
@@ -600,6 +632,10 @@ public class DataManager {
     }
 
     public Observable<GoodsGroupRealm> updateGroupsFromRemote(){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return Observable.empty();
+        }
+
         List<String> groupsToUpdate = new ArrayList<>();
         return mRestService.getGoodsGroupList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
@@ -644,6 +680,10 @@ public class DataManager {
 
 
     public Observable<ItemRealm> updateItemsFromRemote(){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return Observable.empty();
+        }
+
         List<String> itemsToUpdate = new ArrayList<>();
         return mRestService.getGoodsList(mPreferencesManager.getUserAuthToken())
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
@@ -688,6 +728,9 @@ public class DataManager {
 
 
     public void updateGoodItemFromRemote(String itemId){
+        if (getUserName().equals(AppConfig.TEST_USERNAME)){
+            return;
+        }
         try {
             Response<GoodItemRes> response = mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId).execute();
             if (response.isSuccessful()){

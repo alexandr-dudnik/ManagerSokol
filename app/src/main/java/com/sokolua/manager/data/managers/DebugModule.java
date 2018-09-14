@@ -1,5 +1,7 @@
 package com.sokolua.manager.data.managers;
 
+import com.sokolua.manager.R;
+import com.sokolua.manager.data.network.res.UserRes;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
@@ -12,9 +14,12 @@ import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.data.storage.realm.VisitRealm;
+import com.sokolua.manager.utils.App;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import io.realm.Realm;
@@ -25,6 +30,9 @@ public class DebugModule {
         Realm realm = Realm.getDefaultInstance();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        Calendar mCal = Calendar.getInstance();
+        Date curTime = mCal.getTime();
 
         RealmList<CustomerRealm> managedCustomers= new RealmList<>();
         RealmList<OrderRealm> managedOrders= new RealmList<>();
@@ -148,15 +156,24 @@ public class DebugModule {
         managedPlanRealms.add(new OrderPlanRealm(temp, cat1, 1500f));
         managedPlanRealms.add(new OrderPlanRealm(temp, cat2, 5000f));
         managedPlanRealms.add(new OrderPlanRealm(temp, cat3, 3500f));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00001", dateFormat.parse("2018-08-01"), true));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00002", dateFormat.parse("2018-08-05"), true));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00003", dateFormat.parse("2018-08-09"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00004", dateFormat.parse("2018-08-12"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00005", dateFormat.parse("2018-08-15"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00006", dateFormat.parse("2018-08-16"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00007", dateFormat.parse("2018-08-21"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00008", dateFormat.parse("2018-08-25"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00009", dateFormat.parse("2018-08-31"), false));
+        mCal.setTime(curTime);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00001", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
+        mCal.add(Calendar.DATE, -3);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00002", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
+        mCal.add(Calendar.DATE, -1);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00003", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 1);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00004", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 2);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00005", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 5);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00006", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 7);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00007", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 10);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00008", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 15);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00009", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
 
         OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "Заказ взял, клиет должен уточнить по количеству");
@@ -187,11 +204,16 @@ public class DebugModule {
         //--------------------------
         temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm", "C");
         managedDebtRealms.add(new DebtRealm(temp,"UAH",500,18,false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00010", dateFormat.parse("2018-08-05"), true));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00011", dateFormat.parse("2018-08-09"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00012", dateFormat.parse("2018-08-12"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00013", dateFormat.parse("2018-08-15"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00014", dateFormat.parse("2018-08-20"), false));
+        mCal.setTime(curTime);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00010", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
+        mCal.add(Calendar.DATE, -2);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00011", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, -1);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00012", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 2);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00013", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 6);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00014", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
 
         tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "");
@@ -211,21 +233,31 @@ public class DebugModule {
         managedDebtRealms.add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
         temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com", "X");
-        managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-01"), true));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00016", dateFormat.parse("2018-08-10"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse("2018-08-15"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00018", dateFormat.parse("2018-08-25"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00019", dateFormat.parse("2018-08-30"), false));
+        mCal.setTime(curTime);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
+        mCal.add(Calendar.DATE, -1);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00016", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 1);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 2);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00018", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 10);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00019", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
         //--------------------------
         temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","", "");
         managedDebtRealms.add(new DebtRealm(temp,"USD",130,130,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",250,9.50f,false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00020", dateFormat.parse("2018-08-01"), true));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00021", dateFormat.parse("2018-08-05"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00022", dateFormat.parse("2018-08-15"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00023", dateFormat.parse("2018-08-19"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00024", dateFormat.parse("2018-08-30"), false));
+        mCal.setTime(curTime);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00020", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, -2);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00021", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, -1);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00022", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 3);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00023", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
+        mCal.add(Calendar.DATE, 4);
+        managedVisitRealms.add(new VisitRealm(temp, "visit00024", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
 
         tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "плановый заказ");
@@ -253,5 +285,13 @@ public class DebugModule {
         realm.close();
 
         
+    }
+
+    public static UserRes loginUser(String userName, String password) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Calendar mCal = Calendar.getInstance();
+        mCal.setLenient(true);
+        mCal.add(Calendar.HOUR, 12);
+        return new UserRes("XXXX-XXXX-XXXX", App.getStringRes(R.string.default_manager_name), sdf.format(mCal.getTime()));
     }
 }
