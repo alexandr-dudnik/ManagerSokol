@@ -9,7 +9,6 @@ import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
 public class PreferencesManager {
-    private static final String AUTH_STRING_KEY = "pref_auth_string";
     private static final String PRICE_LAST_UPDATE_KEY = "pref_last_update";
     private static final String SERVER_ADDRESS_STRING = "pref_server_address";
     private static final String AUTO_SYNCHRONIZE = "auto_synchronize";
@@ -88,10 +87,10 @@ public class PreferencesManager {
         return mSharedPreferences.getString(USER_AUTH_TOKEN_EXPIRATION, "1900-01-01 00:00:00");
     }
 
-    public void updateUserAuthToken(String pass, String expires) {
+    public void updateUserAuthToken(String token, String expires) {
         SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(USER_AUTH_TOKEN, pass );
-        spEditor.putString(USER_AUTH_TOKEN_EXPIRATION, pass );
+        spEditor.putString(USER_AUTH_TOKEN, token );
+        spEditor.putString(USER_AUTH_TOKEN_EXPIRATION, expires.isEmpty()?"1900-01-01 00:00:00":expires );
         spEditor.apply();
     }
 
