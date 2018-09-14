@@ -224,7 +224,7 @@ public class DebugModule {
         managedVisitRealms.add(new VisitRealm(temp, "visit00020", dateFormat.parse("2018-08-01"), true));
         managedVisitRealms.add(new VisitRealm(temp, "visit00021", dateFormat.parse("2018-08-05"), false));
         managedVisitRealms.add(new VisitRealm(temp, "visit00022", dateFormat.parse("2018-08-15"), false));
-        managedVisitRealms.add(new VisitRealm(temp, "visit00023", dateFormat.parse("2018-08-25"), false));
+        managedVisitRealms.add(new VisitRealm(temp, "visit00023", dateFormat.parse("2018-08-19"), false));
         managedVisitRealms.add(new VisitRealm(temp, "visit00024", dateFormat.parse("2018-08-30"), false));
         managedCustomers.add(temp);
 
@@ -236,18 +236,20 @@ public class DebugModule {
         managedOrders.add(tmpOrder);
 
 
-        realm.executeTransaction(db -> db.insertOrUpdate(managedCats));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedBrands));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedGroups));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedItems));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedCustomers));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedOrders));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedDebtRealms));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedVisitRealms));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedTaskRealms));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedNoteRealms));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedPlanRealms));
-        realm.executeTransaction(db -> db.insertOrUpdate(managedOrderLines));
+        realm.executeTransaction(db ->{
+            db.insertOrUpdate(managedCats);
+            db.insertOrUpdate(managedBrands);
+            db.insertOrUpdate(managedGroups);
+            db.insertOrUpdate(managedItems);
+            db.insertOrUpdate(managedCustomers);
+            db.insertOrUpdate(managedOrders);
+            db.insertOrUpdate(managedDebtRealms);
+            db.insertOrUpdate(managedVisitRealms);
+            db.insertOrUpdate(managedTaskRealms);
+            db.insertOrUpdate(managedNoteRealms);
+            db.insertOrUpdate(managedPlanRealms);
+            db.insertOrUpdate(managedOrderLines);
+        });
         realm.close();
 
         

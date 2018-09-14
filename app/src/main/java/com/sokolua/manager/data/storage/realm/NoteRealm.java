@@ -1,10 +1,10 @@
 package com.sokolua.manager.data.storage.realm;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 import io.realm.RealmObject;
-import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -24,6 +24,13 @@ public class NoteRealm extends RealmObject implements Serializable {
         this.customer = customer;
         this.noteId = noteId;
         this.date = date;
+        this.data = data;
+    }
+
+    public NoteRealm(CustomerRealm customer, String data) {
+        this.customer = customer;
+        this.noteId = "note_"+String.valueOf(Math.random());
+        this.date = Calendar.getInstance().getTime();
         this.data = data;
     }
 

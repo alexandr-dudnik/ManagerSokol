@@ -11,8 +11,8 @@ public interface IRootView extends IView{
     void showLoad();
     void hideLoad();
 
-    void showBottomBar();
-    void hideBottomBar();
+    void setBottomBarVisibility(boolean state);
+    boolean getBottomBarVisibility();
 
     @Nullable
     IView getCurrentScreen();

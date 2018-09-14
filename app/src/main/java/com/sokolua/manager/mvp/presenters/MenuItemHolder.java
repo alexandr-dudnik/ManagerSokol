@@ -3,6 +3,7 @@ package com.sokolua.manager.mvp.presenters;
 import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
 
+import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 
 import java.util.ArrayList;
@@ -24,11 +25,11 @@ public class MenuItemHolder {
         this.queryListener = null;
     }
 
-    public MenuItemHolder(CharSequence itemTitle, int iconResId, SearchView.OnQueryTextListener listener, int type) {
+    public MenuItemHolder(CharSequence itemTitle, SearchView.OnQueryTextListener listener) {
         this.itemTitle = itemTitle;
-        this.iconResId = iconResId;
+        this.iconResId = R.drawable.ic_search;
         this.listener = null;
-        this.itemType = type;
+        this.itemType = ConstantManager.MENU_ITEM_TYPE_SEARCH;
         this.queryListener = listener;
     }
 

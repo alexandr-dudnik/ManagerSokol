@@ -11,13 +11,17 @@ import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
+import com.sokolua.manager.data.storage.realm.VisitRealm;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
 import io.reactivex.Observable;
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmModel;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -26,6 +30,17 @@ import io.realm.internal.ManagableObject;
 public class RealmManager {
 
     private Realm mRealmInstance;
+
+    public void clearDataBase() {
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().build();
+        Set<Class<? extends RealmModel>> schemaClasses = realmConfiguration.getRealmObjectClasses();
+
+        getQueryRealmInstance().executeTransaction(db->{
+            for (Class<? extends RealmModel> model : schemaClasses) {
+                db.delete(model);
+            }
+        });
+    }
 
     private Realm getQueryRealmInstance() {
         if (mRealmInstance == null || mRealmInstance.isClosed()) {
@@ -344,6 +359,32 @@ public class RealmManager {
                 .equalTo("id", orderId)
                 .findFirst();
     }
+
+    public Observable<CustomerRealm> getCustomersByVisitDate(Date day) {
+        return Observable.fromIterable(
+                    getQueryRealmInstance()
+                    .where(VisitRealm.class)
+                    .equalTo("date", day)
+                    .sort("customer.name", Sort.ASCENDING)
+                    .findAll()
+        ).map(VisitRealm::getCustomer);
+    }
+
+    public void addNewNote(CustomerRealm customer, String note) {
+        getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(new NoteRealm(customer, note)));
+    }
+
+    public void deleteNote(NoteRealm note) {
+        NoteRealm tmp = getQueryRealmInstance()
+                .where(NoteRealm.class)
+                .equalTo("noteId", note.getNoteId())
+                .findFirst();
+        if (tmp != null) {
+            getQueryRealmInstance().executeTransaction(db->tmp.deleteFromRealm());
+        }
+    }
+
+
 }
 
 

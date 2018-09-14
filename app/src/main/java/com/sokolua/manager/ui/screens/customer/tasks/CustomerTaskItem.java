@@ -1,6 +1,5 @@
 package com.sokolua.manager.ui.screens.customer.tasks;
 
-import com.sokolua.manager.data.storage.dto.TaskDto;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
 public class CustomerTaskItem {

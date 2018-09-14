@@ -2,19 +2,101 @@
 <com.sokolua.manager.ui.screens.routes.RoutesView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/main_background">
 
-    <CalendarView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:firstDayOfWeek="2"
-        />
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/order_list"-->
-        <!--android:scrollbars="vertical"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
+        android:layout_height="match_parent"
+        android:isScrollContainer="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
 
-    <!--</android.support.v7.widget.RecyclerView>-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingEnd="@dimen/customer_routes_margin"
+                android:paddingStart="@dimen/customer_routes_margin"
+                >
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_1"
+                    android:text="ПН"
+                    tools:backgroundTint="@color/color_accent"
+                    />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_2"
+                    android:text="ВТ"
+                    />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_3"
+                    android:text="СР"
+                    />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_4"
+                    android:text="ЧТ"
+                    />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_5"
+                    android:text="ПТ"
+                    />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_6"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_6"
+                    android:text="СБ"
+                    android:textColor="@color/color_red"
+                    />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btn_7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:tag="day_7"
+                    android:text="ВС"
+                    android:textColor="@color/color_red"
+                    />
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/customer_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                />
+        </LinearLayout>
+    </ScrollView>
 </com.sokolua.manager.ui.screens.routes.RoutesView>

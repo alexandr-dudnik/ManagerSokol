@@ -1,41 +1,48 @@
 package com.sokolua.manager.mvp.presenters;
 
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.MenuItemHoverListener;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 
-//import com.skill_branch.graduate.mvp.models.AccountModel;
-
+import com.sokolua.manager.R;
+import com.sokolua.manager.data.network.res.UserRes;
+import com.sokolua.manager.mvp.models.AuthModel;
+import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.mvp.views.IAuthView;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.activities.SplashActivity;
+import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.AppConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import flow.Direction;
+import flow.Flow;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import mortar.Presenter;
 import mortar.bundler.BundleService;
 
 
 public class RootPresenter extends Presenter<IRootView> {
 
-    //@Inject
-    //AccountModel mAccountModel;
+    private static final String BOTTOM_BAR_VISIBILITY_KEY = "bottom_bar_visibility";
+    @Inject
+    AuthModel mAuthModel;
 
     private static int DEFAULT_MODE = 0;
     private static int TAB_MODE = 1;
@@ -56,7 +63,16 @@ public class RootPresenter extends Presenter<IRootView> {
     protected void onLoad(Bundle savedInstanceState) {
         super.onLoad(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            getView().setBottomBarVisibility(savedInstanceState.getBoolean(BOTTOM_BAR_VISIBILITY_KEY, true));
+        }
+    }
 
+    @Override
+    protected void onSave(Bundle outState) {
+        outState.putBoolean(BOTTOM_BAR_VISIBILITY_KEY, getView().getBottomBarVisibility());
+
+        super.onSave(outState);
     }
 
     @Override
@@ -64,44 +80,74 @@ public class RootPresenter extends Presenter<IRootView> {
         super.dropView(view);
     }
 
-//    private Subscription subscribeOnUserInfoObs(){
-//        return mAccountModel.getUserInfoObservable()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new UserInfoSubscriber());
-//    }
 
     @Nullable
     public IRootView getRootView() {
         return getView();
     }
 
+
+    public void doUserLogin(String userName, String password) {
+        AbstractView scr = (AbstractView) getView().getCurrentScreen();
+        if (!mAuthModel.isUserNameValid(userName)) {
+            if (scr != null && scr instanceof IAuthView) {
+                ((IAuthView) scr).showInvalidUserName();
+            }
+            getView().showMessage(App.getStringRes(R.string.error_empty_login));
+            return;
+        }
+        if (!mAuthModel.isPasswordValid(password)) {
+            if (scr != null && scr instanceof IAuthView) {
+                ((IAuthView) scr).showInvalidPassword();
+            }
+            getView().showMessage(App.getStringRes(R.string.error_bad_password));
+            return;
+        }
+
+        Observable<UserRes> obs = mAuthModel.loginUser(userName, password);
+        obs.subscribeOn(Schedulers.io())
+                .debounce(AppConfig.MAX_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .take(1)
+                .subscribe(
+                        new Observer<UserRes>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                ((RootActivity) getView()).runOnUiThread(() -> getView().showLoad());
+                            }
+
+                            @Override
+                            public void onNext(UserRes userRes) {
+                                mAuthModel.updateUserData(userRes);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                getView().showError(e);
+                                ((RootActivity) getView()).runOnUiThread(() -> getView().hideLoad());
+                                if (scr != null && scr instanceof IAuthView) {
+                                    ((IAuthView) scr).login_error();
+                                }
+                                getView().showMessage(e.getMessage());
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                ((RootActivity) getView()).runOnUiThread(() -> getView().hideLoad());
+                                if (mAuthModel.isUserAuth()) {
+                                    getView().showMessage(App.getStringRes(R.string.message_auth_success));
+                                    Flow.get(scr).replaceHistory(new MainScreen(), Direction.REPLACE);
+                                }
+                            }
+                        }
+                );
+    }
+
+
     public ActionBarBuilder newActionBarBuilder() {
         return this.new ActionBarBuilder();
     }
 
-//    @RxLogSubscriber
-//    private class UserInfoSubscriber extends Subscriber<UserInfoDto>{
-//
-//        @Override
-//        public void onCompleted() {
-//
-//        }
-//
-//        @Override
-//        public void onError(Throwable e) {
-//            if (getView() != null) {
-//                getView().showError(e);
-//            }
-//        }
-//
-//        @Override
-//        public void onNext(UserInfoDto userInfoDto) {
-//            if (getView() != null) {
-//                getView().initDrawer(userInfoDto);
-//            }
-//        }
-//    }
 
     public boolean checkPermissionsAndRequestIfNotGranted(@NonNull String[] permissions, int requestCode){
         boolean allGranted = true;

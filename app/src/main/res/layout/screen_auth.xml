@@ -2,7 +2,6 @@
 <com.sokolua.manager.ui.screens.auth.AuthView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme.NoActionBar"
@@ -31,74 +30,7 @@
         app:cardElevation="@dimen/login_form_elevation"
         >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/login_form_padding"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/login_caption"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@string/roboto_medium"
-                android:text="@string/login_form_caption"
-                android:textAlignment="center"
-                android:textColor="@color/color_black"
-                android:textSize="18sp"
-                />
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/login_form_padding"
-                android:layout_marginRight="@dimen/login_form_padding"
-                >
-
-                <EditText
-                    android:id="@+id/user_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/color_black"
-                    android:inputType="text"
-                    android:hint="@string/user_name_hint"
-                    android:textColorHint="@color/color_gray"
-                    android:background="@color/color_white"
-                    android:drawableLeft="@drawable/ic_person_24dp"
-                    android:drawableStart="@drawable/ic_person_24dp"/>
-            </android.support.design.widget.TextInputLayout>
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/login_form_padding"
-                android:layout_marginRight="@dimen/login_form_padding"
-                android:layout_marginBottom="@dimen/login_form_padding"
-                >
-
-                <EditText
-                    android:id="@+id/user_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:hint="@string/user_password_hint"
-                    android:textColorHint="@color/color_gray"
-                    android:background="@color/color_white"
-                    android:drawableLeft="@drawable/ic_password_24dp"
-                    android:drawableStart="@drawable/ic_password_24dp"
-                    android:textColor="@color/color_black"
-                    />
-            </android.support.design.widget.TextInputLayout>
-            <Button
-                android:id="@+id/login_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#03A9F4"
-                android:layout_margin="@dimen/login_form_padding"
-                android:text="@string/login_button_text"
-                android:textStyle="bold"
-                android:textColor="@color/color_white"
-                />
-        </LinearLayout>
+        <include layout="@layout/login_form" />
 
     </android.support.v7.widget.CardView>
 

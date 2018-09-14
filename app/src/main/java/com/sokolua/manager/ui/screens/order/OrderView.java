@@ -103,8 +103,11 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
                 public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                     mPresenter.removeLine(((OrderLineViewHolder) viewHolder).getCurrentItem());
                 }
+
             });
+            itemTouchHelper.attachToRecyclerView(mItems);
         }
+
 
     }
 
@@ -239,5 +242,6 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     void addItemsClick(View view){
         mPresenter.addNewItemToOrder();
     }
+
     //endregion ================== Events =========================
 }

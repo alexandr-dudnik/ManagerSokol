@@ -1,8 +1,11 @@
 package com.sokolua.manager.ui.screens.customer.info;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
@@ -21,6 +24,9 @@ import com.sokolua.manager.utils.IntentStarter;
 import javax.inject.Inject;
 
 import dagger.Provides;
+import io.reactivex.Observable;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_info)
@@ -74,6 +80,9 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
     public class Presenter extends AbstractPresenter<CustomerInfoView, CustomerModel> {
         @Inject
         protected CustomerRealm mCustomer;
+        private ReactiveRecyclerAdapter mNotesAdapter;
+        private ReactiveRecyclerAdapter.ReactiveViewHolderFactory<NoteRealm> viewAndHolderFactory;
+        private RealmChangeListener<RealmResults<NoteRealm>> mNotesListener;
 
 
         public Presenter() {
@@ -114,16 +123,31 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             getView().setDataAdapter(mDataAdapter);
 
             //Notes realm adapter
-            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<NoteRealm> viewAndHolderFactory = (parent, pViewType) -> {
+            viewAndHolderFactory = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_info_note_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new CustomerNoteViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mNotesAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerNotes(mCustomer.getCustomerId()), viewAndHolderFactory);
+            mNotesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory);
             getView().setNoteAdapter(mNotesAdapter);
+            updateNotes();
 
+            mNotesListener = noteRealms -> updateNotes();
+            mCustomer.getNotes().addChangeListener(mNotesListener);
+
+        }
+
+        void updateNotes(){
+            mNotesAdapter.refreshList(mModel.getCustomerNotes(mCustomer.getCustomerId()));
+        }
+
+
+        @Override
+        public void dropView(CustomerInfoView view) {
+            mCustomer.getNotes().removeChangeListener(mNotesListener);
+            super.dropView(view);
         }
 
         @Override
@@ -151,9 +175,25 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         }
 
         public void deleteNote(NoteRealm note) {
-            if (getRootView() != null) {
-                getRootView().showMessage("Удаление заметки"); //TODO make realization of notes deletion
-            }
+            mModel.deleteNote(note);
+        }
+
+        public void addNewNote() {
+            final EditText input = new EditText(getView().getContext());
+            input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
+                    .setTitle(App.getStringRes(R.string.customer_info_notes))
+                    .setMessage(App.getStringRes(R.string.add_new_note_title))
+                    .setCancelable(false)
+                    .setView(input)
+                    .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
+                        String newNote = input.getText().toString();
+                        mModel.addNewNote(mCustomer, newNote);
+                    })
+                    .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
+                    });
+            alert.show();
         }
     }
 }

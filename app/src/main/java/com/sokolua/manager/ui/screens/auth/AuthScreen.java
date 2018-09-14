@@ -11,12 +11,8 @@ import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
-import com.sokolua.manager.ui.screens.main.MainScreen;
-import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
-import flow.Direction;
-import flow.Flow;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_auth)
@@ -30,8 +26,6 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
     }
 
 
-
-
     //region ===================== Presenter =========================
     public static class Presenter extends AbstractPresenter<AuthView, AuthModel> implements IAuthPresenter {
 
@@ -43,8 +37,11 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
 
-            ((Component)scope.getService(DaggerService.SERVICE_NAME)).inject(this);
+            ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
 
+            if (getRootView() != null) {
+                getRootView().setBottomBarVisibility(false);
+            }
         }
 
 
@@ -52,23 +49,17 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            if (getView() != null) {
-                if (getRootView()!=null) {
-                    getRootView().hideBottomBar();
-                }
-            } else {
-                if (getRootView() != null) {
-                    getRootView().showError(new NullPointerException("Что-то пошло не так..."));
-                }
+            getView().setUserName(mModel.getUserName());
+            getView().setUserPassword(mModel.getUserPassword());
+
+            if (!mModel.getUserName().isEmpty() && !mModel.getUserPassword().isEmpty()){
+                clickOnLogin();
             }
 
         }
 
         @Override
         public void dropView(AuthView view) {
-            if (getRootView()!=null) {
-                getRootView().showBottomBar();
-            }
             super.dropView(view);
         }
 
@@ -79,44 +70,10 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                     .build();
         }
 
-
-        public boolean isUserNameValid(String userName) {
-
-            //return email.matches("^[a-z0-9_]([a-z0-9_-]+\\.*)+[a-z0-9_]@[a-z0-9_-]+(\\.[a-z0-9_-]+)*\\.[a-z]{2,6}$");
-            return !userName.isEmpty();
-        }
-
-        public boolean isPasswordValid(String pass) {
-            return pass.length() >= 8;
-        }
-
         @Override
         public void clickOnLogin() {
-            if (getView() != null && getRootView() != null) {
-                if (!isUserNameValid((getView().getUserName()))) {
-                    getView().showInvalidUserName();
-                    getRootView().showMessage(App.getStringRes(R.string.error_empty_login));
-                    return;
-                }
-                if (!isPasswordValid(getView().getUserPassword())) {
-                    getView().showInvalidPassword();
-                    getRootView().showMessage(App.getStringRes(R.string.error_bad_password));
-                    return;
-                }
-
-                    //TODO auth user
-                    mModel.loginUser(getView().getUserName(),
-                            getView().getUserPassword());
-
-                    if (mModel.isUserAuth()) {
-                        Flow.get(getView()).replaceHistory(new MainScreen(), Direction.REPLACE);
-                    }else {
-                        getView().login_error();
-                        getRootView().showMessage(App.getStringRes(R.string.error_auth_error));
-                    }
-
-                }
-            }
+            mRootPresenter.doUserLogin(getView().getUserName(), getView().getUserPassword());
+        }
 
         @Override
         public boolean checkUserAuth() {

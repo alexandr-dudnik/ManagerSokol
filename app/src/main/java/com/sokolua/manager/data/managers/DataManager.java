@@ -1,5 +1,11 @@
 package com.sokolua.manager.data.managers;
 
+import com.sokolua.manager.data.network.RestService;
+import com.sokolua.manager.data.network.error.AccessDenied;
+import com.sokolua.manager.data.network.error.AccessError;
+import com.sokolua.manager.data.network.error.ApiError;
+import com.sokolua.manager.data.network.req.UserLoginReq;
+import com.sokolua.manager.data.network.res.UserRes;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
@@ -15,20 +21,28 @@ import com.sokolua.manager.di.components.DataManagerComponent;
 import com.sokolua.manager.di.modules.LocalModule;
 import com.sokolua.manager.di.modules.NetworkModule;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.NetworkStatusChecker;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import retrofit2.Retrofit;
 
 public class DataManager {
     private static DataManager ourInstance;
-    private boolean userAuth=false;
 
     @Inject
     PreferencesManager mPreferencesManager;
-
+    @Inject
+    RestService mRestService;
+    @Inject
+    Retrofit mRetrofit;
     @Inject
     RealmManager mRealmManager;
 
@@ -38,8 +52,8 @@ public class DataManager {
         if (dmComponent==null){
             dmComponent = DaggerDataManagerComponent.builder()
                     .appComponent(App.getAppComponent())
-                    .localModule(new LocalModule())
                     .networkModule(new NetworkModule())
+                    .localModule(new LocalModule())
                     .build();
             DaggerService.registerComponent(DataManagerComponent.class, dmComponent);
         }
@@ -55,11 +69,23 @@ public class DataManager {
         return ourInstance;
     }
 
+    public void clearDataBase() {
+        mRealmManager.clearDataBase();
+    }
+
     //region ===================== Getters =========================
 
 
     public PreferencesManager getPreferencesManager() {
         return mPreferencesManager;
+    }
+
+    public Retrofit getRetrofit() {
+        return mRetrofit;
+    }
+
+    public RestService getRestservice() {
+        return mRestService;
     }
 
     //endregion ================== Getters =========================
@@ -68,14 +94,73 @@ public class DataManager {
     //region ===================== UserInfo =========================
 
     public boolean isUserAuth() {
-        //TODO check auth token in shared preferences
-        // TODO: 20.06.2018 send check auth String
-        return userAuth;
+        if (mPreferencesManager.getUserAuthToken().isEmpty()){
+            return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        try {
+            Date dueDate = sdf.parse(mPreferencesManager.getUserAuthTokenExpiration());
+            return !dueDate.before(Calendar.getInstance().getTime()) || !NetworkStatusChecker.isNetworkAvailable();
+
+        } catch (ParseException ignore) {
+        }
+        return false;
     }
 
-    public void setUserAuth(boolean state){
-        userAuth = state;
+
+    public String getUserName() {
+        return mPreferencesManager.getUserName();
     }
+
+    public void updateUserName(String login) {
+        mPreferencesManager.updateUserName(login);
+    }
+
+    public String getUserPassword() {
+        return mPreferencesManager.getUserPassword();
+    }
+
+    public void updateUserPassword(String pass) {
+        mPreferencesManager.updateUserPassword(pass);
+    }
+
+
+    public Observable<UserRes> loginUser(String userName, String password) {
+        return mRestService.loginUser(new UserLoginReq(userName, password))
+                .flatMap(userResResponse -> {
+                    switch (userResResponse.code()) {
+                        case 200:
+                            updateUserName(userName);
+                            updateUserPassword(password);
+                            return Observable.just(userResResponse.body());
+                        case 401:
+                            return Observable.error(new AccessError());
+                        case 403:
+                            return Observable.error(new AccessDenied());
+                        default:
+                            return Observable.error(new ApiError(userResResponse.code()));
+
+                    }
+                });
+    }
+
+    private void setUserAuthToken(String token, String expires) {
+        mPreferencesManager.updateUserAuthToken(token, expires);
+    }
+
+    private void setManagerName(String managerName) {
+        mPreferencesManager.updateManagerName(managerName);
+    }
+
+    public void updateUserData(UserRes userRes) {
+        setManagerName(userRes.getFullname());
+        setUserAuthToken(userRes.getToken(), userRes.getDueDate());
+    }
+
+    public String getManagerName() {
+        return mPreferencesManager.getManagerName();
+    }
+
     //endregion ================== UserInfo =========================
 
     
@@ -121,9 +206,22 @@ public class DataManager {
         mRealmManager.updateCustomerTask(taskId, checked, result);
     }
 
+    public Observable<CustomerRealm> getCustomersByVisitDate(Date day) {
+        return mRealmManager.getCustomersByVisitDate(day);
+    }
+
+    public void addNewNote(CustomerRealm customer, String note) {
+        mRealmManager.addNewNote(customer, note);
+    }
+
+    public void deleteNote(NoteRealm note) {
+        mRealmManager.deleteNote(note);
+    }
+
 
 
     //endregion ================== Customers =========================
+
 
     //region ===================== Orders =========================
     public Observable<OrderRealm> getCustomerOrders(String customerId) {
@@ -197,5 +295,29 @@ public class DataManager {
 
 
     //endregion ================== Goods =========================
+
+
+    //region ===================== Preferences =========================
+
+    public String getServerAddress() {
+        return mPreferencesManager.getServerAddress();
+    }
+
+    public void updateServerAddress(String address) {
+        mPreferencesManager.updateServerAddress(address);
+    }
+
+
+    public Boolean getAutoSynchronize() {
+        return mPreferencesManager.getAutoSynchronize();
+    }
+
+    public void updateAutoSynchronize(Boolean sync) {
+        mPreferencesManager.updateAutoSynchronize(sync);
+    }
+
+
+    //endregion ================== Preferences =========================
+
 }
 

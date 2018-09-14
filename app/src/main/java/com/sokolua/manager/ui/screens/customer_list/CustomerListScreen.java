@@ -115,7 +115,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
                             setCustomerListFilter(query);
@@ -127,7 +127,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                             setCustomerListFilter(newText);
                             return true;
                         }
-                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
+                    }))
                     .setTitle(App.getStringRes(R.string.menu_customers))
                     .build();
 
@@ -143,15 +143,13 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
         }
 
         public void callToCustomer(CustomerRealm customer) {
-            if (!IntentStarter.openMap(customer.getPhone()) && getRootView()!= null){
+            if (!IntentStarter.openCaller(customer.getPhone()) && getRootView()!= null){
                 getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
             }
         }
 
         public void openCustomerCard(CustomerRealm customer){
-            if (getRootView()!= null) {
-                Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
-            }
+            Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
         }
 
         //endregion ================== Event Actions =========================

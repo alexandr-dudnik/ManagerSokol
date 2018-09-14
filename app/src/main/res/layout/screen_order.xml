@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sokolua.manager.ui.screens.order.OrderView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sokolua.manager.ui.screens.order.OrderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="@dimen/order_margin"
-    android:orientation="vertical"
-    android:background="@color/main_background">
+    >
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:isScrollContainer="true"
-        >
+        android:scrollbars="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:scaleType="fitCenter"
-                tools:srcCompat="@drawable/ic_cart" />
+                tools:srcCompat="@drawable/ic_cart"/>
 
             <TextView
                 android:id="@+id/order_date_text"
@@ -41,7 +41,7 @@
                 android:fontFamily="@string/roboto_black"
                 android:textColor="@color/color_black"
                 android:textSize="20sp"
-                tools:text="20-07-2018" />
+                tools:text="20-07-2018"/>
 
             <TextView
                 android:id="@+id/order_title_text"
@@ -57,14 +57,14 @@
                 android:fontFamily="@string/roboto_black"
                 android:textColor="@color/color_black"
                 android:textSize="20sp"
-                tools:text="Заказ клиента" />
+                tools:text="Заказ клиента"/>
 
             <View
                 android:id="@+id/order_divider_1"
                 style="@style/order_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/order_status_image" />
+                android:layout_below="@id/order_status_image"/>
 
             <LinearLayout
                 android:id="@+id/order_header_values_group"
@@ -76,9 +76,6 @@
                 android:layout_toEndOf="@id/order_title_text"
                 android:layout_toRightOf="@id/order_title_text"
                 android:orientation="vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 >
 
                 <TextView
@@ -90,7 +87,7 @@
                     android:fontFamily="@string/roboto_medium"
                     android:textColor="@color/color_green"
                     android:textSize="18sp"
-                    tools:text="USD" />
+                    tools:text="USD"/>
 
                 <ViewSwitcher
                     android:layout_width="match_parent"
@@ -105,7 +102,7 @@
                         android:fontFamily="@string/roboto_medium"
                         android:textColor="@color/color_green"
                         android:textSize="18sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"/>
 
                     <TextView
                         android:id="@+id/order_type_text"
@@ -115,7 +112,7 @@
                         android:layout_marginStart="@dimen/order_margin"
                         android:fontFamily="@string/roboto_medium"
                         android:textColor="@color/color_green"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"/>
                 </ViewSwitcher>
 
                 <TextView
@@ -128,7 +125,7 @@
                     android:fontFamily="@string/roboto_medium"
                     android:textColor="@color/color_green"
                     android:textSize="18sp"
-                    tools:text="23-07-2018" />
+                    tools:text="23-07-2018"/>
 
                 <TextView
                     android:id="@+id/order_amount_text"
@@ -139,7 +136,7 @@
                     android:fontFamily="@string/roboto_medium"
                     android:textColor="@color/color_green"
                     android:textSize="18sp"
-                    tools:text="100000.00" />
+                    tools:text="100000.00"/>
 
             </LinearLayout>
 
@@ -153,9 +150,6 @@
                 android:layout_toLeftOf="@id/order_header_values_group"
                 android:layout_toStartOf="@id/order_header_values_group"
                 android:orientation="vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 >
 
                 <TextView
@@ -166,7 +160,7 @@
                     android:fontFamily="@string/roboto_regular"
                     android:text="@string/order_currency_title"
                     android:textColor="@color/color_black"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -176,7 +170,7 @@
                     android:fontFamily="@string/roboto_regular"
                     android:text="@string/order_type_title"
                     android:textColor="@color/color_black"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -188,7 +182,7 @@
                     android:hint="@string/order_delivery_date_title"
                     android:text="@string/order_delivery_date_title"
                     android:textColor="@color/color_black"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -198,7 +192,7 @@
                     android:fontFamily="@string/roboto_regular"
                     android:text="@string/order_amount_title"
                     android:textColor="@color/color_black"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
 
             </LinearLayout>
             <!-- Table -->
@@ -209,9 +203,6 @@
                 android:layout_below="@id/order_header_titles_group"
                 android:layout_marginTop="@dimen/order_margin"
                 android:orientation="horizontal"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 >
 
                 <TextView
@@ -222,7 +213,7 @@
                     android:gravity="center"
                     android:padding="2dp"
                     android:text="@string/order_items_header_article"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -231,7 +222,7 @@
                     android:background="@drawable/rectangle_shape"
                     android:padding="2dp"
                     android:text="@string/order_items_header_name"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -241,7 +232,7 @@
                     android:gravity="end"
                     android:padding="2dp"
                     android:text="@string/order_items_header_price"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -251,7 +242,7 @@
                     android:gravity="end"
                     android:padding="2dp"
                     android:text="@string/order_items_header_quantity"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
 
             </LinearLayout>
 
@@ -262,9 +253,6 @@
                 android:layout_below="@id/order_items_list_header"
                 android:isScrollContainer="false"
                 android:overScrollMode="never"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 />
 
             <LinearLayout
@@ -272,18 +260,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/order_items_list"
+                android:background="@drawable/rectangle_shape"
                 android:orientation="horizontal"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 >
 
                 <ImageView
                     android:id="@+id/order_items_add_image"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/order_lines_add_image_size"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="@dimen/order_margin"
                     android:scaleType="fitCenter"
                     android:tint="@color/color_green"
                     app:srcCompat="@drawable/ic_add_circle"
@@ -298,13 +282,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/order_items_list_footer"
                 android:layout_marginTop="@dimen/order_margin"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:fontFamily="@string/roboto_medium"
                 android:text="@string/order_comment_title"
                 android:textColor="@color/color_gray"
                 android:textSize="18sp"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 />
 
             <ViewSwitcher
@@ -317,13 +301,13 @@
                     android:id="@+id/order_comment_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
                     android:fontFamily="@string/roboto_regular"
+                    android:inputType="textMultiLine"
                     android:text="@string/order_comment_title"
                     android:textColor="@color/color_gray"
                     android:textSize="16sp"
                     android:textStyle="italic"
-                    tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero." />
+                    tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero."/>
 
                 <TextView
                     android:id="@+id/order_comment_text"
@@ -334,8 +318,8 @@
                     android:textColor="@color/color_gray"
                     android:textSize="16sp"
                     android:textStyle="italic"
-                    tools:visibility="gone"
-                    tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero." />
+                    tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero."
+                    tools:visibility="gone"/>
             </ViewSwitcher>
         </RelativeLayout>
 

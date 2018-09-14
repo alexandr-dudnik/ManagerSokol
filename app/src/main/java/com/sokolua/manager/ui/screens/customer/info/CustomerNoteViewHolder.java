@@ -16,7 +16,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CustomerNoteViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<NoteRealm> {
 
@@ -43,11 +42,6 @@ public class CustomerNoteViewHolder extends ReactiveRecyclerAdapter.ReactiveView
         mNoteDate.setText(dateFormat.format(currentItem.getDate()));
         mNoteData.setText(currentItem.getData());
 
-    }
-
-    @OnClick(R.id.delete_note_img)
-    public void onIconClick(View view) {
-        mPresenter.deleteNote(currentItem);
     }
 
 

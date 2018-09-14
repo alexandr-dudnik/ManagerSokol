@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/color_primary_dark</item>
+        <item name="android:colorControlNormal">@color/color_primary_dark</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+
+    <style name="login_input_text">
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:inputType">text</item>
+        <item name="android:hint">@string/user_name_hint</item>
+        <item name="android:textColorHint">@color/color_gray</item>
+        <item name="android:background">@color/color_white</item>
+        <item name="android:drawableLeft">@drawable/ic_person_24dp</item>
+        <item name="android:drawableStart">@drawable/ic_person_24dp</item>
+    </style>
+    <style name="password_input_text">
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:inputType">text</item>
+        <item name="android:hint">@string/user_password_hint</item>
+        <item name="android:textColorHint">@color/color_gray</item>
+        <item name="android:background">@color/color_white</item>
+        <item name="android:drawableLeft">@drawable/ic_password_24dp</item>
+        <item name="android:drawableStart">@drawable/ic_password_24dp</item>
+    </style>
+    <style name="SplashTheme" parent="AppTheme.NoActionBar.FullScreen">
+        <item name="android:windowBackground">@drawable/ic_logo_bird</item>
+    </style>
+
+</resources>

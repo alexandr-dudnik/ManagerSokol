@@ -80,4 +80,12 @@ public class CustomerModel extends AbstractModel {
     public OrderRealm getCartForCustomer(CustomerRealm customer) {
         return mDataManager.getCartForCustomer(customer);
     }
+
+    public void addNewNote(CustomerRealm customer, String note) {
+        mDataManager.addNewNote(customer, note);
+    }
+
+    public void deleteNote(NoteRealm note) {
+        mDataManager.deleteNote(note);
+    }
 }

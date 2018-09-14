@@ -93,5 +93,17 @@
     <string name="order_items_counter_title">Товаров</string>
     <string name="button_negative_text">Cancel</string>
     <string name="button_positive_text">OK</string>
+    <string name="question_quit">Завершить работу с приложением?</string>
+    <string name="add_new_note_title">Добавление новой заметки</string>
+    <string name="menu_logout">Выйти</string>
+    <string name="message_logout">Авторизация очищена!</string>
+    <string name="question_logout">Все данные будут очищены! Вы уверены что хотите очистить авторизацию?</string>
+    <string name="menu_synchronize">Синхронизация</string>
+    <string name="message_sync_complete">сихронизация завершена</string>
+    <string name="settings_auto_sync">Авто. синхронизация</string>
+    <string name="settings_server_address">Адрес сервера</string>
+    <string name="message_auth_success">Авторизация прошла успешно!</string>
+    <string name="error_access_denied">Доступ запрещен!</string>
+    <string name="default_manager_name">Вася Пупкин</string>
 
 </resources>

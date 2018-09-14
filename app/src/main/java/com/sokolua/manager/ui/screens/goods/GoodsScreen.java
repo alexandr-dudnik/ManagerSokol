@@ -12,6 +12,7 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
+import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
@@ -30,6 +31,10 @@ import java.util.Locale;
 import dagger.Provides;
 import flow.Flow;
 import io.reactivex.Observable;
+import io.realm.RealmChangeListener;
+import io.realm.RealmModel;
+import io.realm.RealmObjectChangeListener;
+import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_goods)
@@ -112,6 +117,8 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<ItemRealm> itemViewHolder;
         ReactiveRecyclerAdapter groupsAdapter;
         ReactiveRecyclerAdapter itemsAdapter;
+        private RealmObjectChangeListener<RealmModel> orderChangeListener;
+        private RealmChangeListener<RealmResults<OrderLineRealm>> orderLinesChangeListener;
 
         public Presenter() {
         }
@@ -162,7 +169,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 getView().setCartMode();
                 updateFields();
 
-                currentCart.addChangeListener((realmModel, changeSet) -> {
+                orderChangeListener = (realmModel, changeSet) -> {
                     if (changeSet == null) {
                         return;
                     }
@@ -171,7 +178,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         getView().setCatalogMode();
                     }
                     if (changeSet.isFieldChanged("status")) {
-                        if (currentCart.getStatus()!=ConstantManager.ORDER_STATUS_CART){
+                        if (currentCart.getStatus() != ConstantManager.ORDER_STATUS_CART) {
                             currentCart = null;
                             getView().setCatalogMode();
                         }
@@ -182,13 +189,13 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     if (changeSet.isFieldChanged("currency")) {
                         getView().setCartCurrency(currentCart.getCurrency());
                     }
-                });
-                currentCart.getLines().addChangeListener(orderLineRealms -> {
-                        getView().setCartAmount(currentCart.getTotal());
-                        getView().setCartItemsCount(currentCart.getLines().size());
-                    }
-
-                );
+                };
+                currentCart.addChangeListener(orderChangeListener);
+                orderLinesChangeListener = orderLineRealms -> {
+                            getView().setCartAmount(currentCart.getTotal());
+                            getView().setCartItemsCount(currentCart.getLines().size());
+                        };
+                currentCart.getLines().addChangeListener(orderLinesChangeListener);
 
             }else{
                 getView().setCatalogMode();
@@ -199,8 +206,8 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @Override
         public void dropView(GoodsView view) {
             if (currentCart != null){
-                currentCart.getLines().removeAllChangeListeners();
-                currentCart.removeAllChangeListeners();
+                currentCart.getLines().removeChangeListener(orderLinesChangeListener);
+                currentCart.removeChangeListener(orderChangeListener);
                 currentCart = null;
             }
 
@@ -231,7 +238,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(currentCart!=null)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
                             setGoodsListFilter(query);
@@ -243,7 +250,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             setGoodsListFilter(newText);
                             return true;
                         }
-                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
+                    }))
                     .setTitle(App.getStringRes(R.string.menu_goods))
                     .build();
 
@@ -299,7 +306,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             .setView(view);
 
                     alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
-                        float newPrice = Float.parseFloat(inputPrice.getText().toString());
+                        float newPrice = Float.parseFloat(inputPrice.getText().toString().replace(",","."));
                         float newQty = Float.parseFloat(inputQty.getText().toString());
                         //check price
                         if (newPrice < selectedItem.getLowPrice()) {
