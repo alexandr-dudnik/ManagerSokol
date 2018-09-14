@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sokolua.manager.ui.screens.customer.orders.CustomerOrdersView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,12 +10,13 @@
         android:isScrollContainer="true"
         android:scrollbars="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/order_plan_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/customer_orders_margin"
@@ -26,13 +28,17 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/plan_list"
+                android:layout_below="@id/order_plan_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/customer_orders_margin"
                 android:overScrollMode="never"
+                tools:listitem="@layout/customer_plan_item"
                 />
 
             <TextView
+                android:id="@+id/orders_list_header"
+                android:layout_below="@id/plan_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/customer_orders_margin"
@@ -45,13 +51,14 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/orders_list"
+                android:layout_below="@id/orders_list_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:overScrollMode="never"
-                />
+                tools:listitem="@layout/order_list_item" />
 
 
-        </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 
 </com.sokolua.manager.ui.screens.customer.orders.CustomerOrdersView>

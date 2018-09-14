@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sokolua.manager.ui.screens.customer.tasks.CustomerTasksView xmlns:android="http://schemas.android.com/apk/res/android"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -10,12 +10,13 @@
         android:isScrollContainer="true"
         android:scrollbars="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/debt_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/customer_debt_margin"
@@ -27,15 +28,18 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/debt_list"
+                android:layout_below="@id/debt_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/customer_debt_margin"
                 android:overScrollMode="never"
                 android:isScrollContainer="false"
-
+                tools:listitem="@layout/customer_debt_item"
                 />
 
             <TextView
+                android:id="@+id/tasks_header"
+                android:layout_below="@id/debt_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/customer_debt_margin"
@@ -48,14 +52,15 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/tasks_list"
+                android:layout_below="@id/tasks_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:overScrollMode="never"
                 android:isScrollContainer="false"
-
+                tools:listitem="@layout/customer_task_item"
                 />
 
-        </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 
 </com.sokolua.manager.ui.screens.customer.tasks.CustomerTasksView>

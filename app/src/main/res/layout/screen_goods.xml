@@ -121,7 +121,8 @@
             android:layout_gravity="fill"
             android:paddingLeft="@dimen/good_list_margin_half"
             android:paddingRight="@dimen/good_list_margin_half"
-            android:stretchMode="columnWidth" />
+            android:stretchMode="columnWidth"
+            tools:listitem="@layout/goods_items_item"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/item_list"
@@ -131,7 +132,8 @@
             android:alpha="0.0"
             android:paddingLeft="@dimen/good_list_margin_half"
             android:paddingRight="@dimen/good_list_margin_half"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:listitem="@layout/goods_groups_item" />
     </RelativeLayout>
 
 </com.sokolua.manager.ui.screens.goods.GoodsView>

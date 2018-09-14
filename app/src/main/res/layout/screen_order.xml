@@ -253,6 +253,7 @@
                 android:layout_below="@id/order_items_list_header"
                 android:isScrollContainer="false"
                 android:overScrollMode="never"
+                tools:listitem="@layout/order_list_item"
                 />
 
             <LinearLayout
