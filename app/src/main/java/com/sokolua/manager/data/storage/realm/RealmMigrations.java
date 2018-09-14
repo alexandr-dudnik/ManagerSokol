@@ -1,10 +1,12 @@
 package com.sokolua.manager.data.storage.realm;
 
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import io.realm.DynamicRealm;
 import io.realm.RealmMigration;
 
+@Keep
 public class RealmMigrations implements RealmMigration {
     @Override
     public void migrate(@NonNull DynamicRealm realm, long oldVersion, long newVersion) {

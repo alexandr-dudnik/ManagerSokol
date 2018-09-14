@@ -1,7 +1,9 @@
 package com.sokolua.manager.data.network.req;
 
+import android.support.annotation.Keep;
 import android.util.Base64;
 
+@Keep
 public class UserLoginReq {
     private String username;
     private String password;

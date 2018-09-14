@@ -9,7 +9,7 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
-        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
 

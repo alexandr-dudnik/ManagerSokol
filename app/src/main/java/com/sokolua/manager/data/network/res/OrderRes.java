@@ -1,7 +1,10 @@
 package com.sokolua.manager.data.network.res;
 
+import android.support.annotation.Keep;
+
 import java.util.List;
 
+@Keep
 public class OrderRes {
     private String id;
     private String date;

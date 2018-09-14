@@ -380,11 +380,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             if (getRootView() != null) {
                                 getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), selectedItem.getLowPrice()) + ")");
                             }
-                        } else{
-                            if (newQty > 0){
-                                mModel.addItemToCart(currentCart, selectedItem, newQty, newPrice);
+                        }
 
-                            }
+                        if (newQty > 0){
+                            mModel.addItemToCart(currentCart, selectedItem, newQty, newPrice);
+
                         }
                     });
                     alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {

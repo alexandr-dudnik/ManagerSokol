@@ -1,5 +1,8 @@
 package com.sokolua.manager.data.network.res;
 
+import android.support.annotation.Keep;
+
+@Keep
 public class SendNewObjectRes {
     private String old_id;
     private String new_id;
