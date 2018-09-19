@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Менеджер Sokol</string>
+
+    <!-- Errors -->
+    <string name="error_message">Помилка додатка</string>
+    <string name="error_empty_login">Ви забули ввести ім\'я!</string>
+    <string name="error_bad_password">Довжина пароля менше 8 символів!</string>
+    <string name="error_auth_error">Помилка аутентифікації! Перевірте свій логін і пароль!</string>
+    <string name="error_google_maps_not_found">Додаток Карти Google не встановлено!</string>
+    <string name="error_phone_not_available">" Не знайдено телефон - зробити дзвінок неможливо!"</string>
+    <string name="error_email_not_available">Поштова програма не встановлена</string>
+
+
+    <!-- General -->
+    <string name="date_format">dd.MM.yyyy</string>
+    <string name="numeric_format">%1$.2f</string>
+    <string name="numeric_format_int">%1$.0f</string>
+    <string name="national_currency">ГРН</string>
+    <string name="search_hint">Пошук…</string>
+    <string name="button_negative_text">Скасувати</string>
+    <string name="button_positive_text">OK</string>
+    <string name="question_quit">Завершити роботу з додатком?</string>
+    <string name="message_logout">Авторизацію очищено!</string>
+    <string name="question_logout">Всі дані будуть знщені! Ви впевнені, що бажаєте очистити авторизацію?</string>
+    <string name="default_manager_name">Василь Наливайко</string>
+    <string name="button_yes_text">Так</string>
+    <string name="button_no_text">Ні</string>
+
+    <!-- Login -->
+    <string name="login_form_caption">Ваші облікові дані</string>
+    <string name="user_name_hint">Логін</string>
+    <string name="user_password_hint">Пароль</string>
+    <string name="login_button_text">Авторизація</string>
+    <string name="message_auth_success">Авторизація пройшла успішно!</string>
+    <string name="error_access_denied">Доступ заборонено!</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Головна</string>
+    <string name="menu_customers">Клієнти</string>
+    <string name="menu_orders">Замовлення</string>
+    <string name="menu_goods">Товари</string>
+    <string name="menu_route">Маршрут</string>
+    <string name="menu_settings">Налаштування</string>
+    <string name="menu_search">Пошук</string>
+    <string name="menu_logout">Вийти</string>
+    <string name="menu_synchronize">Синхронізація</string>
+    <string name="menu_brands">Бренди</string>
+
+    <!-- Customer screen -->
+    <string name="customer_tab_info">Інфо</string>
+    <string name="customer_tab_tasks">Завдання</string>
+    <string name="customer_tab_orders">Замовлення</string>
+    <string name="customer_info_name_header">Назва</string>
+    <string name="customer_info_contact_header">Контактна особа</string>
+    <string name="customer_info_address_header">Адрес</string>
+    <string name="customer_info_notes">Нотатки</string>
+    <string name="customer_info_phone_header">Телефон</string>
+    <string name="customer_info_email_header">E-Mail</string>
+    <string name="customer_debt_header">Борги</string>
+    <string name="customer_debt_outdated">Прострочений</string>
+    <string name="customer_debt_normal">В терміні</string>
+    <string name="customer_debt_whole">Загальний</string>
+    <string name="customer_debt_no_debt">Борги відсутні</string>
+    <string name="customer_tasks_header">Завдання</string>
+    <string name="customer_task_research">Розвиток</string>
+    <string name="customer_task_no_tasks">Нема  завдань</string>
+    <string name="customer_task_individual">Індивідуальні</string>
+    <string name="customer_order_plan_header">План замовлення на візит</string>
+    <string name="customer_order_list_header">Замовлення клієнта</string>
+    <string name="customer_enter_task_result_hint">Вкажіть результат виконання завдання…</string>
+    <string name="customer_info_category_header">Класс по обороту</string>
+    <string name="customer_info_category_no_category">НЕ ВСТАНОВЛЕНО</string>
+    <string name="customer_add_new_note_title">Додавання нового нотатку</string>
+
+    <!-- Orders screen -->
+    <string name="payment_type_cash">ФОП</string>
+    <string name="payment_type_official">ТОВ</string>
+    <string name="delivery_date_prefix">на:</string>
+    <string name="order_title">Замовлення</string>
+    <string name="cart_title">Кошик</string>
+    <string name="order_delivery_date_title">Дата відвантаження</string>
+    <string name="order_currency_title">Валюта</string>
+    <string name="order_amount_title">Сума замовлення</string>
+    <string name="order_type_title">Форма оплати</string>
+    <string name="order_comment_title">Коментар до замовлення</string>
+    <string name="order_items_header_article">Артикул</string>
+    <string name="order_items_header_name">Найменування</string>
+    <string name="order_items_header_price">Ціна</string>
+    <string name="order_items_header_quantity">Кіл-ть</string>
+    <string name="error_low_price">Задане значення ціни меньше мінімальної!</string>
+    <string name="action_send_order">Відправити замовлення</string>
+    <string name="error_empty_order">Відправка не вдалась! Замовлення клієнта пусте!</string>
+    <string name="error_wrong_delivery">Відправка не вдалась! Дата замовлення пізніше дати доставки!</string>
+    <string name="action_clear_order">Очистити</string>
+    <string name="order_items_counter_title">Товарів</string>
+
+    <!-- Goods screen -->
+    <string name="item_wh_rest_label">СФ</string>
+    <string name="item_cwh_rest_label">ЦС</string>
+    <string name="item_official_rest_label">БГ</string>
+    <string name="item_base_price_label">Прайс</string>
+    <string name="item_min_price_label">Мін.</string>
+    <string name="all_brands">ВСІ</string>
+    <string name="item_discount_label">Снижка</string>
+
+    <!-- Routes screen -->
+    <string name="monday">ПН</string>
+    <string name="tuesday">ВІ</string>
+    <string name="wednesday">СР</string>
+    <string name="thursday">ЧТ</string>
+    <string name="friday">ПТ</string>
+    <string name="saturday">СБ</string>
+    <string name="sunday">НД</string>
+
+
+    <!-- Sync screen -->
+    <string name="settings_auto_sync">Авто. синхронізація</string>
+    <string name="settings_server_address">Адрес серверу</string>
+    <string name="message_sync_complete">Сихронізацію завершено!</string>
+
+    <!-- newly added -->
+
+</resources>
