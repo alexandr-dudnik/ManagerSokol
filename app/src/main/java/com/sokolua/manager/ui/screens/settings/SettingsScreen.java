@@ -123,10 +123,10 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @NonNull
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
             return item -> {
-                mModel.clearDatabase();
 
                 if (mAuthModel.getUserName().equals(AppConfig.TEST_USERNAME)){
                     try {
+                        mModel.clearDatabase();
                         DebugModule.mock_RealmDB();
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
@@ -143,6 +143,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 ArrayList<Observable<Boolean>> obs = new ArrayList<>();
                 obs.add(mModel.sendAllOrders());
                 obs.add(mModel.sendAllNotes());
+                obs.add(Observable.just(true).doOnNext(it->mModel.clearDatabase()));
                 obs.add(mModel.updateAllGroupsFromRemote().map(result -> true));
                 obs.add(mModel.updateAllGoodItemsFromRemote().map(result -> true));
                 obs.add(mModel.updateAllCustomersFromRemote().map(result -> true));
