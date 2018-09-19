@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.storage.realm.BrandsRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
@@ -49,6 +50,7 @@ import mortar.MortarScope;
 @Screen(R.layout.screen_goods)
 public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
     private String mCustomerOrderId = null;
+    private String mFilterCategoryId = null;
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -109,6 +111,12 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         this.mCustomerOrderId = orderId;
     }
 
+    public GoodsScreen(String orderId, String filterCategoryId) {
+        super();
+        this.mCustomerOrderId = orderId;
+        this.mFilterCategoryId = filterCategoryId;
+    }
+
     @Override
     public String getScopeName() {
         return super.getScopeName()+(mCustomerOrderId==null||mCustomerOrderId.isEmpty()?"":("_"+mCustomerOrderId));
@@ -131,6 +139,12 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         ReactiveRecyclerAdapter itemsAdapter;
         private RealmObjectChangeListener<RealmModel> orderChangeListener;
         private RealmChangeListener<RealmResults<OrderLineRealm>> orderLinesChangeListener;
+        private RealmChangeListener<GoodsGroupRealm> groupsListener;
+        private RealmChangeListener<ItemRealm> itemsListener;
+
+        private String currentFilter = "";
+        private String currentBrand = "";
+
 
         public Presenter() {
         }
@@ -163,6 +177,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             getView().setGroupsAdapter(groupsAdapter);
 
 
+
             itemViewHolder = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goods_items_item, parent, false);
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
@@ -174,13 +189,16 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             getView().setItemsAdapter(itemsAdapter);
 
-            setGoodsListFilter("");
+            groupsListener = goodsGroupRealm -> updateGoodsList();
+            itemsListener = goodsGroupRealm -> updateGoodsList();
+
+            updateGoodsList();
 
 
 
             if (currentCart != null){
                 getView().setCartMode();
-                updateFields();
+                updateCartFields();
 
                 orderChangeListener = (realmModel, changeSet) -> {
                     if (changeSet == null) {
@@ -218,6 +236,8 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 getView().setCatalogMode();
             }
 
+
+
         }
 
         @Override
@@ -227,11 +247,13 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 currentCart.removeChangeListener(orderChangeListener);
                 currentCart = null;
             }
+            groupsListener = null;
+            itemsListener = null;
 
             super.dropView(view);
         }
 
-        public void updateFields() {
+        void updateCartFields() {
 
             getView().setCustomer(currentCart.getCustomer().getName());
             getView().setCartCurrency(currentCart.getCurrency());
@@ -240,32 +262,60 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         }
 
-        public void setGoodsListFilter(String filter){
-            if ((currentGroup == null || currentGroup.getParent() == null) && (filter == null || filter.isEmpty())){
-                groupsAdapter.refreshList(mModel.getGroupList(currentGroup));
+        void updateGoodsList(){
+            if (getRootView() != null) {
+                ((RootActivity) getRootView()).setBackArrow(currentGroup!=null||currentCart!=null);
+                ((RootActivity) getRootView()).setActionBarTitle((currentGroup == null?App.getStringRes(R.string.menu_goods):currentGroup.getName())+(currentBrand.isEmpty()?"":" ("+currentBrand+")"));
+            }
+
+            if ((currentGroup == null || currentGroup.getParent() == null) && (currentFilter == null || currentFilter.isEmpty()) && (mFilterCategoryId == null || mFilterCategoryId.isEmpty())){
+                groupsAdapter.refreshList(mModel.getGroupList(currentGroup, currentBrand));
                 getView().showGroups();
             }else{
-                itemsAdapter.refreshList(mModel.getItemList(currentGroup, filter));
+                itemsAdapter.refreshList(mModel.getItemList(currentGroup, currentFilter, currentBrand, mFilterCategoryId));
                 getView().showItems();
             }
         }
 
         @Override
         protected void initActionBar() {
+
+            MenuItem.OnMenuItemClickListener brandListener = item -> {
+                if (getRootView() != null) {
+                    MenuItem groupItem = ((RootActivity)getRootView()).getMainMenuItemParent(item.getItemId());
+                    if (groupItem != null) {
+                        groupItem.setTitle(String.format("%s: %s",App.getStringRes(R.string.menu_brands), item.getTitle()));
+                    }
+                }
+                item.setChecked(true);
+                currentBrand = item.getTitle().toString().equals(App.getStringRes(R.string.all_brands)) ? "" : item.getTitle().toString();
+                updateGoodsList();
+                return true;
+            };
+
+            MenuItemHolder brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), App.getStringRes(R.string.all_brands)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+            brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, true));
+            for (BrandsRealm brand: mModel.getBrands()){
+                brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, false));
+            }
+
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(currentCart!=null)
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
+                    .addAction(brandsSubMenu)
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
                         @Override
                         public boolean onQueryTextSubmit(String query) {
-                            setGoodsListFilter(query);
+                            currentFilter = query;
+                            updateGoodsList();
                             return true;
                         }
 
                         @Override
                         public boolean onQueryTextChange(String newText) {
-                            setGoodsListFilter(newText);
+                            currentFilter = newText;
+                            updateGoodsList();
                             return true;
                         }
                     }))
@@ -315,39 +365,26 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
 
-        public void mainGroupSelected(GoodsGroupRealm selectedGroup) {
+        void mainGroupSelected(GoodsGroupRealm selectedGroup) {
 
             if (getRootView() != null) {
                 currentGroup = selectedGroup;
-                ((RootActivity)getRootView()).setBackArrow(true);
-                ((RootActivity)getRootView()).setActionBarTitle(currentGroup.getName());
-                setGoodsListFilter("");
+                updateGoodsList();
             }
 
         }
 
         public boolean goGroupBack(){
-            if (getRootView() != null) {
-                if (currentGroup == null) {
-                    return false;
-                } else {
-                    currentGroup = currentGroup.getParent();
-                }
-                if (currentGroup == null) {
-                    if (currentCart == null) {
-                        ((RootActivity) getRootView()).setBackArrow(false);
-                    }
-                    ((RootActivity) getRootView()).setActionBarTitle(App.getStringRes(R.string.menu_goods));
-                }
-                else{
-                    ((RootActivity)getRootView()).setActionBarTitle(currentGroup.getName());
-                }
-                setGoodsListFilter("");
+            if (currentGroup == null) {
+                return false;
+            } else {
+                currentGroup = currentGroup.getParent();
             }
+            updateGoodsList();
             return true;
         }
 
-        public void itemSelected(ItemRealm selectedItem) {
+        void itemSelected(ItemRealm selectedItem) {
             if (currentCart == null){
                 //TODO: make screen with item card
             }else{
@@ -401,11 +438,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             }
         }
 
-        public Float getCustomerDiscount(ItemRealm item) {
+        Float getCustomerDiscount(ItemRealm item) {
             return  mModel.getCustomerDiscount(mCustomer, item);
         }
 
-        public Float getCustomerPrice(ItemRealm item) {
+        Float getCustomerPrice(ItemRealm item) {
             Float discount = getCustomerDiscount(item);
             return  (float)(Math.round(item.getBasePrice() * (100 - discount))) / 100;
         }

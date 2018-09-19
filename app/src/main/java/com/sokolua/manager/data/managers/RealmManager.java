@@ -235,28 +235,45 @@ public class RealmManager {
                 ;
     }
 
-    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent) {
-        RealmResults<GoodsGroupRealm> res;
-        if (parent == null) {
-             res = getQueryRealmInstance()
-                     .where(GoodsGroupRealm.class)
-                     .isNull("parent")
-                     .sort("name", Sort.ASCENDING)
-                     .findAll();
+    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent, String brand) {
+        if (brand == null || brand.isEmpty()){
+            RealmResults<GoodsGroupRealm> res;
+            if (parent == null) {
+                 res = getQueryRealmInstance()
+                         .where(GoodsGroupRealm.class)
+                         .isNull("parent")
+                         .sort("name", Sort.ASCENDING)
+                         .findAll();
+            }else{
+                res = getQueryRealmInstance()
+                        .where(GoodsGroupRealm.class)
+                        .equalTo("parent.groupId", parent.getGroupId())
+                        .sort("name", Sort.ASCENDING)
+                        .findAll();
+            }
+            return Observable.fromIterable(res)
+                    .filter(item -> item.isLoaded()) //получаем только загруженные
+                    .filter(ManagableObject::isValid)
+                    ;
         }else{
-            res = getQueryRealmInstance()
-                    .where(GoodsGroupRealm.class)
-                    .equalTo("parent.groupId", parent.getGroupId())
-                    .sort("name", Sort.ASCENDING)
+            RealmResults<ItemRealm> resIt;
+            resIt = getQueryRealmInstance()
+                    .where(ItemRealm.class)
+                    .equalTo("brand.name", brand)
                     .findAll();
+            return Observable.fromIterable(resIt)
+                    .map(ItemRealm::getGroup)
+                    .map(grp->parent==null?grp.getParent():grp)
+                    .distinct()
+                    .filter(grp -> grp.isLoaded()) //получаем только загруженные
+                    .filter(ManagableObject::isValid)
+                    .filter(grp-> parent==null?grp.getParent()==null:grp.getParent().getGroupId().equals(parent.getGroupId()))
+                    .sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
+                    ;
         }
-        return Observable.fromIterable(res)
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
     }
 
-    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
+    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter, String brand, String categoryId) {
         RealmQuery<ItemRealm> res;
         if (parent == null) {
             res = getQueryRealmInstance().where(ItemRealm.class).alwaysTrue();
@@ -265,6 +282,12 @@ public class RealmManager {
         }
         if (filter != null && !filter.isEmpty()){
             res.contains("index", filter.toLowerCase());
+        }
+        if (brand != null && !brand.isEmpty()){
+            res.equalTo("brand.name", brand);
+        }
+        if (categoryId != null && !categoryId.isEmpty()){
+            res.equalTo("category.categoryId", categoryId);
         }
         return Observable.fromIterable(res.sort("name", Sort.ASCENDING).findAll())
                 .filter(item -> item.isLoaded()) //получаем только загруженные
@@ -780,6 +803,10 @@ public class RealmManager {
         }
 
         return discRealm==null ? 0f : discRealm.getPercent();
+    }
+
+    public RealmResults<BrandsRealm> getBrands() {
+        return getQueryRealmInstance().where(BrandsRealm.class).findAll();
     }
 }
 

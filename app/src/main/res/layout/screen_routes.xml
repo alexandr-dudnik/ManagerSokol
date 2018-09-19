@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_1"
-                    android:text="ПН"
+                    android:text="@string/monday"
                     tools:backgroundTint="@color/color_accent"
                     />
 
@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_2"
-                    android:text="ВТ"
+                    android:text="@string/tuesday"
                     />
 
                 <android.support.v7.widget.AppCompatButton
@@ -49,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_3"
-                    android:text="СР"
+                    android:text="@string/wednesday"
                     />
 
                 <android.support.v7.widget.AppCompatButton
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_4"
-                    android:text="ЧТ"
+                    android:text="@string/thursday"
                     />
 
                 <android.support.v7.widget.AppCompatButton
@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_5"
-                    android:text="ПТ"
+                    android:text="@string/friday"
                     />
 
                 <android.support.v7.widget.AppCompatButton
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_6"
-                    android:text="СБ"
+                    android:text="@string/saturday"
                     android:textColor="@color/color_red"
                     />
 
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:tag="day_7"
-                    android:text="ВС"
+                    android:text="@string/sunday"
                     android:textColor="@color/color_red"
                     />
             </LinearLayout>

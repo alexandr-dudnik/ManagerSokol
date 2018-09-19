@@ -12,6 +12,7 @@ import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.OrderRes;
 import com.sokolua.manager.data.network.res.UserRes;
+import com.sokolua.manager.data.storage.realm.BrandsRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
@@ -579,12 +580,12 @@ public class DataManager {
 
 
     //region ===================== Goods =========================
-    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent) {
-        return mRealmManager.getGroupList(parent);
+    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent, String brand) {
+        return mRealmManager.getGroupList(parent, brand);
     }
 
-    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter) {
-        return mRealmManager.getItemList(parent, filter);
+    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter, String brand, String categoryId) {
+        return mRealmManager.getItemList(parent, filter, brand, categoryId);
     }
 
 
@@ -771,6 +772,10 @@ public class DataManager {
 
     public Float getCustomerDiscount(CustomerRealm mCustomer, ItemRealm item) {
         return mRealmManager.getCustomerDiscount(mCustomer, item);
+    }
+
+    public RealmResults<BrandsRealm> getBrands() {
+        return mRealmManager.getBrands();
     }
 
     //endregion ================== Goods =========================

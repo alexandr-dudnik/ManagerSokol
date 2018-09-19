@@ -229,7 +229,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
             AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
                     .setTitle(App.getStringRes(R.string.customer_info_notes))
-                    .setMessage(App.getStringRes(R.string.add_new_note_title))
+                    .setMessage(App.getStringRes(R.string.customer_add_new_note_title))
                     .setCancelable(false)
                     .setView(input)
                     .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {

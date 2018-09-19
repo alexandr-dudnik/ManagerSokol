@@ -82,6 +82,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     private ActionBar mActionBar;
     private List<MenuItemHolder> mActionBarMenuItem;
+    private Menu mOptionsMenu;
 
 
     @Override
@@ -259,6 +260,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     private void addMenuItem(Menu menu, MenuItemHolder menuItem) {
         MenuItem item;
+        int mId = generateMenuItemId();
         if (menuItem.getItemType() == ConstantManager.MENU_ITEM_TYPE_SEARCH){
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             if (searchManager != null) {
@@ -274,14 +276,21 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         }
 
         if (menuItem.hasSubMenu()) {
-            SubMenu subMenu = menu.addSubMenu(menuItem.getItemTitle());
+            SubMenu subMenu = menu.addSubMenu(Menu.NONE, mId, Menu.NONE , menuItem.getItemTitle());
             item = subMenu.getItem();
 
             for (MenuItemHolder subItem : menuItem.getSubMenu()) {
                 addMenuItem(subMenu, subItem);
             }
         } else {
-            item = menu.add(menuItem.getItemTitle());
+            if (menuItem.isCheckable()) {
+                item = menu.add(menuItem.getGroupId(), mId, Menu.NONE, menuItem.getItemTitle());
+                item.setCheckable(menuItem.isCheckable());
+                item.setChecked(menuItem.isChecked());
+                menu.setGroupCheckable(menuItem.getGroupId(), true, true);
+            }else{
+                item = menu.add(Menu.NONE, mId, Menu.NONE, menuItem.getItemTitle());
+            }
         }
         int flags;
         switch (menuItem.getItemType()){
@@ -292,14 +301,52 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                  flags = MenuItem.SHOW_AS_ACTION_NEVER;
         }
         item.setShowAsActionFlags(flags)
-                .setIcon(menuItem.getIconResId())
-                .setOnMenuItemClickListener(menuItem.getListener());
+            .setOnMenuItemClickListener(menuItem.getListener());
 
-        this.tintMenuIcon(this, item, R.color.menu_item_icon_color);
+        if (menuItem.getIconResId() != 0){
+            item.setIcon(menuItem.getIconResId());
+            this.tintMenuIcon(this, item, R.color.menu_item_icon_color);
+        }
+
     }
 
+    private int generateMenuItemId(){
+        while (mOptionsMenu!=null) {
+            int rnd = (int) (Math.random()*Integer.MAX_VALUE);
+            if (mOptionsMenu.findItem(rnd) == null){
+                return rnd;
+            }
+        }
+        return 0;
+    }
+
+    @Nullable
+    private MenuItem checkMenu(MenuItem currentItem, Menu menu, int itemId){
+        for (int i=0;i<menu.size();i++){
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == itemId){
+                return currentItem;
+            }
+            if (item.hasSubMenu()) {
+                if (checkMenu(item, item.getSubMenu(), itemId) != null) {
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public MenuItem getMainMenuItemParent(int itemId) {
+        if (mOptionsMenu != null) {
+            return checkMenu(null, mOptionsMenu, itemId);
+        }
+        return null;
+    }
+
+
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
         if (mActionBarMenuItem != null && !mActionBarMenuItem.isEmpty()) {
             menu.clear();
             for (MenuItemHolder menuItem : mActionBarMenuItem) {
@@ -309,9 +356,11 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
             menu.clear();
         }
 
+        mOptionsMenu = menu;
 
-        return super.onPrepareOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public void setTabLayout(ViewPager tabs) {
@@ -333,10 +382,11 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     @Override
     public void removeTabLayout() {
         View tabView = mAppBarLayout.getChildAt(1);
-        if (tabView != null && tabView instanceof TabLayout) { //проверяем если у аппбара есть дочерняя View являющаяся TabLayout
+        if (tabView instanceof TabLayout) { //проверяем если у аппбара есть дочерняя View являющаяся TabLayout
             mAppBarLayout.removeView(tabView); //то удаляем ее
         }
     }
+
 
     //endregion ================== IActionBarView =========================
 
