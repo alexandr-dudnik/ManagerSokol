@@ -57,9 +57,11 @@ public class RealmManager {
 
     //region =======================  DataBase cleanup  =========================
 
-    public void clearDataBase() {
-        getQueryRealmInstance().removeAllChangeListeners();
-        getQueryRealmInstance().executeTransaction(db-> db.deleteAll());
+    void clearDataBase() {
+        Realm inst = Realm.getDefaultInstance();
+        inst.removeAllChangeListeners();
+        inst.executeTransaction(db-> db.deleteAll());
+        inst.close();
     }
 
     //endregion ====================  DataBase cleanup  =========================
@@ -67,7 +69,7 @@ public class RealmManager {
 
 
 
-    public Observable<CustomerRealm> getCustomersFromRealm(String filter){
+    Observable<CustomerRealm> getCustomersFromRealm(String filter){
         RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance()
                 .where(CustomerRealm.class)
                 .contains("index", filter == null ? "": filter.toLowerCase(), Case.INSENSITIVE) //Ищем по индексному полю - пока индекс = наименование
@@ -83,7 +85,7 @@ public class RealmManager {
 
 
     @Nullable
-    public CustomerRealm getCustomerById(String id) {
+    CustomerRealm getCustomerById(String id) {
         return getQueryRealmInstance()
                 .where(CustomerRealm.class)
                 .equalTo("customerId", id)
