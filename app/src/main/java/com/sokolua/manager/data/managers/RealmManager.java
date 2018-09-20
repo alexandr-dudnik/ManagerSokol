@@ -279,7 +279,9 @@ public class RealmManager {
         RealmQuery<ItemRealm> res;
         if (parent == null) {
             res = getQueryRealmInstance().where(ItemRealm.class).alwaysTrue();
-        }else {
+        }else if(parent.getParent() == null){
+            res = getQueryRealmInstance().where(ItemRealm.class).equalTo("group.parent.groupId", parent.getGroupId());
+        }else{
             res = getQueryRealmInstance().where(ItemRealm.class).equalTo("group.groupId", parent.getGroupId());
         }
         if (filter != null && !filter.isEmpty()){

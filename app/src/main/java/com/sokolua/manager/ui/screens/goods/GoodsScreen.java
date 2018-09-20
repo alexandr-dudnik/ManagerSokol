@@ -293,10 +293,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 return true;
             };
 
-            MenuItemHolder brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), App.getStringRes(R.string.all_brands)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
-            brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, true));
+            MenuItemHolder brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty()?App.getStringRes(R.string.all_brands):currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+            brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
             for (BrandsRealm brand: mModel.getBrands()){
-                brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, false));
+                brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
             }
 
             mRootPresenter.newActionBarBuilder()
