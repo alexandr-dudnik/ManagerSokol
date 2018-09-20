@@ -2,17 +2,16 @@
           package="com.sokolua.manager">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!--uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /-->
+    <!--uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission-sdk-23 android:name="android.permission.MANAGE_DOCUMENTS"/>
-    <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" /-->
+    <!--uses-permission-sdk-23 android:name="android.permission.MANAGE_DOCUMENTS"/-->
+    <!--uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE"/-->
+    <!--uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE"/-->
 
     <application
         android:name=".utils.App"
@@ -53,6 +52,9 @@
                 android:resource="@xml/file_paths">
             </meta-data>
         </provider>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="cef067e91ae3953e5904121e798e637f1573b656" />
     </application>
 
 </manifest>

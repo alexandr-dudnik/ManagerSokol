@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.crashlytics.android.Crashlytics;
 import com.sokolua.manager.data.storage.realm.RealmMigrations;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
@@ -16,6 +17,7 @@ import com.sokolua.manager.mortar.ScreenScoper;
 import com.sokolua.manager.ui.activities.DaggerRootActivity_RootComponent;
 import com.sokolua.manager.ui.activities.RootActivity;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import mortar.MortarScope;
@@ -31,6 +33,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
+
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
@@ -55,20 +59,10 @@ public class App extends Application {
                 .migration(new RealmMigrations())
                 .build();
         Realm.setDefaultConfiguration(configuration);
-        //Realm.getInstance(configuration);
-
-
-//        if (BuildConfig.DEBUG) {
-//            try {
-//                DebugModule.mock_RealmDB();
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
 
         ScreenScoper.registerScope(mRootScope);
         ScreenScoper.registerScope(mRootActivityScope);
+
     }
 
     @Override
