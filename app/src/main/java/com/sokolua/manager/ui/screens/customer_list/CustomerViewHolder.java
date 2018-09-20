@@ -49,7 +49,7 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
 //                }
 ////                if (changeSet.isDeleted()){
 ////                }
-//                updateFields(currentItem);
+//                updateCartFields(currentItem);
 //            };
 //            currentItem.getCustomer().addChangeListener(listener);
 //        }

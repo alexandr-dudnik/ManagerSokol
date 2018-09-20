@@ -1,114 +1,132 @@
 <resources>
-    <string name="app_name">Менеджер Sokol</string>
+    <string name="app_name">Manager Sokol</string>
 
     <!-- Fonts -->
-    <string name="roboto_regular">sans-serif</string>
-    <string name="roboto_light">sans-serif-light</string>
-    <string name="roboto_condensed">sans-serif-condensed</string>
-    <string name="roboto_black">sans-serif-black</string>
-    <string name="roboto_thin">sans-serif-thin</string>
-    <string name="roboto_medium">sans-serif-medium</string>
+    <string name="roboto_regular" translatable="false">sans-serif</string>
+    <string name="roboto_light" translatable="false">sans-serif-light</string>
+    <string name="roboto_condensed" translatable="false">sans-serif-condensed</string>
+    <string name="roboto_black" translatable="false">sans-serif-black</string>
+    <string name="roboto_thin" translatable="false">sans-serif-thin</string>
+    <string name="roboto_medium" translatable="false">sans-serif-medium</string>
 
     <!-- Errors -->
-    <string name="error_message">Ошибка приложения</string>
-    <string name="error_empty_login">Вы забыли ввести логин!</string>
-    <string name="error_bad_password">Длина пароля меньше 8 символов!</string>
-    <string name="error_auth_error">Ошибка аутентификации! Проверьте ваш логин и пароль!</string>
-    <string name="error_google_maps_not_found">Приложение "Карты Google" не установлены!</string>
-    <string name="error_phone_not_available">Не обнаружен телефон - совершить звонок не возможно!</string>
-    <string name="error_email_not_available">Почтовая программа не установлена</string>
+    <string name="error_message">Application Error</string>
+    <string name="error_empty_login">Login field is empty!</string>
+    <string name="error_bad_password">Length of password is 8 chars minimum!</string>
+    <string name="error_auth_error">Login failed! Check your credentials!</string>
+    <string name="error_google_maps_not_found">Application "Google maps" not found!</string>
+    <string name="error_phone_not_available">Phone engine not found - unable to make a call!</string>
+    <string name="error_email_not_available">No mail application was found</string>
 
+
+    <!-- General -->
     <string name="date_format">dd.MM.yyyy</string>
     <string name="numeric_format">%1$.2f</string>
     <string name="numeric_format_int">%1$.0f</string>
-    <string name="national_currency">ГРН</string>
-
-    <string name="search_hint">Поиск…</string>
-
-    <!-- Login -->
-    <string name="login_form_caption">Ваши учетные данные</string>
-    <string name="user_name_hint">Логин</string>
-    <string name="user_password_hint">Пароль</string>
-    <string name="login_button_text">Авторизация</string>
-
-    <!-- Menu items -->
-    <string name="menu_home">Главная</string>
-    <string name="menu_customers">Клиенты</string>
-    <string name="menu_orders">Заказы</string>
-    <string name="menu_goods">Товары</string>
-    <string name="menu_route">Маршрут</string>
-    <string name="menu_settings">Настройки</string>
-    <string name="menu_search">Поиск</string>
-
-    <!-- Customer screen -->
-    <string name="customer_tab_info">Инфо</string>
-    <string name="customer_tab_tasks">Задачи</string>
-    <string name="customer_tab_orders">Заказы</string>
-    <string name="customer_info_name_header">Название</string>
-    <string name="customer_info_contact_header">Контактное лицо</string>
-    <string name="customer_info_address_header">Адрес</string>
-    <string name="customer_info_notes">Заметки</string>
-    <string name="customer_info_phone_header">Телефон</string>
-    <string name="customer_info_email_header">E-Mail</string>
-    <string name="customer_debt_header">Долги</string>
-    <string name="customer_debt_outdated">Просроченный</string>
-    <string name="customer_debt_normal">В сроке</string>
-    <string name="customer_debt_whole">Общий</string>
-    <string name="customer_debt_no_debt">Долги отсутствуют</string>
-    <string name="customer_tasks_header">Задачи</string>
-    <string name="customer_task_research">Развитие</string>
-    <string name="customer_task_no_tasks">Нет задач</string>
-    <string name="customer_task_individual">Индивидуальные</string>
-    <string name="customer_order_plan_header">План заказа на посещение</string>
-    <string name="customer_order_list_header">Заказы клиента</string>
-    <string name="customer_enter_task_result_hint">Укажите результат выполнения задачи…</string>
-
-    <!-- Orders screen -->
-    <string name="payment_type_cash">ЧП</string>
-    <string name="payment_type_official">ООО</string>
-    <string name="delivery_date_prefix">на:</string>
-
-    <!-- Goods screen -->
-    <string name="item_wh_rest_label">СФ</string>
-    <string name="item_cwh_rest_label">ЦС</string>
-    <string name="item_official_rest_label">БН</string>
-    <string name="item_base_price_label">Прайс</string>
-    <string name="item_min_price_label">Мин.</string>
-    <string name="order_title">Заказ</string>
-    <string name="cart_title">Корзина</string>
-    <string name="order_delivery_date_title">Дата отгрузки</string>
-    <string name="order_currency_title">Валюта</string>
-    <string name="order_amount_title">Сумма заказа</string>
-    <string name="order_type_title">Форма оплаты</string>
-    <string name="order_comment_title">Комментарий к заказу</string>
-    <string name="order_items_header_article">Артикул</string>
-    <string name="order_items_header_name">Наименование</string>
-    <string name="order_items_header_price">Цена</string>
-    <string name="order_items_header_quantity">Кол-во</string>
-    <string name="error_low_price">Введенное значение цены меньше минимальной!</string>
-    <string name="action_send_order">Отправить заказ</string>
-    <string name="error_empty_order">Отправка не удалась! Заказ клиента пуст!</string>
-    <string name="error_wrong_delivery">Отправка не удалась! Дата заказа позже даты доставки!</string>
-    <string name="action_clear_order">Очистить</string>
-    <string name="order_items_counter_title">Товаров</string>
+    <string name="national_currency">USD</string>
+    <string name="search_hint">Search by…</string>
     <string name="button_negative_text">Cancel</string>
     <string name="button_positive_text">OK</string>
-    <string name="question_quit">Завершить работу с приложением?</string>
-    <string name="add_new_note_title">Добавление новой заметки</string>
-    <string name="menu_logout">Выйти</string>
-    <string name="message_logout">Авторизация очищена!</string>
-    <string name="question_logout">Все данные будут очищены! Вы уверены что хотите очистить авторизацию?</string>
-    <string name="menu_synchronize">Синхронизация</string>
-    <string name="message_sync_complete">сихронизация завершена</string>
-    <string name="settings_auto_sync">Авто. синхронизация</string>
-    <string name="settings_server_address">Адрес сервера</string>
-    <string name="message_auth_success">Авторизация прошла успешно!</string>
-    <string name="error_access_denied">Доступ запрещен!</string>
-    <string name="default_manager_name">Вася Пупкин</string>
-    <string name="customer_info_category_header">Класс по обороту</string>
-    <string name="customer_info_category_no_category">НЕТ</string>
-    <string name="button_yes_text">ДА</string>
+    <string name="question_quit">Do you want to exit from application?</string>
+    <string name="message_logout">You are logged out!</string>
+    <string name="question_logout">All data will be wiped out! Do you really want to logout?</string>
+    <string name="default_manager_name">Mr. Who</string>
+    <string name="button_yes_text">Yes</string>
     <string name="button_no_text">No</string>
-    <string name="item_discount_label">Скидка</string>
+
+    <!-- Login -->
+    <string name="user_name_hint">Login</string>
+    <string name="user_password_hint">Password</string>
+    <string name="login_button_text">Authentication</string>
+    <string name="message_auth_success">You are logged id!</string>
+    <string name="error_access_denied">Access denied!</string>
+    <string name="login_form_caption">Your credentials</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Home</string>
+    <string name="menu_customers">Customers</string>
+    <string name="menu_orders">Orders</string>
+    <string name="menu_goods">Goods</string>
+    <string name="menu_route">Route</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_synchronize">Synchronization</string>
+    <string name="menu_brands">Brands</string>
+
+    <!-- Customer screen -->
+    <string name="customer_tab_info">Info</string>
+    <string name="customer_tab_tasks">Tasks</string>
+    <string name="customer_tab_orders">Orders</string>
+    <string name="customer_info_name_header">Name</string>
+    <string name="customer_info_contact_header">Contact name</string>
+    <string name="customer_info_address_header">Address</string>
+    <string name="customer_info_notes">Notes</string>
+    <string name="customer_info_phone_header">Phone</string>
+    <string name="customer_info_email_header">E-Mail</string>
+    <string name="customer_debt_header">Debt</string>
+    <string name="customer_debt_outdated">Outdated</string>
+    <string name="customer_debt_normal">In term</string>
+    <string name="customer_debt_whole">Overall</string>
+    <string name="customer_debt_no_debt">No debts</string>
+    <string name="customer_tasks_header">Tasks</string>
+    <string name="customer_task_research">Research</string>
+    <string name="customer_task_no_tasks">No tasks</string>
+    <string name="customer_task_individual">Individual</string>
+    <string name="customer_order_plan_header">Order plan for visit</string>
+    <string name="customer_order_list_header">Customer orders</string>
+    <string name="customer_enter_task_result_hint">Provide task completion results…</string>
+    <string name="customer_info_category_header">Class by turnover</string>
+    <string name="customer_info_category_no_category">NOT SET</string>
+    <string name="customer_add_new_note_title">Add new note</string>
+
+    <!-- Orders screen -->
+    <string name="payment_type_cash">Cash</string>
+    <string name="payment_type_official">LTD</string>
+    <string name="delivery_date_prefix">for:</string>
+    <string name="order_title">Order</string>
+    <string name="cart_title">Cart</string>
+    <string name="order_delivery_date_title">Delivery date</string>
+    <string name="order_currency_title">Currency</string>
+    <string name="order_amount_title">Order amount</string>
+    <string name="order_type_title">Payment type</string>
+    <string name="order_comment_title">Comment for order</string>
+    <string name="order_items_header_article">Art.</string>
+    <string name="order_items_header_name">Item name</string>
+    <string name="order_items_header_price">Price</string>
+    <string name="order_items_header_quantity">Qty</string>
+    <string name="error_low_price">Entered price value below minimal price!</string>
+    <string name="action_send_order">Send order</string>
+    <string name="error_empty_order">Send failed! Order is empty!</string>
+    <string name="error_wrong_delivery">Send failed! Delivery date setted before order date!</string>
+    <string name="action_clear_order">Clear order</string>
+    <string name="order_items_counter_title">Number of items</string>
+
+    <!-- Goods screen -->
+    <string name="item_wh_rest_label">Str</string>
+    <string name="item_cwh_rest_label">DC</string>
+    <string name="item_official_rest_label">OF</string>
+    <string name="item_base_price_label">Price</string>
+    <string name="item_min_price_label">Min.</string>
+    <string name="item_discount_label">Discount</string>
+    <string name="all_brands">ALL</string>
+
+    <!-- Routes screen -->
+    <string name="monday">MO</string>
+    <string name="tuesday">TU</string>
+    <string name="wednesday">WE</string>
+    <string name="thursday">TH</string>
+    <string name="friday">FR</string>
+    <string name="saturday">SA</string>
+    <string name="sunday">SU</string>
+
+
+    <!-- Sync screen -->
+    <string name="settings_auto_sync">Auto synchronization</string>
+    <string name="settings_server_address">Server address</string>
+    <string name="message_sync_complete">Synchronization complete</string>
+
+
+    <!-- newly added -->
 
 </resources>

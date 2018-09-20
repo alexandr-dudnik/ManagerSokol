@@ -123,13 +123,13 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 //                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), R.drawable.ic_search, new SearchView.OnQueryTextListener() {
 //                        @Override
 //                        public boolean onQueryTextSubmit(String query) {
-//                            setGoodsListFilter(query);
+//                            updateGoodsList(query);
 //                            return true;
 //                        }
 //
 //                        @Override
 //                        public boolean onQueryTextChange(String newText) {
-//                            setGoodsListFilter(newText);
+//                            updateGoodsList(newText);
 //                            return true;
 //                        }
 //                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))

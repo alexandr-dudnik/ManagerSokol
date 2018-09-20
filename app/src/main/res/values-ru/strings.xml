@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Менеджер Sokol</string>
+
+    <!-- Errors -->
+    <string name="error_message">Ошибка приложения</string>
+    <string name="error_empty_login">Вы забыли ввести логин!</string>
+    <string name="error_bad_password">Длина пароля меньше 8 символов!</string>
+    <string name="error_auth_error">Ошибка аутентификации! Проверьте ваш логин и пароль!</string>
+    <string name="error_google_maps_not_found">Приложение "Карты Google" не установлены!</string>
+    <string name="error_phone_not_available">Не обнаружен телефон - совершить звонок не возможно!</string>
+    <string name="error_email_not_available">Почтовая программа не установлена</string>
+
+
+    <!-- General -->
+    <string name="date_format">dd.MM.yyyy</string>
+    <string name="numeric_format">%1$.2f</string>
+    <string name="numeric_format_int">%1$.0f</string>
+    <string name="national_currency">ГРН</string>
+    <string name="search_hint">Поиск…</string>
+    <string name="button_negative_text">Отмена</string>
+    <string name="button_positive_text">OK</string>
+    <string name="question_quit">Завершить работу с приложением?</string>
+    <string name="customer_add_new_note_title">Добавление новой заметки</string>
+    <string name="default_manager_name">Вася Пупкин</string>
+    <string name="button_yes_text">Да</string>
+    <string name="button_no_text">Нет</string>
+    <string name="message_logout">Авторизация очищена!</string>
+    <string name="question_logout">Все данные будут очищены! Вы уверены, что хотите очистить авторизацию?</string>
+
+    <!-- Login -->
+    <string name="login_form_caption">Ваши учетные данные</string>
+    <string name="user_name_hint">Логин</string>
+    <string name="user_password_hint">Пароль</string>
+    <string name="login_button_text">Авторизация</string>
+    <string name="message_auth_success">Авторизация прошла успешно!</string>
+    <string name="error_access_denied">Доступ запрещен!</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Главная</string>
+    <string name="menu_customers">Клиенты</string>
+    <string name="menu_orders">Заказы</string>
+    <string name="menu_goods">Товары</string>
+    <string name="menu_route">Маршрут</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_search">Поиск</string>
+    <string name="menu_logout">Выйти</string>
+    <string name="menu_synchronize">Синхронизация</string>
+    <string name="menu_brands">Бренды</string>
+
+    <!-- Customer screen -->
+    <string name="customer_tab_info">Инфо</string>
+    <string name="customer_tab_tasks">Задачи</string>
+    <string name="customer_tab_orders">Заказы</string>
+    <string name="customer_info_name_header">Название</string>
+    <string name="customer_info_contact_header">Контактное лицо</string>
+    <string name="customer_info_address_header">Адрес</string>
+    <string name="customer_info_notes">Заметки</string>
+    <string name="customer_info_phone_header">Телефон</string>
+    <string name="customer_info_email_header">E-Mail</string>
+    <string name="customer_debt_header">Долги</string>
+    <string name="customer_debt_outdated">Просроченный</string>
+    <string name="customer_debt_normal">В сроке</string>
+    <string name="customer_debt_whole">Общий</string>
+    <string name="customer_debt_no_debt">Долги отсутствуют</string>
+    <string name="customer_tasks_header">Задачи</string>
+    <string name="customer_task_research">Развитие</string>
+    <string name="customer_task_no_tasks">Нет задач</string>
+    <string name="customer_task_individual">Индивидуальные</string>
+    <string name="customer_order_plan_header">План заказа на посещение</string>
+    <string name="customer_order_list_header">Заказы клиента</string>
+    <string name="customer_enter_task_result_hint">Укажите результат выполнения задачи…</string>
+    <string name="customer_info_category_header">Класс по обороту</string>
+    <string name="customer_info_category_no_category">НЕ ЗАДАНО</string>
+
+    <!-- Orders screen -->
+    <string name="payment_type_cash">ЧП</string>
+    <string name="payment_type_official">ООО</string>
+    <string name="delivery_date_prefix">на:</string>
+    <string name="order_title">Заказ</string>
+    <string name="cart_title">Корзина</string>
+    <string name="order_delivery_date_title">Дата отгрузки</string>
+    <string name="order_currency_title">Валюта</string>
+    <string name="order_amount_title">Сумма заказа</string>
+    <string name="order_type_title">Форма оплаты</string>
+    <string name="order_comment_title">Комментарий к заказу</string>
+    <string name="order_items_header_article">Артикул</string>
+    <string name="order_items_header_name">Наименование</string>
+    <string name="order_items_header_price">Цена</string>
+    <string name="order_items_header_quantity">Кол-во</string>
+    <string name="error_low_price">Введенное значение цены меньше минимальной!</string>
+    <string name="action_send_order">Отправить заказ</string>
+    <string name="error_empty_order">Отправка не удалась! Заказ клиента пуст!</string>
+    <string name="error_wrong_delivery">Отправка не удалась! Дата заказа позже даты доставки!</string>
+    <string name="action_clear_order">Очистить</string>
+    <string name="order_items_counter_title">Товаров</string>
+
+    <!-- Goods screen -->
+    <string name="item_wh_rest_label">СФ</string>
+    <string name="item_cwh_rest_label">ЦС</string>
+    <string name="item_official_rest_label">БН</string>
+    <string name="item_base_price_label">Прайс</string>
+    <string name="item_min_price_label">Мин.</string>
+    <string name="all_brands">ВСЕ</string>
+    <string name="item_discount_label">Скидка</string>
+
+    <!-- Routes screen -->
+    <string name="monday">ПН</string>
+    <string name="tuesday">ВТ</string>
+    <string name="wednesday">СР</string>
+    <string name="thursday">ЧТ</string>
+    <string name="friday">ПТ</string>
+    <string name="saturday">СБ</string>
+    <string name="sunday">ВС</string>
+
+    <!-- Sync screen -->
+    <string name="settings_auto_sync">Авто. синхронизация</string>
+    <string name="settings_server_address">Адрес сервера</string>
+    <string name="message_sync_complete">Сихронизация завершена</string>
+
+
+    <!-- newly added -->
+
+</resources>
