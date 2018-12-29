@@ -39,7 +39,7 @@ import mortar.MortarScope;
 @Screen(R.layout.screen_order)
 public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
-    private OrderRealm currentOrder;
+    private String currentOrderId;
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -51,13 +51,13 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
 
 
-    public OrderScreen(OrderRealm currentOrder) {
-        this.currentOrder = currentOrder;
+    public OrderScreen(String currentOrderId) {
+        this.currentOrderId = currentOrderId;
     }
 
     @Override
     public String getScopeName() {
-        return super.getScopeName()+"_"+this.currentOrder.getId();
+        return super.getScopeName()+"_"+this.currentOrderId;
     }
 
     //region ===================== DI =========================
@@ -100,6 +100,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         private RealmChangeListener<RealmResults<OrderLineRealm>> lineChangeListener;
         private RealmObjectChangeListener<OrderRealm> orderChangeListener;
 
+        OrderRealm currentOrder;
+
         public Presenter() {
         }
 
@@ -107,6 +109,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
+
+            currentOrder = mModel.getOrderById(currentOrderId);
         }
 
         @Override
@@ -121,7 +125,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new OrderLineViewHolder(view)
                 );
             };
-            linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder);
+            linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder, false);
             updateLines();
             getView().setLinesAdapter(linesAdapter);
             lineChangeListener = orderLineRealms -> {
@@ -170,7 +174,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         private void updateLines(){
-            linesAdapter.refreshList(mModel.getLinesList(currentOrder));
+            linesAdapter.refreshList(mModel.getLinesList(currentOrderId));
             getView().setOrderAmount(currentOrder.getTotal());
         }
 
@@ -191,7 +195,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
                         if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS){
                             currentOrder.removeChangeListener(orderChangeListener);
-                            mModel.sendOrder(currentOrder);
+                            mModel.sendOrder(currentOrder.getId());
                             Flow.get(getView()).goBack();
                         }else{
                             mModel.updateOrderFromRemote(currentOrder.getId());
@@ -214,12 +218,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                         }
                     }
                     currentOrder.removeChangeListener(orderChangeListener);
-                    mModel.sendOrder(currentOrder);
+                    mModel.sendOrder(currentOrderId);
                     Flow.get(getView()).goBack();
                     return false;
                 }, ConstantManager.MENU_ITEM_TYPE_ACTION))
                 .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
-                    mModel.clearOrderLines(currentOrder);
+                    mModel.clearOrderLines(currentOrderId);
                     return false;
                 }, ConstantManager.MENU_ITEM_TYPE_ITEM))
                 ;
@@ -244,7 +248,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         public void updateDeliveryDate(Date mDate) {
-            mModel.setDeliveryDate(currentOrder, mDate);
+            mModel.setDeliveryDate(currentOrderId, mDate);
         }
 
         public void updatePrice(OrderLineRealm line) {
@@ -269,7 +273,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                             getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), line.getItem().getLowPrice()) + ")");
                         }
                     } else {
-                        mModel.updateOrderItemPrice(currentOrder, line.getItem(), newValue);
+                        mModel.updateOrderItemPrice(currentOrderId, line.getItem().getItemId(), newValue);
                     }
                 });
                 alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
@@ -293,9 +297,9 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                     float newValue = Float.parseFloat(input.getText().toString());
                     if (newValue == 0f) {
-                        mModel.removeOrderItem(currentOrder, line.getItem());
+                        mModel.removeOrderItem(currentOrderId, line.getItem().getItemId());
                     } else {
-                        mModel.updateOrderItemQty(currentOrder, line.getItem(), newValue);
+                        mModel.updateOrderItemQty(currentOrderId, line.getItem().getItemId(), newValue);
                     }
                 });
                 alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
@@ -306,22 +310,22 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void removeLine(OrderLineRealm currentItem) {
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
-                mModel.removeOrderItem(currentOrder, currentItem.getItem());
+                mModel.removeOrderItem(currentOrderId, currentItem.getItem().getItemId());
             }
         }
 
         public void updatePayment(int payment) {
-            mModel.updateOrderPayment(currentOrder, payment);
+            mModel.updateOrderPayment(currentOrderId, payment);
         }
 
 
         public void updateComment(String comment) {
-            mModel.updateOrderComment(currentOrder, comment);
+            mModel.updateOrderComment(currentOrderId, comment);
         }
 
         public void addNewItemToOrder() {
             if (getRootView() != null) {
-                Flow.get((RootActivity)getRootView()).set(new GoodsScreen(currentOrder.getId()));
+                Flow.get((RootActivity)getRootView()).set(new GoodsScreen(currentOrderId));
             }
         }
     }

@@ -4,19 +4,20 @@ import android.support.annotation.Keep;
 
 @Keep
 public class GoodItemRes {
-    public String id;
-    public String article;
-    public String name;
-    public GoodItemPrice price;
-    public GoodItemRest rest;
-    public CategoryRes category;
-    public String group_id;
-    public BrandRes brand;
+    private String id;
+    private String article;
+    private String name;
+    private GoodItemPrice price;
+    private GoodItemRest rest;
+    private CategoryRes category;
+    private String group_id;
+    private BrandRes brand;
+    private Boolean active;
 
 
     public static class GoodItemPrice {
-        public Float base;
-        public Float min;
+        Float base;
+        Float min;
 
         public GoodItemPrice(Float base, Float min) {
             this.base = base;
@@ -34,9 +35,9 @@ public class GoodItemRes {
 
 
     public static class GoodItemRest {
-        public Float store;
-        public Float distribution;
-        public Float official;
+        Float store;
+        Float distribution;
+        Float official;
 
         public GoodItemRest(Float store, Float distribution, Float official) {
             this.store = store;
@@ -57,7 +58,7 @@ public class GoodItemRes {
         }
     }
 
-    public GoodItemRes(String id, String article, String name, GoodItemPrice price, GoodItemRest rest, CategoryRes category, String group_id, BrandRes brand) {
+    public GoodItemRes(String id, String article, String name, GoodItemPrice price, GoodItemRest rest, CategoryRes category, String group_id, BrandRes brand, Boolean active) {
         this.id = id;
         this.article = article;
         this.name = name;
@@ -66,6 +67,7 @@ public class GoodItemRes {
         this.category = category;
         this.group_id = group_id;
         this.brand = brand;
+        this.active = active;
     }
 
     public String getId() {
@@ -99,5 +101,10 @@ public class GoodItemRes {
     public BrandRes getBrand() {
         return brand;
     }
+
+    public Boolean isActive() {
+        return active==null?false:active;
+    }
+
 }
 

@@ -1,103 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sokolua.manager.ui.screens.routes.RoutesView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/main_background">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:isScrollContainer="true">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/customer_routes_margin"
+            android:paddingEnd="@dimen/customer_routes_margin">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingEnd="@dimen/customer_routes_margin"
-                android:paddingStart="@dimen/customer_routes_margin"
-                >
+                android:layout_weight="1"
+                android:tag="day_1"
+                android:text="@string/monday"
+                tools:backgroundTint="@color/color_accent" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_1"
-                    android:text="@string/monday"
-                    tools:backgroundTint="@color/color_accent"
-                    />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="day_2"
+                android:text="@string/tuesday" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_2"
-                    android:text="@string/tuesday"
-                    />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="day_3"
+                android:text="@string/wednesday" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_3"
-                    android:text="@string/wednesday"
-                    />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="day_4"
+                android:text="@string/thursday" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_4"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_4"
-                    android:text="@string/thursday"
-                    />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="day_5"
+                android:text="@string/friday" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_5"
-                    android:text="@string/friday"
-                    />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="day_6"
+                android:text="@string/saturday"
+                android:textColor="@color/color_red" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_6"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_6"
-                    android:text="@string/saturday"
-                    android:textColor="@color/color_red"
-                    />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="day_7"
+                android:text="@string/sunday"
+                android:textColor="@color/color_red" />
+        </LinearLayout>
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/btn_7"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:tag="day_7"
-                    android:text="@string/sunday"
-                    android:textColor="@color/color_red"
-                    />
-            </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:isScrollContainer="true">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/customer_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:overScrollMode="never"
-                tools:listitem="@layout/customer_list_item"
-                />
-        </LinearLayout>
-    </ScrollView>
+                tools:listitem="@layout/customer_list_item" />
+        </ScrollView>
+    </LinearLayout>
 </com.sokolua.manager.ui.screens.routes.RoutesView>

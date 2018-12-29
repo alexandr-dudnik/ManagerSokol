@@ -13,66 +13,78 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRecyclerAdapter.ReactiveViewHolder<T>> {
     private Observable<List<T>> observable;
     private final ReactiveViewHolderFactory<T> viewHolderFactory;
     private List<T> currentList;
+    private Disposable listSub;
+    private boolean useBlankItemOnEmptyList;
 
-    public ReactiveRecyclerAdapter(Observable<List<T>> observable, ReactiveViewHolderFactory<T> viewHolderFactory) {
+    public ReactiveRecyclerAdapter(Observable<List<T>> observable, ReactiveViewHolderFactory<T> viewHolderFactory, boolean useBlankItemOnEmptyList) {
         this.viewHolderFactory = viewHolderFactory;
         this.currentList = Collections.emptyList();
+        this.useBlankItemOnEmptyList = useBlankItemOnEmptyList;
         refreshList(observable);
     }
 
     public void refreshList(Observable<List<T>> observable){
+        if (listSub!=null && !listSub.isDisposed()){
+            listSub.dispose();
+        }
         this.observable = observable;
-        this.observable
+        listSub = this.observable
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(AndroidSchedulers.mainThread())
                 .doOnNext(items -> {
                     this.currentList = items;
                     this.notifyDataSetChanged();
                 })
                 .subscribe();
     }
-//    private PublishSubject<T> mViewClickSubject = PublishSubject.create();
-
-//    public Observable<T> getViewClickedObservable() {
-//        return mViewClickSubject;
-//    }
 
 
+
+    @NonNull
     @Override
     public ReactiveViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, int pViewType) {
         ReactiveViewHolderFactory.ViewAndHolder<T> viewAndHolder = viewHolderFactory.createViewAndHolder(parent, pViewType);
-
-//        RxView.clicks(viewAndHolder.view)
-//                .takeUntil(RxView.detaches(parent))
-//                .map(aVoid -> viewHolder.getCurrentItem())
-//                .subscribe(mViewClickSubject);
-
         return viewAndHolder.viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ReactiveViewHolder<T> holder, int position) {
-        T item = currentList.get(position);
-        holder.setCurrentItem(item);
+        if (currentList.size()>0) {
+            T item = currentList.get(position);
+            holder.setCurrentItem(item);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return currentList.size();
+        if (currentList.size()==0) {
+            return useBlankItemOnEmptyList?1:0;
+        } else {
+            return currentList.size();
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        T item = currentList.get(position);
-        int viewType = ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
-        try {
-            Method mm = item.getClass().getMethod("isHeader", (Class<?>[]) null);
-            viewType = (boolean)mm.invoke(item, (Object[]) null)? ConstantManager.RECYCLER_VIEW_TYPE_HEADER:ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
-        } catch (Throwable ignore) {
+        int viewType;
+        if (currentList.size()==0){
+            viewType = ConstantManager.RECYCLER_VIEW_TYPE_EMPTY;
+        }else {
+            viewType = ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
+            T item = currentList.get(position);
+            try {
+                Method mm = item.getClass().getMethod("isHeader", (Class<?>[]) null);
+                viewType = (boolean) mm.invoke(item, (Object[]) null) ? ConstantManager.RECYCLER_VIEW_TYPE_HEADER : ConstantManager.RECYCLER_VIEW_TYPE_ITEM;
+            } catch (Throwable ignore) {
+            }
         }
         return viewType;
     }
@@ -90,7 +102,8 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
 
         public T getCurrentItem() {
             return currentItem;
-        }    }
+        }
+    }
 
     public interface ReactiveViewHolderFactory<T> {
         class ViewAndHolder<T> {

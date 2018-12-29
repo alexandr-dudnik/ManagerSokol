@@ -9,6 +9,8 @@ public interface IRootView extends IView{
     void showError(Throwable e);
 
     void showLoad();
+    void showLoad(int progressBarMax);
+    void updateProgress(int currentProgress);
     void hideLoad();
 
     void setBottomBarVisibility(boolean state);

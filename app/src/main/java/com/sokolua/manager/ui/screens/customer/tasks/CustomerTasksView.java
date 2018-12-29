@@ -22,7 +22,6 @@ public class CustomerTasksView extends AbstractView<CustomerTasksScreen.Presente
     @BindView(R.id.tasks_list)
     RecyclerView mTaskList;
 
-
     public CustomerTasksView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }

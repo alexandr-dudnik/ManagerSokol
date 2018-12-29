@@ -42,7 +42,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
 import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import mortar.MortarScope;
@@ -137,10 +136,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<ItemRealm> itemViewHolder;
         ReactiveRecyclerAdapter groupsAdapter;
         ReactiveRecyclerAdapter itemsAdapter;
-        private RealmObjectChangeListener<RealmModel> orderChangeListener;
+        private RealmObjectChangeListener<OrderRealm> orderChangeListener;
         private RealmChangeListener<RealmResults<OrderLineRealm>> orderLinesChangeListener;
-        private RealmChangeListener<GoodsGroupRealm> groupsListener;
-        private RealmChangeListener<ItemRealm> itemsListener;
+
 
         private String currentFilter = "";
         private String currentBrand = "";
@@ -172,7 +170,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new GroupViewHolder(view)
                 );
             };
-            groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupViewHolder);
+
+            //noinspection unchecked
+            groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupViewHolder, false);
 
             getView().setGroupsAdapter(groupsAdapter);
 
@@ -185,12 +185,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new ItemViewHolder(view)
                 );
             };
-            itemsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), itemViewHolder);
+            //noinspection unchecked
+            itemsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), itemViewHolder, false);
 
             getView().setItemsAdapter(itemsAdapter);
 
-            groupsListener = goodsGroupRealm -> updateGoodsList();
-            itemsListener = goodsGroupRealm -> updateGoodsList();
 
             updateGoodsList();
 
@@ -243,12 +242,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @Override
         public void dropView(GoodsView view) {
             if (currentCart != null){
-                currentCart.getLines().removeChangeListener(orderLinesChangeListener);
                 currentCart.removeChangeListener(orderChangeListener);
+                currentCart.getLines().removeChangeListener(orderLinesChangeListener);
                 currentCart = null;
             }
-            groupsListener = null;
-            itemsListener = null;
 
             super.dropView(view);
         }
@@ -266,14 +263,18 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             if (getRootView() != null) {
                 ((RootActivity) getRootView()).setBackArrow(currentGroup!=null||currentCart!=null);
                 ((RootActivity) getRootView()).setActionBarTitle((currentGroup == null?App.getStringRes(R.string.menu_goods):currentGroup.getName())+(currentBrand.isEmpty()?"":" ("+currentBrand+")"));
+
             }
 
-            if ((currentGroup == null || currentGroup.getParent() == null) && (currentFilter == null || currentFilter.isEmpty()) && (mFilterCategoryId == null || mFilterCategoryId.isEmpty())){
-                groupsAdapter.refreshList(mModel.getGroupList(currentGroup, currentBrand));
-                getView().showGroups();
-            }else{
-                itemsAdapter.refreshList(mModel.getItemList(currentGroup, currentFilter, currentBrand, mFilterCategoryId));
-                getView().showItems();
+            if (getView() != null) {
+                String currentGroupId = currentGroup == null?"":currentGroup.getGroupId();
+                if ((currentGroup == null || currentGroup.getParent() == null) && (currentFilter == null || currentFilter.isEmpty()) && (mFilterCategoryId == null || mFilterCategoryId.isEmpty())){
+                    groupsAdapter.refreshList(mModel.getGroupList(currentGroupId, currentBrand));
+                    getView().showGroups();
+                }else{
+                    itemsAdapter.refreshList(mModel.getItemList(currentGroupId, currentFilter, currentBrand, mFilterCategoryId));
+                    getView().showItems();
+                }
             }
         }
 
@@ -295,32 +296,40 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             MenuItemHolder brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty()?App.getStringRes(R.string.all_brands):currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
             brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
-            for (BrandsRealm brand: mModel.getBrands()){
-                brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
-            }
 
-            mRootPresenter.newActionBarBuilder()
-                    .setVisible(true)
-                    .setBackArrow(currentCart!=null)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
-                    .addAction(brandsSubMenu)
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
-                        @Override
-                        public boolean onQueryTextSubmit(String query) {
-                            currentFilter = query;
-                            updateGoodsList();
-                            return true;
-                        }
 
-                        @Override
-                        public boolean onQueryTextChange(String newText) {
-                            currentFilter = newText;
-                            updateGoodsList();
-                            return true;
+            Disposable mBrandsSub = mModel.getBrands()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(brands -> {
+                        for (BrandsRealm brand : brands) {
+                            brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
                         }
-                    }))
-                    .setTitle(App.getStringRes(R.string.menu_goods))
-                    .build();
+                        mRootPresenter.newActionBarBuilder()
+                                .setVisible(true)
+                                .setBackArrow(currentCart != null)
+                                .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
+                                .addAction(brandsSubMenu)
+                                .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
+                                    @Override
+                                    public boolean onQueryTextSubmit(String query) {
+                                        currentFilter = query;
+                                        updateGoodsList();
+                                        return true;
+                                    }
+
+                                    @Override
+                                    public boolean onQueryTextChange(String newText) {
+                                        currentFilter = newText;
+                                        updateGoodsList();
+                                        return true;
+                                    }
+                                }))
+                                .setTitle(App.getStringRes(R.string.menu_goods))
+                                .build();
+
+                    })
+                    .subscribe();
 
         }
 
@@ -384,14 +393,15 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             return true;
         }
 
-        void itemSelected(ItemRealm selectedItem) {
+        void itemSelected(String selectedItemId) {
             if (currentCart == null){
                 //TODO: make screen with item card
             }else{
                 if (getRootView() != null) {
+                    ItemRealm selectedItem = mModel.getItemById(selectedItemId);
                     Float itemBasePrice = selectedItem.getBasePrice();
-                    Float itemDiscount = getCustomerDiscount(selectedItem);
-                    Float itemPrice = getCustomerPrice(selectedItem);
+                    Float itemDiscount = getCustomerDiscount(selectedItemId);
+                    Float itemPrice = getCustomerPrice(selectedItemId);
 
                     LayoutInflater layoutInflater = ((Activity)getRootView()).getLayoutInflater();
                     View view = layoutInflater.inflate(R.layout.add_item_to_cart, null);
@@ -420,7 +430,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         }
 
                         if (newQty > 0){
-                            mModel.addItemToCart(currentCart, selectedItem, newQty, newPrice);
+                            mModel.addItemToCart(mCustomerOrderId, selectedItemId, newQty, newPrice);
 
                         }
                     });
@@ -434,16 +444,17 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void returnToCart() {
             if (currentCart != null) {
-                Flow.get(getView()).set(new OrderScreen(currentCart));
+                Flow.get(getView()).set(new OrderScreen(mCustomerOrderId));
             }
         }
 
-        Float getCustomerDiscount(ItemRealm item) {
-            return  mModel.getCustomerDiscount(mCustomer, item);
+        Float getCustomerDiscount(String itemId) {
+            return  mModel.getCustomerDiscount(mCustomer.getCustomerId(), itemId);
         }
 
-        Float getCustomerPrice(ItemRealm item) {
-            Float discount = getCustomerDiscount(item);
+        Float getCustomerPrice(String itemId) {
+            Float discount = getCustomerDiscount(itemId);
+            ItemRealm item = mModel.getItemById(itemId);
             return  (float)(Math.round(item.getBasePrice() * (100 - discount))) / 100;
         }
     }

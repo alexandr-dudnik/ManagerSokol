@@ -6,6 +6,8 @@ import com.sokolua.manager.data.network.error.ErrorUtils;
 import com.sokolua.manager.data.network.error.NetworkAvailableError;
 import com.sokolua.manager.utils.NetworkStatusChecker;
 
+import java.util.ArrayList;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
@@ -21,11 +23,25 @@ public class RestCallTransformer<R> implements ObservableTransformer<Response<R>
                 .flatMap(rResponse ->{
                     switch (rResponse.code()){
                         case 200:
-                            String lastModified = rResponse.headers().get(ConstantManager.HEADER_LAST_MODIFIED);
-                            if (lastModified != null){
-                                DataManager.getInstance().getPreferencesManager().saveLastProductUpdate(lastModified);
+                            if (rResponse.body()!=null) {
+                                String lastModified = rResponse.headers().get(ConstantManager.HEADER_LAST_MODIFIED);
+                                if (lastModified != null) {
+                                    Class module = null;
+                                    if (rResponse.body() instanceof ArrayList){
+                                        if (!((ArrayList) rResponse.body()).isEmpty()){
+                                            module =(((ArrayList) rResponse.body()).get(0)).getClass();
+                                        }
+                                    } else {
+                                        module = rResponse.body().getClass();
+                                    }
+                                    if (module != null) {
+                                        DataManager.getInstance().setLastUpdate(module.getSimpleName(), lastModified);
+                                    }
+                                }
+                                return Observable.just(rResponse.body());
+                            }else{
+                                return Observable.empty();
                             }
-                            return Observable.just(rResponse.body());
                         case 304:
                             return Observable.empty();
                         default:

@@ -12,6 +12,8 @@ import javax.inject.Inject;
 public abstract class AbstractModel {
     @Inject
     DataManager mDataManager;
+//    @Inject
+//    JobManager mJobManager;
 
     public AbstractModel() {
         ModelComponent component= DaggerService.getComponent(ModelComponent.class);
@@ -22,10 +24,9 @@ public abstract class AbstractModel {
         component.inject(this);
     }
 
-    //public AbstractModel(DataManager dataManager, JobManager jobManager) {
     AbstractModel(DataManager dataManager){
         mDataManager = dataManager;
-        //mJobManager = jobManager;
+//        mJobManager = jobManager;
     }
 
     private ModelComponent createDaggerComponent() {
@@ -39,7 +40,6 @@ public abstract class AbstractModel {
     }
 
 
-//
 //    public JobManager getJobManager() {
 //        return mJobManager;
 //    }

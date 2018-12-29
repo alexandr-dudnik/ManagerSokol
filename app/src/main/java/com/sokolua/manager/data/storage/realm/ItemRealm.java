@@ -49,7 +49,7 @@ public class ItemRealm extends RealmObject implements Serializable{
         this.index = name.toLowerCase()+"#"+artNumber.toLowerCase();
     }
 
-    public ItemRealm(String itemId, String itemName, String artNumber) {
+    public ItemRealm(String itemId, String itemName, String artNumber, GoodsGroupRealm parent) {
         this.itemId = itemId;
         this.name = itemName;
         this.artNumber = artNumber;
@@ -59,7 +59,7 @@ public class ItemRealm extends RealmObject implements Serializable{
         this.restDistr = 0f;
         this.restOfficial = 0f;
         this.category = null;
-        this.group = null;
+        this.group = parent;
         this.brand = null;
         this.index = name.toLowerCase()+"#"+artNumber.toLowerCase();
     }
@@ -112,4 +112,12 @@ public class ItemRealm extends RealmObject implements Serializable{
 
 
     //endregion ================== Getters =========================
+
+    //region =======================  Setters  =========================
+
+    public void setGroup(GoodsGroupRealm group){
+        this.group = group;
+    }
+
+    //endregion ====================  Setters  =========================
 }

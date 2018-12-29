@@ -27,6 +27,7 @@ public class RouteViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
     @Nullable @BindView(R.id.call_img)          ImageView mCallImg;
     @Nullable @BindView(R.id.customer_name_text)TextView mCustomerNameText;
     @Nullable @BindView(R.id.item_header_text)  TextView mItemHeaderText;
+    @Nullable @BindView(R.id.empty_list_text)   TextView mEmptyText;
 
     @Inject
     RoutesScreen.Presenter mPresenter;
@@ -35,6 +36,10 @@ public class RouteViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
         super(itemView);
         DaggerService.<RoutesScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
+
+        if (mEmptyText != null){
+            mEmptyText.setText(App.getStringRes(R.string.routes_no_route));
+        }
     }
 
 

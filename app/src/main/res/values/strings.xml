@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Manager Sokol</string>
 
+    <string name="google_app_id" translatable="false">1:296512292816:android:7d203d6ddc8654e0</string>
+
     <!-- Fonts -->
     <string name="roboto_regular" translatable="false">sans-serif</string>
     <string name="roboto_light" translatable="false">sans-serif-light</string>
@@ -23,7 +25,7 @@
     <string name="date_format">dd.MM.yyyy</string>
     <string name="numeric_format">%1$.2f</string>
     <string name="numeric_format_int">%1$.0f</string>
-    <string name="national_currency">USD</string>
+    <string name="national_currency">UAH</string>
     <string name="search_hint">Search by…</string>
     <string name="button_negative_text">Cancel</string>
     <string name="button_positive_text">OK</string>
@@ -79,6 +81,8 @@
     <string name="customer_info_category_header">Class by turnover</string>
     <string name="customer_info_category_no_category">NOT SET</string>
     <string name="customer_add_new_note_title">Add new note</string>
+    <string name="customer_plan_no_plans">No plans assigned</string>
+    <string name="customer_info_notes_no_notes">No notes added</string>
 
     <!-- Orders screen -->
     <string name="payment_type_cash">Cash</string>
@@ -101,6 +105,7 @@
     <string name="error_wrong_delivery">Send failed! Delivery date setted before order date!</string>
     <string name="action_clear_order">Clear order</string>
     <string name="order_items_counter_title">Number of items</string>
+    <string name="order_no_orders">No orders</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">Str</string>
@@ -119,12 +124,15 @@
     <string name="friday">FR</string>
     <string name="saturday">SA</string>
     <string name="sunday">SU</string>
+    <string name="routes_no_route" >No route assigned for this day</string>
 
 
     <!-- Sync screen -->
     <string name="settings_auto_sync">Auto synchronization</string>
     <string name="settings_server_address">Server address</string>
     <string name="message_sync_complete">Synchronization complete</string>
+    <string name="api_error_text">API error</string>
+    <string name="error_text">Error</string>
 
 
     <!-- newly added -->

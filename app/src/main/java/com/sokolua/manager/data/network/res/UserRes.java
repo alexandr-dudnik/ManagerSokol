@@ -4,9 +4,9 @@ import android.support.annotation.Keep;
 
 @Keep
 public class UserRes {
-    public String token;
-    public String fullname;
-    public String dueDate;
+    private String token;
+    private String fullname;
+    private String dueDate;
 
     public UserRes(String token, String fullname, String dueDate) {
         this.token = token;

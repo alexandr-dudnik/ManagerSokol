@@ -4,9 +4,9 @@ import android.support.annotation.Keep;
 
 @Keep
 public class OrderPlanRes {
-    public String category_id;
-    public String category_name;
-    public float amount;
+    private String category_id;
+    private String category_name;
+    private float amount;
 
     public OrderPlanRes(String category_id, String category_name, float amount) {
         this.category_id = category_id;
@@ -32,20 +32,4 @@ public class OrderPlanRes {
 
 
 
-    //region =======================  Setters  =========================
-
-    public void setCategoryId(String category_id) {
-        this.category_id = category_id;
-    }
-
-    public void setAmount(float amount) {
-        this.amount = amount;
-    }
-
-    public void setCategoryName(String category_name) {
-        this.category_name = category_name;
-    }
-
-
-    //endregion ====================  Setters  =========================
 }

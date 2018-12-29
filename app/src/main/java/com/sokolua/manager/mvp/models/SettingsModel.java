@@ -45,15 +45,14 @@ public class SettingsModel extends AbstractModel {
         mDataManager.clearDataBase();
     }
 
-    public Observable<Boolean> sendAllOrders() {
-        return mDataManager.sendAllOrders("");
+    public void sendAllOrders() {
+        mDataManager.sendAllOrders("");
     }
 
-    public Observable<Boolean> sendAllNotes() {
-        return mDataManager.sendAllNotes("");
+    public void sendAllNotes() {
+        mDataManager.sendAllNotes("");
     }
 
-//    public Observable<ItemRealm> updateGoodItemFromRemote(String goodId){
-//        return mDataManager.updateGoodItemFromRemote(goodId);
-//    }
+
+
 }

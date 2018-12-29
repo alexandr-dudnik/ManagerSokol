@@ -4,9 +4,9 @@ import android.support.annotation.Keep;
 
 @Keep
 public class TaskRes {
-    public String id;
-    public String text;
-    public Integer type;
+    private String id;
+    private String text;
+    private Integer type;
 
     public TaskRes(String id, String text, Integer type) {
         this.id = id;
@@ -31,21 +31,5 @@ public class TaskRes {
 
     //endregion ====================  Getters  =========================
 
-    //region =======================  Setters  =========================
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-
-    //endregion ====================  Setters  =========================
 
 }

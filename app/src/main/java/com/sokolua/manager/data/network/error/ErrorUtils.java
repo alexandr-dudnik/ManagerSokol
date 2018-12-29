@@ -17,7 +17,7 @@ public class ErrorUtils {
                     .convert(response.errorBody());
         } catch (IOException e) {
             e.printStackTrace();
-            return new ApiError(response.code());
+            return new ApiError(response.code(), response.message());
         }
 
         return error;

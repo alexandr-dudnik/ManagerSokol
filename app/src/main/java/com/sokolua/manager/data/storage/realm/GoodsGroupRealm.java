@@ -5,6 +5,8 @@ import android.support.annotation.Keep;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -17,6 +19,11 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
     private String name;
     private GoodsGroupRealm parent;
     private String imageURI;
+    @LinkingObjects("parent")
+    private final RealmResults<GoodsGroupRealm> subGroups = null;
+    @LinkingObjects("group")
+    private final RealmResults<ItemRealm> items = null;
+
 
 
     public GoodsGroupRealm() {
@@ -27,6 +34,13 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
         this.name = groupName;
         this.imageURI = imageURI;
         this.parent = parent;
+    }
+
+    public GoodsGroupRealm(String groupId, String groupName) {
+        this.groupId = groupId;
+        this.name = groupName;
+        this.imageURI = "";
+        this.parent = null;
     }
 
 

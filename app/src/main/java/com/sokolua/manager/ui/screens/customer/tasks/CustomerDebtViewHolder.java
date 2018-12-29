@@ -24,6 +24,7 @@ public class CustomerDebtViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     @Nullable @BindView(R.id.debt_type_text)      TextView mDebtTypeText;
     @Nullable @BindView(R.id.debt_value_currency) TextView mDebtCurrency;
     @Nullable @BindView(R.id.debt_value_sum)      TextView mDebtValueSum;
+    @Nullable @BindView(R.id.empty_list_text)     TextView mEmptyText;
 
     @Inject
     CustomerTasksScreen.Presenter mPresenter;
@@ -32,6 +33,10 @@ public class CustomerDebtViewHolder extends ReactiveRecyclerAdapter.ReactiveView
         super(itemView);
         DaggerService.<CustomerTasksScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
+
+        if (mEmptyText != null){
+            mEmptyText.setText(App.getStringRes(R.string.customer_debt_no_debt));
+        }
     }
 
 

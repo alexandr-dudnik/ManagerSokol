@@ -104,6 +104,16 @@ public class SplashActivity extends AppCompatActivity implements IRootView {
     }
 
     @Override
+    public void showLoad(int progressBarMax) {
+
+    }
+
+    @Override
+    public void updateProgress(int currentProgress) {
+
+    }
+
+    @Override
     public void hideLoad() {
     }
 

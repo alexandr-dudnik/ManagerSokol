@@ -25,6 +25,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
@@ -188,14 +189,38 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
             mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             mProgressDialog.setContentView(R.layout.progress_root);
         }
+        ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+
+    @Override
+    public void showLoad(int progressBarMax) {
+        showLoad();
+        ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
+        mProgressBar.setMax(progressBarMax);
+        mProgressBar.setProgress(0);
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void updateProgress(int currentProgress) {
+        if (mProgressDialog != null && mProgressDialog.isShowing()){
+            ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
+            if (mProgressBar.getVisibility() == View.VISIBLE){
+                mProgressBar.setProgress(currentProgress);
+            }
+        }
     }
 
     @Override
     public void hideLoad() {
-        if (mProgressDialog != null) {
-            if (mProgressDialog.isShowing()) {
-                mProgressDialog.hide();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
+            if (mProgressBar.getVisibility() == View.VISIBLE){
+                mProgressBar.setVisibility(View.GONE);
             }
+           mProgressDialog.hide();
         }
     }
 

@@ -7,7 +7,7 @@ import android.view.MenuItem;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
-import com.sokolua.manager.data.managers.DebugModule;
+import com.sokolua.manager.data.managers.DebugManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -30,7 +30,6 @@ import flow.Direction;
 import flow.Flow;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import mortar.MortarScope;
@@ -127,7 +126,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 if (mAuthModel.getUserName().equals(AppConfig.TEST_USERNAME)){
                     try {
                         mModel.clearDatabase();
-                        DebugModule.mock_RealmDB();
+                        DebugManager.mock_RealmDB();
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
                         }
@@ -139,29 +138,32 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     return true;
                 }
 
-
-                ArrayList<Observable<Boolean>> obs = new ArrayList<>();
-                obs.add(mModel.sendAllOrders());
-                obs.add(mModel.sendAllNotes());
-                obs.add(Observable.just(true).doOnNext(it->mModel.clearDatabase()));
-                obs.add(mModel.updateAllGroupsFromRemote().map(result -> true));
-                obs.add(mModel.updateAllGoodItemsFromRemote().map(result -> true));
-                obs.add(mModel.updateAllCustomersFromRemote().map(result -> true));
-                obs.add(mModel.updateAllOrdersFromRemote().map(result -> true));
+                ArrayList<Observable<Integer>> obs = new ArrayList<>();
+                obs.add(Observable.just("Send orders...").doOnNext(it->mModel.sendAllOrders()).map(it->0));
+                obs.add(Observable.just("Send notes...").doOnNext(it->mModel.sendAllNotes()).map(it->1));
+                //obs.add(Observable.just("Clear DataBase...").doOnNext(it->mModel.clearDatabase()).map(it->2));
+                obs.add(mModel.updateAllGroupsFromRemote().map(it->2));
+                obs.add(mModel.updateAllGoodItemsFromRemote().map(it->3));
+                obs.add(mModel.updateAllCustomersFromRemote().map(it->4));
+                obs.add(mModel.updateAllOrdersFromRemote().map(it->5));
 
                 Observable.concat(obs)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<Boolean>() {
+                    .observeOn(Schedulers.single())
+                    .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         if (getRootView() != null) {
-                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().showLoad());
+                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().showLoad(obs.size()));
                         }
                     }
 
                     @Override
-                    public void onNext(Boolean aBoolean) {  }
+                    public void onNext(Integer param) {
+                        if (getRootView() != null) {
+                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().updateProgress(param));
+                        }
+                    }
 
                     @Override
                     public void onError(Throwable e) {
@@ -174,6 +176,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     @Override
                     public void onComplete() {
                         if (getRootView() != null) {
+                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().updateProgress(obs.size()));
                             ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
                             getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
                         }
@@ -190,12 +193,42 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .setMessage(App.getStringRes(R.string.question_logout))
                         .setCancelable(false)
                         .setPositiveButton(R.string.button_positive_text, ((dialog, which) -> {
-                            if (getRootView() != null) {
-                                mAuthModel.clearUserData();
-                                Flow.get(getView()).replaceHistory(new AuthScreen(), Direction.REPLACE);
-                                getRootView().showMessage(App.getStringRes(R.string.message_logout));
+                            Observable.just(true)
+                                .doOnNext(aBool -> mAuthModel.clearUserData())
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.single())
+                                .subscribe(new Observer<Boolean>() {
+                                    @Override
+                                    public void onSubscribe(Disposable d) {
+                                        if (getRootView() != null) {
+                                            ((RootActivity) getRootView()).runOnUiThread(() -> getRootView().showLoad());
+                                        }
+                                    }
 
-                            }
+                                    @Override
+                                    public void onNext(Boolean param) {
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        if (getRootView() != null) {
+                                            ((RootActivity) getRootView()).runOnUiThread(() -> getRootView().hideLoad());
+                                            getRootView().showError(e);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+                                        if (getRootView() != null) {
+                                            ((RootActivity) getRootView()).runOnUiThread(() -> {
+                                                getRootView().hideLoad();
+                                                Flow.get(getView()).replaceHistory(new AuthScreen(), Direction.REPLACE);
+                                                getRootView().showMessage(App.getStringRes(R.string.message_logout));
+                                            });
+                                        }
+                                    }
+                                });
+
                         }))
                         .setNegativeButton(R.string.button_negative_text, ((dialog, which) -> {
                         }));

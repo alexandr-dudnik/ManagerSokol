@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "296512292816",
+    "firebase_url": "https://managersokol-1d27e.firebaseio.com",
+    "project_id": "managersokol-1d27e",
+    "storage_bucket": "managersokol-1d27e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296512292816:android:7d203d6ddc8654e0",
+        "android_client_info": {
+          "package_name": "com.sokolua.manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296512292816-1mpq2duhmnt5kp5gfs8cml26k1sq2764.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM-rr9vbUfDDRuj_PpoFKaVVIcuAzQj_Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

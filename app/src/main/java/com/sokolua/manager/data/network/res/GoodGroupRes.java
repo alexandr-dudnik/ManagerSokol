@@ -4,16 +4,18 @@ import android.support.annotation.Keep;
 
 @Keep
 public class GoodGroupRes {
-    public String id;
-    public String name;
-    public String image;
-    public String parent;
+    private String id;
+    private String name;
+    private String image;
+    private String parent;
+    private Boolean active;
 
-    public GoodGroupRes(String id, String name, String parent, String image) {
+    public GoodGroupRes(String id, String name, String parent, String image, Boolean active) {
         this.id = id;
         this.name = name;
         this.image = image;
         this.parent = parent;
+        this.active = active;
     }
 
     public String getId() {
@@ -30,5 +32,9 @@ public class GoodGroupRes {
 
     public String getParent() {
         return parent;
+    }
+
+    public Boolean isActive() {
+        return active==null?false:active;
     }
 }

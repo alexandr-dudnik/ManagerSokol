@@ -31,21 +31,4 @@ public class NoteRes {
 
     //endregion ====================  Getters  =========================
 
-
-    //region =======================  Setters  =========================
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-
-    //endregion ====================  Setters  =========================
 }

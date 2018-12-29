@@ -4,8 +4,8 @@ import android.support.annotation.Keep;
 
 @Keep
 public class BrandRes {
-    public String id;
-    public String name;
+    private String id;
+    private String name;
 
     public BrandRes(String id, String name) {
         this.id = id;
