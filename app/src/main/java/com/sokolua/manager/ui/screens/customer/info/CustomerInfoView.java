@@ -52,7 +52,7 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(getContext()) {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                mPresenter.deleteNote(((CustomerNoteViewHolder) viewHolder).getCurrentItem());
+                mPresenter.deleteNote(((CustomerNoteViewHolder) viewHolder).getCurrentItem().getNoteId());
             }
 
         });

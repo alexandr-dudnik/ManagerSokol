@@ -130,8 +130,8 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                     .setTitle(mCustomer.getName())
                     .setTabs(getView().getViewPager())
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.cart_title), R.drawable.ic_cart, item ->{
-                                OrderRealm cart = mModel.getCartForCustomer(mCustomer);
-                                Flow.get(getView()).set(new OrderScreen(cart));
+                                OrderRealm cart = mModel.getCartForCustomer(mCustomer.getCustomerId());
+                                Flow.get(getView()).set(new OrderScreen(cart.getId()));
                                 return false;
                             } , ConstantManager.MENU_ITEM_TYPE_ACTION))
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{

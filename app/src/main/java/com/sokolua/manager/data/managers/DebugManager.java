@@ -25,7 +25,7 @@ import java.util.Locale;
 import io.realm.Realm;
 import io.realm.RealmList;
 
-public class DebugModule {
+public class DebugManager {
     public static void mock_RealmDB() throws ParseException {
         Realm realm = Realm.getDefaultInstance();
 

@@ -4,8 +4,8 @@ import android.support.annotation.Keep;
 
 @Keep
 public class CategoryRes {
-    public String id;
-    public String name;
+    private String id;
+    private String name;
 
     public CategoryRes(String id, String name) {
         this.id = id;

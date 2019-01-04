@@ -9,7 +9,7 @@
     <string name="error_bad_password">Довжина пароля менше 8 символів!</string>
     <string name="error_auth_error">Помилка аутентифікації! Перевірте свій логін і пароль!</string>
     <string name="error_google_maps_not_found">Додаток Карти Google не встановлено!</string>
-    <string name="error_phone_not_available">" Не знайдено телефон - зробити дзвінок неможливо!"</string>
+    <string name="error_phone_not_available">Не знайдено телефон - зробити дзвінок неможливо!</string>
     <string name="error_email_not_available">Поштова програма не встановлена</string>
 
 
@@ -73,6 +73,8 @@
     <string name="customer_info_category_header">Класс по обороту</string>
     <string name="customer_info_category_no_category">НЕ ВСТАНОВЛЕНО</string>
     <string name="customer_add_new_note_title">Додавання нового нотатку</string>
+    <string name="customer_plan_no_plans">Плани не визначено</string>
+    <string name="customer_info_notes_no_notes">Немає жодної нотатки</string>
 
     <!-- Orders screen -->
     <string name="payment_type_cash">ФОП</string>
@@ -95,6 +97,7 @@
     <string name="error_wrong_delivery">Відправка не вдалась! Дата замовлення пізніше дати доставки!</string>
     <string name="action_clear_order">Очистити</string>
     <string name="order_items_counter_title">Товарів</string>
+    <string name="order_no_orders">Замовлення відсутні</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">СФ</string>
@@ -113,12 +116,15 @@
     <string name="friday">ПТ</string>
     <string name="saturday">СБ</string>
     <string name="sunday">НД</string>
+    <string name="routes_no_route" >На цей день маршрут не визначено</string>
 
 
     <!-- Sync screen -->
     <string name="settings_auto_sync">Авто. синхронізація</string>
     <string name="settings_server_address">Адрес серверу</string>
     <string name="message_sync_complete">Сихронізацію завершено!</string>
+    <string name="api_error_text">Помилка API</string>
+    <string name="error_text">Помилка</string>
 
     <!-- newly added -->
 

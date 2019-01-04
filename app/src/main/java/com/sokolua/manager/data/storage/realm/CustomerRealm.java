@@ -1,6 +1,7 @@
 package com.sokolua.manager.data.storage.realm;
 
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -43,7 +44,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
     public CustomerRealm() {
     }
 
-    public CustomerRealm(String customerId, String name, String contactName, String address, String phone, String email, String category) {
+    public CustomerRealm(String customerId, @NonNull String name, String contactName, String address, String phone, String email, String category) {
         this.customerId = customerId;
         this.name = name;
         this.contactName = contactName;

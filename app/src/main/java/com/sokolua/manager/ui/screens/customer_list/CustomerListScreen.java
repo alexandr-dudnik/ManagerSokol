@@ -102,7 +102,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                 );
             };
 
-            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory);
+            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory, false);
             getView().setAdapter(reactiveRecyclerAdapter);
             setCustomerListFilter("");
         }

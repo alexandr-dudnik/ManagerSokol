@@ -2,7 +2,6 @@ package com.sokolua.manager.mvp.models;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
-import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
@@ -12,90 +11,118 @@ import com.sokolua.manager.ui.screens.customer.tasks.CustomerDebtItem;
 import com.sokolua.manager.ui.screens.customer.tasks.CustomerTaskItem;
 import com.sokolua.manager.utils.App;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class CustomerModel extends AbstractModel {
 
     public Observable<List<NoteRealm>> getCustomerNotes(String customerId) {
-        Observable<NoteRealm> obs = mDataManager.getCustomerNotes(customerId);
-        return obs.toList().toObservable();
+        return mDataManager.getCustomerNotes(customerId);
     }
 
-
-    public Observable<List<CustomerDebtItem>> getCustomerDebt(String customerId) {
-        Observable<DebtRealm> obs = mDataManager.getCustomerDebt(customerId);
-        return obs.map(CustomerDebtItem::new).toList().toObservable();
-    }
 
     public Observable<List<CustomerDebtItem>> getCustomerDebtHeadered(String customerId) {
-        Observable<DebtRealm> obsNorm = mDataManager.getCustomerDebtByType(customerId, ConstantManager.DEBT_TYPE_NORMAL);
-        Observable<DebtRealm> obsOutd = mDataManager.getCustomerDebtByType(customerId, ConstantManager.DEBT_TYPE_OUTDATED);
-        Observable<DebtRealm> obsWhole = mDataManager.getCustomerDebtByType(customerId, ConstantManager.DEBT_TYPE_WHOLE);
-        return
-                Observable.just(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_outdated), ConstantManager.DEBT_TYPE_OUTDATED)).filter(item -> !obsOutd.isEmpty().blockingGet())
-                        .concatWith(obsOutd.map(CustomerDebtItem::new))
-                        .concatWith(Observable.just(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_normal), ConstantManager.DEBT_TYPE_NORMAL)).filter(item -> !obsNorm.isEmpty().blockingGet()))
-                        .concatWith(obsNorm.map(CustomerDebtItem::new))
-                        .concatWith(Observable.just(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_whole), ConstantManager.DEBT_TYPE_WHOLE)).filter(item -> !obsWhole.isEmpty().blockingGet()))
-                        .concatWith(obsWhole.map(CustomerDebtItem::new))
-                        .concatWith(Observable.just(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_no_debt), ConstantManager.DEBT_TYPE_WHOLE)).filter(item -> obsWhole.isEmpty().blockingGet()))
-                        .toList()
-                        .toObservable();
-    }
+        Observable<List<DebtRealm>> obsNorm = mDataManager.getCustomerDebtByType(customerId, ConstantManager.DEBT_TYPE_NORMAL);
+        Observable<List<DebtRealm>> obsOutdated = mDataManager.getCustomerDebtByType(customerId, ConstantManager.DEBT_TYPE_OUTDATED);
+        Observable<List<DebtRealm>> obsWhole = mDataManager.getCustomerDebtByType(customerId, ConstantManager.DEBT_TYPE_WHOLE);
 
-    public Observable<List<CustomerTaskItem>> getCustomerTasks(String customerId) {
-        Observable<TaskRealm> obs = mDataManager.getCustomerTasks(customerId);
-        return obs.map(CustomerTaskItem::new).toList().toObservable();
+        return Observable.zip(
+                obsOutdated,
+                obsNorm,
+                obsWhole,
+                (listOutdated, listNorm, listWhole)->{
+                    List<CustomerDebtItem> list = new ArrayList<>();
+                    if (!listOutdated.isEmpty()){
+                        list.add(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_outdated), ConstantManager.DEBT_TYPE_OUTDATED));
+                    }
+                    for (DebtRealm item:listOutdated){
+                        list.add(new CustomerDebtItem(item));
+                    }
+
+                    if (!listNorm.isEmpty()){
+                        list.add(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_normal), ConstantManager.DEBT_TYPE_NORMAL));
+                    }
+                    for (DebtRealm item:listNorm){
+                        list.add(new CustomerDebtItem(item));
+                    }
+
+                    if (!listWhole.isEmpty()){
+                        list.add(new CustomerDebtItem(App.getStringRes(R.string.customer_debt_whole), ConstantManager.DEBT_TYPE_WHOLE));
+                    }
+                    for (DebtRealm item:listWhole){
+                        list.add(new CustomerDebtItem(item));
+                    }
+
+                    return list;
+                }
+        )
+        ;
+
     }
 
     public Observable<List<CustomerTaskItem>> getCustomerTasksHeadered(String customerId) {
-        Observable<TaskRealm> obsRes = mDataManager.getCustomerTasksByType(customerId, ConstantManager.TASK_TYPE_RESEARCH);
-        Observable<TaskRealm> obsInd = mDataManager.getCustomerTasksByType(customerId, ConstantManager.TASK_TYPE_INDIVIDUAL);
-        return
-                Observable.just(new CustomerTaskItem(App.getStringRes(R.string.customer_task_research))).filter(item -> !obsRes.isEmpty().blockingGet())
-                        .concatWith(obsRes.map(CustomerTaskItem::new))
-                        .concatWith(Observable.just(new CustomerTaskItem(App.getStringRes(R.string.customer_task_individual))).filter(item -> !obsInd.isEmpty().blockingGet()))
-                        .concatWith(obsInd.map(CustomerTaskItem::new))
-                        .concatWith(Observable.just(new CustomerTaskItem(App.getStringRes(R.string.customer_task_no_tasks))).filter(item -> Observable.concat(obsRes, obsInd).isEmpty().blockingGet()))
-                        .toList()
-                        .toObservable();
+        Observable<List<TaskRealm>> obsRes = mDataManager.getCustomerTasksByType(customerId, ConstantManager.TASK_TYPE_RESEARCH);
+        Observable<List<TaskRealm>> obsInd = mDataManager.getCustomerTasksByType(customerId, ConstantManager.TASK_TYPE_INDIVIDUAL);
+
+        return Observable.zip(
+                obsRes,
+                obsInd,
+                (listRes, listInd)->{
+                    List<CustomerTaskItem> list = new ArrayList<>();
+                    if (!listInd.isEmpty()){
+                        list.add(new CustomerTaskItem(App.getStringRes(R.string.customer_task_individual)));
+                    }
+                    for (TaskRealm item:listInd){
+                        list.add(new CustomerTaskItem(item));
+                    }
+
+                    if (!listRes.isEmpty()){
+                        list.add(new CustomerTaskItem(App.getStringRes(R.string.customer_task_research)));
+                    }
+                    for (TaskRealm item:listRes){
+                        list.add(new CustomerTaskItem(item));
+                    }
+
+                    return list;
+                },
+                true
+        )
+        ;
+
     }
 
     public Observable<List<OrderPlanRealm>> getCustomerPlan(String customerId) {
-        Observable<OrderPlanRealm> obs = mDataManager.getCustomerPlan(customerId);
-        return obs.toList().toObservable();
+        return mDataManager.getCustomerPlan(customerId);
     }
 
     public Observable<List<OrderRealm>> getCustomerOrders(String customerId) {
-        Observable<OrderRealm> obs = mDataManager.getCustomerOrders(customerId);
-        return obs.toList().toObservable();
+        return mDataManager.getCustomerOrders(customerId);
     }
 
     public void updateTask(String taskId, boolean checked, String result) {
         mDataManager.updateCustomerTask(taskId, checked, result);
     }
 
-    public OrderRealm getCartForCustomer(CustomerRealm customer) {
-        return mDataManager.getCartForCustomer(customer);
+    public OrderRealm getCartForCustomer(String customerId) {
+        return mDataManager.getCartForCustomer(customerId);
     }
 
-    public void addNewNote(CustomerRealm customer, String note) {
-        mDataManager.addNewNote(customer, note);
+    public void addNewNote(String customerId, String note) {
+        mDataManager.addNewNote(customerId, note);
     }
 
-    public void deleteNote(NoteRealm note) {
-        mDataManager.deleteNote(note);
+    public void deleteNote(String noteId) {
+        mDataManager.deleteNote(noteId);
     }
 
     public void updateCustomerFromRemote(String customerId) {
         Observable.just(customerId)
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .doOnNext(id -> mDataManager.updateCustomerFromRemote(id))
+                .flatMap(id -> mDataManager.updateCustomerFromRemote(id))
                 .subscribe();
     }
 }

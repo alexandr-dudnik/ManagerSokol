@@ -33,8 +33,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
 
+        Fabric.with(this, new Crashlytics());
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
@@ -55,6 +55,7 @@ public class App extends Application {
         Realm.init(sContext);
         final RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .name("sokol.manager.realm")
+                .compactOnLaunch()
                 .schemaVersion(1)
                 .migration(new RealmMigrations())
                 .build();

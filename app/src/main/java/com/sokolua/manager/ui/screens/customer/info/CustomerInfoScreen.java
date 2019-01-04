@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.di.DaggerService;
@@ -24,10 +25,7 @@ import com.sokolua.manager.utils.IntentStarter;
 import javax.inject.Inject;
 
 import dagger.Provides;
-import io.reactivex.Observable;
-import io.realm.RealmChangeListener;
 import io.realm.RealmObjectChangeListener;
-import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_info)
@@ -83,7 +81,6 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         protected CustomerRealm mCustomer;
         private ReactiveRecyclerAdapter mNotesAdapter;
         private ReactiveRecyclerAdapter.ReactiveViewHolderFactory<NoteRealm> viewAndHolderFactory;
-        private RealmChangeListener<RealmResults<NoteRealm>> mNotesListener;
         private CustomerInfoDataAdapter mDataAdapter;
         private RealmObjectChangeListener<CustomerRealm> mCustomerChangeListener;
 
@@ -123,24 +120,19 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
             //Notes realm adapter
             viewAndHolderFactory = (parent, pViewType) -> {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_info_note_item, parent, false);
+                View view;
+                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_EMPTY){
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+                } else {
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_info_note_item, parent, false);
+                }
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new CustomerNoteViewHolder(view)
                 );
             };
-            mNotesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory);
+            mNotesAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerNotes(mCustomer.getCustomerId()), viewAndHolderFactory,true);
             getView().setNoteAdapter(mNotesAdapter);
-            updateNotes();
-
-            mNotesListener = noteRealms -> {
-                if (!noteRealms.isValid() || !noteRealms.isLoaded()){
-                    noteRealms.removeAllChangeListeners();
-                }else {
-                    updateNotes();
-                }
-            };
-            mCustomer.getNotes().addChangeListener(mNotesListener);
 
         }
 
@@ -183,15 +175,10 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             }
         }
 
-        void updateNotes(){
-            mNotesAdapter.refreshList(mModel.getCustomerNotes(mCustomer.getCustomerId()));
-        }
-
 
         @Override
         public void dropView(CustomerInfoView view) {
             mCustomer.removeChangeListener(mCustomerChangeListener);
-            mCustomer.getNotes().removeChangeListener(mNotesListener);
             super.dropView(view);
         }
 
@@ -219,8 +206,8 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             }
         }
 
-        public void deleteNote(NoteRealm note) {
-            mModel.deleteNote(note);
+        public void deleteNote(String noteId) {
+            mModel.deleteNote(noteId);
         }
 
         public void addNewNote() {
@@ -234,7 +221,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
                     .setView(input)
                     .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                         String newNote = input.getText().toString();
-                        mModel.addNewNote(mCustomer, newNote);
+                        mModel.addNewNote(mCustomer.getCustomerId(), newNote);
                     })
                     .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
                     });

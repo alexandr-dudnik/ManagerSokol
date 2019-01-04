@@ -50,6 +50,7 @@ public class AuthModel extends AbstractModel {
         updateUserData(new UserRes("","",""));
         mDataManager.updateUserPassword("");
         mDataManager.updateUserName("");
+        mDataManager.cancelAllJobs();
         mDataManager.clearDataBase();
     }
 

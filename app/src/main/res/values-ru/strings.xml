@@ -73,6 +73,8 @@
     <string name="customer_enter_task_result_hint">Укажите результат выполнения задачи…</string>
     <string name="customer_info_category_header">Класс по обороту</string>
     <string name="customer_info_category_no_category">НЕ ЗАДАНО</string>
+    <string name="customer_plan_no_plans">Планы не назначены</string>
+    <string name="customer_info_notes_no_notes">Заметок пока нет</string>
 
     <!-- Orders screen -->
     <string name="payment_type_cash">ЧП</string>
@@ -95,6 +97,7 @@
     <string name="error_wrong_delivery">Отправка не удалась! Дата заказа позже даты доставки!</string>
     <string name="action_clear_order">Очистить</string>
     <string name="order_items_counter_title">Товаров</string>
+    <string name="order_no_orders">Нет заказов</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">СФ</string>
@@ -113,11 +116,14 @@
     <string name="friday">ПТ</string>
     <string name="saturday">СБ</string>
     <string name="sunday">ВС</string>
+    <string name="routes_no_route" >На этот день маршрут не назначен</string>
 
     <!-- Sync screen -->
     <string name="settings_auto_sync">Авто. синхронизация</string>
     <string name="settings_server_address">Адрес сервера</string>
     <string name="message_sync_complete">Сихронизация завершена</string>
+    <string name="api_error_text">Ошибка API</string>
+    <string name="error_text">Ошибка</string>
 
 
     <!-- newly added -->

@@ -1,6 +1,8 @@
 package com.sokolua.manager.data.managers;
 
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.util.LongSparseArray;
 
 import com.sokolua.manager.data.network.res.CustomerDiscountRes;
 import com.sokolua.manager.data.network.res.CustomerRes;
@@ -32,12 +34,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposables;
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -45,496 +53,144 @@ import io.realm.internal.ManagableObject;
 
 public class RealmManager {
 
-    private Realm mRealmInstance;
+    //region =======================  Realm instance  =========================
+
+
+    private LongSparseArray<Realm> mRealmInstance = new LongSparseArray<>();
 
     private Realm getQueryRealmInstance() {
-        if (mRealmInstance == null || mRealmInstance.isClosed()) {
-            mRealmInstance = Realm.getDefaultInstance();
+        Realm currentRealm = mRealmInstance.get(Thread.currentThread().getId());
+        if (currentRealm == null || currentRealm.isClosed()) {
+            currentRealm = Realm.getDefaultInstance();
+            Realm.compactRealm(currentRealm.getConfiguration());
         }
-        mRealmInstance.refresh();
-        return mRealmInstance;
+        currentRealm.refresh();
+        mRealmInstance.put(Thread.currentThread().getId(), currentRealm);
+
+        return currentRealm;
     }
 
-    //region =======================  DataBase cleanup  =========================
+    private void closeQueryInstance(Realm instance){
+        if (!isUIThread()){
+            instance.close();
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        for (int i = 0; i < mRealmInstance.size(); i++) {
+            Realm inst = mRealmInstance.valueAt(i);
+            if (inst != null && inst.isClosed()) {
+                inst.close();
+            }
+        }
+        if (Realm.getDefaultConfiguration() != null) {
+            Realm.compactRealm(Realm.getDefaultConfiguration());
+        }
+
+        super.finalize();
+    }
+
+    //endregion ====================  Realm instance  =========================
+
+
+    //region =======================  Service  =========================
+
+
+    private boolean isUIThread(){
+        return Thread.currentThread() == Looper.getMainLooper().getThread();
+    }
+
+
+    private <T extends RealmObject> Observable<List<T>> getListObservable(Realm realmInstance, RealmQuery<T> realmQuery) {
+        Observable<List<T>> obs;
+        if (isUIThread()) {
+            obs = Observable.create((ObservableOnSubscribe<List<T>>) emitter -> {
+                final RealmResults<T> res = realmQuery.findAllAsync();
+                final RealmChangeListener<RealmResults<T>> realmChangeListener = element -> {
+                    if (element.isLoaded() && element.isValid() && !emitter.isDisposed()) {
+                        emitter.onNext(element);
+                    }
+                };
+                emitter.setDisposable(Disposables.fromAction(() -> {
+                    if (res.isValid()) {
+                        res.removeChangeListener(realmChangeListener);
+                    }
+                    closeQueryInstance(realmInstance);
+                }));
+                res.addChangeListener(realmChangeListener);
+            })
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .unsubscribeOn(AndroidSchedulers.mainThread())
+            ;
+        }else{
+            obs = Observable.fromIterable(realmInstance.copyFromRealm(realmQuery.findAll()))
+                    .filter(item -> item.isLoaded()) //получаем только загруженные
+                    .filter(ManagableObject::isValid)
+                    .toList()
+                    .toObservable();
+            closeQueryInstance(realmInstance);
+        }
+        return obs;
+    }
+
+
+
 
     void clearDataBase() {
-        Realm inst = Realm.getDefaultInstance();
+        Realm inst = getQueryRealmInstance();
         inst.removeAllChangeListeners();
         inst.executeTransaction(db-> db.deleteAll());
-        inst.close();
-    }
-
-    //endregion ====================  DataBase cleanup  =========================
-
-
-
-
-    Observable<CustomerRealm> getCustomersFromRealm(String filter){
-        RealmResults<CustomerRealm> managedCustomers = getQueryRealmInstance()
-                .where(CustomerRealm.class)
-                .contains("index", filter == null ? "": filter.toLowerCase(), Case.INSENSITIVE) //Ищем по индексному полю - пока индекс = наименование
-                .sort("name")
-                .findAll();
-
-        return Observable.fromIterable(managedCustomers)
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
+        closeQueryInstance(inst);
     }
 
 
+    //endregion ====================  Service  =========================
+
+
+    //region =======================  Customers  =========================
+
+    Observable<List<CustomerRealm>> getCustomersList(String filter){
+
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<CustomerRealm> customersQuery = curInstance
+                .where(CustomerRealm.class);
+        if (filter != null && !filter.isEmpty()) {
+            customersQuery.contains("index", filter.toLowerCase(), Case.INSENSITIVE); //Ищем по индексному полю - пока индекс = наименование
+        }
+        customersQuery.sort("name");
+
+
+        return getListObservable(curInstance, customersQuery);
+    }
 
     @Nullable
     CustomerRealm getCustomerById(String id) {
-        return getQueryRealmInstance()
+        Realm curInstance = getQueryRealmInstance();
+        CustomerRealm result = curInstance
                 .where(CustomerRealm.class)
                 .equalTo("customerId", id)
                 .findFirst();
-    }
-
-    public int getCustomerDebtType(String customerId) {
-        RealmQuery<DebtRealm> qAll = getQueryRealmInstance()
-                .where(DebtRealm.class)
-                .equalTo("customer.customerId", customerId);
-        if (qAll.findFirst() == null) {
-            return ConstantManager.DEBT_TYPE_NO_DEBT;
+        if (result != null && !isUIThread()) {
+            result = curInstance.copyFromRealm(result);
         }
-        return qAll.equalTo("outdated", true).findFirst() == null ? ConstantManager.DEBT_TYPE_NORMAL : ConstantManager.DEBT_TYPE_OUTDATED;
-    }
-
-    public Observable<NoteRealm> getCustomerNotes(String customerId) {
-        RealmQuery<NoteRealm> qAll = getQueryRealmInstance()
-                .where(NoteRealm.class)
-                .equalTo("customer.customerId", customerId);
-        if (qAll.findFirst() == null) {
-            return Observable.empty();
-        }
-        return Observable.fromIterable(qAll.sort("date", Sort.DESCENDING).findAll())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public Observable<DebtRealm> getCustomerDebt(String customerId) {
-        RealmQuery<DebtRealm> qAll = getQueryRealmInstance()
-                .where(DebtRealm.class)
-                .equalTo("customer.customerId", customerId);
-        if (qAll.findFirst() == null) {
-            return Observable.empty();
-        }
-        return Observable.fromIterable(qAll.sort("currency").findAll())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public Observable<TaskRealm> getCustomerTasks(String customerId) {
-        RealmQuery<TaskRealm> qAll = getQueryRealmInstance()
-                .where(TaskRealm.class)
-                .equalTo("customer.customerId", customerId);
-        if (qAll.findFirst() == null) {
-            return Observable.empty();
-        }
-        return Observable.fromIterable(qAll.sort("taskType").findAll())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public Observable<DebtRealm> getCustomerDebtByType(String customerId, int debtType) {
-        RealmQuery<DebtRealm> qAll = getQueryRealmInstance()
-                .where(DebtRealm.class)
-                .equalTo("customer.customerId", customerId);
-        CustomerRealm customer = getCustomerById(customerId);
-        if (qAll.findFirst() == null || customer == null) {
-            return Observable.empty();
-        }
-        switch(debtType){
-            case ConstantManager.DEBT_TYPE_NORMAL:
-                return Observable.fromIterable(qAll.equalTo("outdated", false).sort("currency").findAll())
-                        .filter(item -> item.isLoaded()) //получаем только загруженные
-                        .filter(ManagableObject::isValid)
-                        ;
-            case ConstantManager.DEBT_TYPE_OUTDATED:
-                return Observable.fromIterable(qAll.equalTo("outdated", true).sort("currency").findAll())
-                        .filter(item -> item.isLoaded()) //получаем только загруженные
-                        .filter(ManagableObject::isValid)
-                        ;
-            case ConstantManager.DEBT_TYPE_WHOLE:
-                return Observable.fromIterable(qAll.sort("currency").findAll())
-                        .groupBy(DebtRealm::getCurrency)
-                        .map(grp->{
-                            DebtRealm res = new DebtRealm(customer, grp.getKey(), 0f, 0f, false);
-                            grp.forEach (item ->{
-                                res.setAmount(res.getAmount()+item.getAmount());
-                                res.setAmountUSD(res.getAmountUSD()+item.getAmountUSD());
-                            });
-                            return res;
-                        })
-                        .filter(item -> item.isLoaded()) //получаем только загруженные
-                        .filter(ManagableObject::isValid)
-
-                        ;
-        }
-        return Observable.empty();
-    }
-
-    public Observable<TaskRealm> getCustomerTaskByType(String customerId, int taskType) {
-        RealmQuery<TaskRealm> qAll = getQueryRealmInstance()
-                .where(TaskRealm.class)
-                .equalTo("customer.customerId", customerId)
-                .equalTo("taskType", taskType);
-        if (qAll.findFirst() == null ) {
-            return Observable.empty();
-        }
-        return Observable.fromIterable(qAll.sort("done",Sort.ASCENDING, "text", Sort.ASCENDING).findAll())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public void updateCustomerTask(String taskId, boolean checked, String result) {
-        TaskRealm task = getQueryRealmInstance()
-                .where(TaskRealm.class)
-                .equalTo("taskId", taskId).findFirst();
-        if (task != null && task.isLoaded() && task.isValid()) {
-            getQueryRealmInstance().executeTransaction(db -> {
-                task.setDone(checked);
-                task.setResult(result);
-            });
-        }
-    }
-
-    public Observable<OrderPlanRealm> getCustomerPlan(String customerId) {
-        RealmQuery<OrderPlanRealm> qAll = getQueryRealmInstance()
-                .where(OrderPlanRealm.class)
-                .equalTo("customer.customerId", customerId);
-        if (qAll.findFirst() == null ) {
-            return Observable.empty();
-        }
-        return Observable.fromIterable(qAll.sort("category.name",Sort.ASCENDING).findAll())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public Observable<OrderRealm> getCustomerOrders(String customerId) {
-        RealmResults<OrderRealm> res = getQueryRealmInstance()
-                .where(OrderRealm.class)
-                .equalTo("customer.customerId", customerId)
-                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
-                .findAll();
-        return Observable.fromIterable(res)
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public Observable<OrderRealm> getAllOrders() {
-        return Observable.fromIterable(getOrdersQuery())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public Observable<GoodsGroupRealm> getGroupList(GoodsGroupRealm parent, String brand) {
-        if (brand == null || brand.isEmpty()){
-            RealmResults<GoodsGroupRealm> res;
-            if (parent == null) {
-                 res = getQueryRealmInstance()
-                         .where(GoodsGroupRealm.class)
-                         .isNull("parent")
-                         .sort("name", Sort.ASCENDING)
-                         .findAll();
-            }else{
-                res = getQueryRealmInstance()
-                        .where(GoodsGroupRealm.class)
-                        .equalTo("parent.groupId", parent.getGroupId())
-                        .sort("name", Sort.ASCENDING)
-                        .findAll();
-            }
-            return Observable.fromIterable(res)
-                    .filter(item -> item.isLoaded()) //получаем только загруженные
-                    .filter(ManagableObject::isValid)
-                    ;
-        }else{
-            RealmResults<ItemRealm> resIt;
-            resIt = getQueryRealmInstance()
-                    .where(ItemRealm.class)
-                    .equalTo("brand.name", brand)
-                    .findAll();
-            return Observable.fromIterable(resIt)
-                    .map(ItemRealm::getGroup)
-                    .map(grp->parent==null?grp.getParent():grp)
-                    .distinct()
-                    .filter(grp -> grp.isLoaded()) //получаем только загруженные
-                    .filter(ManagableObject::isValid)
-                    .filter(grp-> parent==null?grp.getParent()==null:grp.getParent().getGroupId().equals(parent.getGroupId()))
-                    .sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
-                    ;
-        }
-    }
-
-    public Observable<ItemRealm> getItemList(GoodsGroupRealm parent, String filter, String brand, String categoryId) {
-        RealmQuery<ItemRealm> res;
-        if (parent == null) {
-            res = getQueryRealmInstance().where(ItemRealm.class).alwaysTrue();
-        }else if(parent.getParent() == null){
-            res = getQueryRealmInstance().where(ItemRealm.class).equalTo("group.parent.groupId", parent.getGroupId());
-        }else{
-            res = getQueryRealmInstance().where(ItemRealm.class).equalTo("group.groupId", parent.getGroupId());
-        }
-        if (filter != null && !filter.isEmpty()){
-            res.contains("index", filter.toLowerCase());
-        }
-        if (brand != null && !brand.isEmpty()){
-            res.equalTo("brand.name", brand);
-        }
-        if (categoryId != null && !categoryId.isEmpty()){
-            res.equalTo("category.categoryId", categoryId);
-        }
-        return Observable.fromIterable(res.sort("name", Sort.ASCENDING).findAll())
-                .filter(item -> item.isLoaded()) //получаем только загруженные
-                .filter(ManagableObject::isValid)
-                ;
-    }
-
-    public void setDeliveryDate(OrderRealm order, Date mDate) {
-        getQueryRealmInstance().executeTransaction(db -> order.setDelivery(mDate));
-    }
-
-    public void updateOrderExternalId(OrderRealm order, String newId) {
-        getQueryRealmInstance().executeTransaction(db -> order.setExternalId(newId));
-    }
-
-
-    public void updateOrderItemPrice(OrderRealm order, ItemRealm item, Float value) {
-        OrderLineRealm line = getQueryRealmInstance()
-                .where(OrderLineRealm.class)
-                .equalTo("order.id", order.getId())
-                .equalTo("item.itemId", item.getItemId())
-                .findFirst();
-        if (line != null) {
-            getQueryRealmInstance().executeTransaction(db -> line.setPrice(value));
-        }
-    }
-
-    public void updateOrderItemQty(OrderRealm order, ItemRealm item, Float value) {
-        OrderLineRealm line = getQueryRealmInstance()
-                .where(OrderLineRealm.class)
-                .equalTo("order.id", order.getId())
-                .equalTo("item.itemId", item.getItemId())
-                .findFirst();
-        if (line != null) {
-            getQueryRealmInstance().executeTransaction(db -> line.setQuantity(value));
-        }
-    }
-
-
-    public void removeOrderItem(OrderRealm order, ItemRealm item) {
-        OrderLineRealm line = getQueryRealmInstance()
-                .where(OrderLineRealm.class)
-                .equalTo("order.id", order.getId())
-                .equalTo("item.itemId", item.getItemId())
-                .findFirst();
-        if (line != null) {
-            line.removeAllChangeListeners();
-            getQueryRealmInstance().executeTransaction(db -> line.deleteFromRealm());
-        }
-    }
-
-    public Observable<OrderLineRealm> getOrderLinesList(OrderRealm order) {
-        RealmResults<OrderLineRealm> res = getQueryRealmInstance()
-                .where(OrderLineRealm.class)
-                .equalTo("order.id", order.getId())
-                .sort("item.artNumber").findAll();
-        return Observable.fromIterable(res);
-    }
-
-    public void updateOrderStatus(OrderRealm order, int orderStatus) {
-        Realm curInstance = Realm.getDefaultInstance();
-        curInstance.executeTransaction(db -> order.setStatus(orderStatus));
-        curInstance.close();
-    }
-
-    public void clearOrderLines(OrderRealm order) {
-        if (!order.getLines().isEmpty()){
-            order.getLines().removeAllChangeListeners();
-            getQueryRealmInstance().executeTransaction(db -> order.getLines().deleteAllFromRealm());
-        }
-    }
-
-    public OrderRealm getCartForCustomer(CustomerRealm customer) {
-        OrderRealm result = getQueryRealmInstance().where(OrderRealm.class)
-                .equalTo("customer.customerId", customer.getCustomerId())
-                .equalTo("status", ConstantManager.ORDER_STATUS_CART)
-                .findFirst();
-        if (result == null){
-            //OrderRealm tmp = new OrderRealm("cart_"+customer.getCustomerId(), customer, Calendar.getInstance().getTime(), Calendar.getInstance().getTime(), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_CASH, ConstantManager.MAIN_CURRENCY, "");
-            OrderRealm tmp = new OrderRealm(customer);
-            getQueryRealmInstance().executeTransaction(db -> db.insertOrUpdate(tmp));
-            result = getCartForCustomer(customer);
-        }
+        closeQueryInstance(curInstance);
         return result;
     }
 
-    public void updateOrderComment(OrderRealm order, String comment) {
-        getQueryRealmInstance().executeTransaction(db -> order.setComments(comment));
-    }
-
-    public void updateOrderPayment(OrderRealm order, int payment) {
-        getQueryRealmInstance().executeTransaction(db -> order.setPayment(payment));
-    }
-
-    public void addItemToCart(OrderRealm order, ItemRealm item, float newQty, float newPrice) {
-        OrderLineRealm line = getQueryRealmInstance()
-                .where(OrderLineRealm.class)
-                .equalTo("order.id", order.getId())
-                .equalTo("item.itemId", item.getItemId())
-                .findFirst();
-        if (line == null){
-            OrderLineRealm tmpLine = new OrderLineRealm(order, item, newQty, newPrice);
-            getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(tmpLine));
-        }else{
-            getQueryRealmInstance().executeTransaction(db->{
-                line.setQuantity(line.getQuantity()+newQty);
-                line.setPrice(newPrice);
-            });
-        }
-
-    }
-
-    public OrderRealm getOrderById(String orderId) {
-        return Realm.getDefaultInstance()
-                .where(OrderRealm.class)
-                .equalTo("id", orderId)
-                .findFirst();
-    }
-
-    public Observable<CustomerRealm> getCustomersByVisitDate(Date day) {
-        return Observable.fromIterable(
-                    getQueryRealmInstance()
-                    .where(VisitRealm.class)
-                    .equalTo("date", day)
-                    .sort("customer.name", Sort.ASCENDING)
-                    .findAll()
-        ).map(VisitRealm::getCustomer);
-    }
-
-    public void addNewNote(CustomerRealm customer, String note) {
-        getQueryRealmInstance().executeTransaction(db->db.insertOrUpdate(new NoteRealm(customer, note)));
-    }
-
-    public void deleteNote(NoteRealm note) {
-        NoteRealm tmp = getQueryRealmInstance()
-                .where(NoteRealm.class)
-                .equalTo("noteId", note.getNoteId())
-                .findFirst();
-        if (tmp != null) {
-            tmp.removeAllChangeListeners();
-            getQueryRealmInstance().executeTransaction(db->tmp.deleteFromRealm());
+    void setDeliveryDate(String orderId, Date mDate) {
+        OrderRealm order = getOrderById(orderId);
+        if (order != null) {
+            Realm curInstance = getQueryRealmInstance();
+            curInstance.executeTransaction(db -> order.setDelivery(mDate));
+            closeQueryInstance(curInstance);
         }
     }
 
-
-
-    public void saveGoodGroupToRealm(GoodGroupRes groupRes) {
-        Realm curInstance = Realm.getDefaultInstance();
-        curInstance.refresh();
-        GoodsGroupRealm mParent=null;
-        if (groupRes.getParent() != null && !groupRes.getParent().isEmpty()) {
-            mParent = curInstance
-                    .where(GoodsGroupRealm.class)
-                    .equalTo("groupId", groupRes.getParent())
-                    .findFirst();
-            if (mParent == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(groupRes.getParent(),"no_name",null,null)));
-                mParent = curInstance
-                        .where(GoodsGroupRealm.class)
-                        .equalTo("groupId", groupRes.getParent())
-                        .findFirst();
-            }
-        }
-
-        String mImageURL ="";
-        if (groupRes.getImage() != null) {
-            mImageURL = UiHelper.saveImageFromBase64(groupRes.getImage(), groupRes.getId());
-        }
-
-        GoodsGroupRealm newGroup = new GoodsGroupRealm(groupRes.getId(), groupRes.getName(), mParent, mImageURL);
-        curInstance.executeTransaction(db -> db.insertOrUpdate(newGroup));
-        curInstance.close();
-    }
-
-    public void saveGoodItemToRealm(GoodItemRes goodItemRes) {
-        Realm curInstance = Realm.getDefaultInstance();
-        curInstance.refresh();
-        GoodsGroupRealm mParent=null;
-        if (goodItemRes.getGroupId() != null && !goodItemRes.getGroupId().isEmpty()) {
-            mParent = curInstance
-                    .where(GoodsGroupRealm.class)
-                    .equalTo("groupId", goodItemRes.getGroupId())
-                    .findFirst();
-            if (mParent == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(goodItemRes.getGroupId(),"no_name",null,null)));
-                mParent = curInstance
-                        .where(GoodsGroupRealm.class)
-                        .equalTo("groupId", goodItemRes.getGroupId())
-                        .findFirst();
-            }
-        }
-
-        BrandsRealm mBrand = null;
-        if (goodItemRes.getBrand() != null && goodItemRes.getBrand().getId() != null && !goodItemRes.getBrand().getId().isEmpty()) {
-            mBrand = curInstance
-                    .where(BrandsRealm.class)
-                    .equalTo("brandId", goodItemRes.getBrand().getId())
-                    .findFirst();
-            if (mBrand == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new BrandsRealm(goodItemRes.getBrand().getId(),goodItemRes.getBrand().getName(),null)));
-                mBrand = curInstance
-                        .where(BrandsRealm.class)
-                        .equalTo("brandId", goodItemRes.getBrand().getId())
-                        .findFirst();
-            }
-        }
-
-        GoodsCategoryRealm mCat = null;
-        if (goodItemRes.getCategory() != null && goodItemRes.getCategory().getId() != null && !goodItemRes.getCategory().getId().isEmpty()) {
-            mCat = curInstance
-                    .where(GoodsCategoryRealm.class)
-                    .equalTo("categoryId", goodItemRes.getCategory().getId())
-                    .findFirst();
-            if (mCat == null){
-                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsCategoryRealm(goodItemRes.getCategory().getId(),goodItemRes.getCategory().getName(),null)));
-                mCat = curInstance
-                        .where(GoodsCategoryRealm.class)
-                        .equalTo("categoryId", goodItemRes.getCategory().getId())
-                        .findFirst();
-            }
-        }
-
-        ItemRealm newItem = new ItemRealm(
-                goodItemRes.getId(),
-                goodItemRes.getName(),
-                goodItemRes.getArticle(),
-                goodItemRes.getPrice()!=null?goodItemRes.getPrice().getBase():0f,
-                goodItemRes.getPrice()!=null?goodItemRes.getPrice().getMin():0f,
-                goodItemRes.getRest()!=null?goodItemRes.getRest().getStore():0f,
-                goodItemRes.getRest()!=null?goodItemRes.getRest().getDistribution():0f,
-                goodItemRes.getRest()!=null?goodItemRes.getRest().getOfficial():0f,
-                mCat,
-                mParent,
-                mBrand
-                );
-        curInstance.executeTransaction(db -> db.insertOrUpdate(newItem));
-        curInstance.close();
-
-    }
-
-    public void saveCustomerToRealm(CustomerRes customerRes){
+    void saveCustomerToRealm(CustomerRes customerRes, boolean createOnly){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        Realm curInstance = Realm.getDefaultInstance();
+        Realm curInstance = getQueryRealmInstance();
         curInstance.refresh();
 
         CustomerRealm newCust =  new CustomerRealm(
@@ -545,7 +201,17 @@ public class RealmManager {
                 customerRes.getPhone(),
                 customerRes.getEmail(),
                 customerRes.getCategory()
-                );
+        );
+
+        if (createOnly){
+            if (curInstance.where(CustomerRealm.class).equalTo("customerId", customerRes.getId()).findFirst() == null) {
+                curInstance.executeTransaction(db->db.insertOrUpdate(newCust));
+            }
+            closeQueryInstance(curInstance);
+            return;
+        }
+
+
 
         RealmList<DebtRealm> mDebt = new RealmList<>();
         if (customerRes.getDebt() != null) {
@@ -601,7 +267,7 @@ public class RealmManager {
                             }
                         }
                         if (item == null) {
-                            item = new ItemRealm(disc.getTargetId(), disc.getTargetName(), "");
+                            item = new ItemRealm(disc.getTargetId(), disc.getTargetName(), "", null);
                             mItems.add(item);
                         }
                     }
@@ -663,27 +329,476 @@ public class RealmManager {
             db.insertOrUpdate(mDisc);
             db.insertOrUpdate(mVisits);
         });
-        curInstance.close();
+        closeQueryInstance(curInstance);
     }
 
 
-    public void saveOrderToRealm(OrderRes orderRes) {
+    void deleteCustomerFromRealm(String id) {
+        Realm curInstance = getQueryRealmInstance();
+
+        CustomerRealm mCustomer = curInstance
+                .where(CustomerRealm.class)
+                .equalTo("customerId", id)
+                .findFirst();
+        if (mCustomer == null) {
+            closeQueryInstance(curInstance);
+            return;
+        }
+
+        List<OrderRealm> orders = curInstance.copyFromRealm(curInstance.where(OrderRealm.class).equalTo("customer.customerId", id).findAll());
+
+        for (OrderRealm order : orders){
+            deleteOrderFromRealm(order.getId());
+        }
+
+        curInstance = getQueryRealmInstance();
+        RealmResults<TaskRealm> oldTasks = curInstance.where(TaskRealm.class).equalTo("customer.customerId", id).findAll();
+        RealmResults<OrderPlanRealm> oldPlans = curInstance.where(OrderPlanRealm.class).equalTo("customer.customerId", id).findAll();
+        RealmResults<DebtRealm> oldDebt = curInstance.where(DebtRealm.class).equalTo("customer.customerId", id).findAll();
+        RealmResults<NoteRealm> oldNotes = curInstance.where(NoteRealm.class).equalTo("customer.customerId", id).findAll();
+        RealmResults<CustomerDiscountRealm> oldDisc = curInstance.where(CustomerDiscountRealm.class).equalTo("customer.customerId", id).findAll();
+        RealmResults<VisitRealm> oldVisits = curInstance.where(VisitRealm.class).equalTo("customer.customerId", id).findAll();
+        curInstance.executeTransaction(db -> {
+            mCustomer.deleteFromRealm();
+            oldTasks.deleteAllFromRealm();
+            oldDebt.deleteAllFromRealm();
+            oldPlans.deleteAllFromRealm();
+            oldNotes.deleteAllFromRealm();
+            oldDisc.deleteAllFromRealm();
+            oldVisits.deleteAllFromRealm();
+        });
+
+        closeQueryInstance(curInstance);
+
+    }
+
+
+    //endregion ====================  Customers  =========================
+
+
+
+    //region =======================  Customer Debt  =========================
+
+
+    int getCustomerDebtType(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<DebtRealm> qAll = curInstance
+                .where(DebtRealm.class)
+                .equalTo("customer.customerId", customerId);
+        if (qAll.findFirst() == null) {
+            closeQueryInstance(curInstance);
+            return ConstantManager.DEBT_TYPE_NO_DEBT;
+        }
+        DebtRealm outdated = qAll.equalTo("outdated", true).findFirst();
+        closeQueryInstance(curInstance);
+        return outdated == null ? ConstantManager.DEBT_TYPE_NORMAL : ConstantManager.DEBT_TYPE_OUTDATED;
+    }
+
+
+    Observable<List<DebtRealm>> getCustomerDebt(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<DebtRealm> qAll = curInstance
+                .where(DebtRealm.class)
+                .equalTo("customer.customerId", customerId);
+        qAll.sort("currency");
+
+        return getListObservable(curInstance, qAll);
+    }
+
+
+
+    Observable<List<DebtRealm>> getCustomerDebtByType(String customerId, int debtType) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<DebtRealm> qAll = curInstance
+                .where(DebtRealm.class)
+                .equalTo("customer.customerId", customerId);
+
+        switch(debtType){
+            case ConstantManager.DEBT_TYPE_NORMAL:
+                qAll.equalTo("outdated", false).sort("currency");
+                return getListObservable(curInstance, qAll);
+            case ConstantManager.DEBT_TYPE_OUTDATED:
+                qAll.equalTo("outdated", true).sort("currency");
+                return getListObservable(curInstance, qAll);
+            case ConstantManager.DEBT_TYPE_WHOLE:
+                List<DebtRealm> all = curInstance.copyFromRealm(qAll.sort("currency").findAll());
+                closeQueryInstance(curInstance);
+                return Observable.fromIterable(all)
+                        .groupBy(DebtRealm::getCurrency)
+                        .map(grp->{
+                            CustomerRealm customer = getCustomerById(customerId);
+                            DebtRealm res = new DebtRealm(customer, grp.getKey(), 0f, 0f, false);
+                            grp.forEach (item ->{
+                                res.setAmount(res.getAmount()+item.getAmount());
+                                res.setAmountUSD(res.getAmountUSD()+item.getAmountUSD());
+                            });
+                            return res;
+                        })
+                        .filter(item -> item.isLoaded()) //получаем только загруженные
+                        .filter(ManagableObject::isValid)
+                        .toList()
+                        .toObservable()
+                        ;
+        }
+        return Observable.empty();
+    }
+
+    //endregion ====================  Customer Debt  =========================
+
+
+    //region =======================  Customer Notes  =========================
+
+    Observable<List<NoteRealm>> getCustomerNotes(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<NoteRealm> qAll = curInstance
+                .where(NoteRealm.class)
+                .equalTo("customer.customerId", customerId);
+        qAll.sort("date", Sort.DESCENDING);
+        return getListObservable(curInstance, qAll);
+    }
+
+    void addNewNote(String customerId, String note) {
+        Realm curInstance = getQueryRealmInstance();
+        CustomerRealm cust = getCustomerById(customerId);
+        if (cust != null) {
+            curInstance.executeTransaction(db->db.insertOrUpdate(new NoteRealm(cust, note)));
+        }
+        closeQueryInstance(curInstance);
+    }
+
+    void deleteNote(String noteId) {
+        Realm curInstance = getQueryRealmInstance();
+        NoteRealm tmp = curInstance
+                .where(NoteRealm.class)
+                .equalTo("noteId", noteId)
+                .findFirst();
+        if (tmp != null) {
+            tmp.removeAllChangeListeners();
+            curInstance.executeTransaction(db->tmp.deleteFromRealm());
+        }
+        closeQueryInstance(curInstance);
+    }
+
+    @Nullable
+    NoteRealm getCustomerNoteById(String mId) {
+        return getQueryRealmInstance().where(NoteRealm.class).equalTo("noteId", mId).findFirst();
+    }
+
+    Observable<NoteRealm> getNotesToSend(String filter) {
+        Realm curInst = getQueryRealmInstance();
+        RealmQuery<NoteRealm> query = curInst
+                .where(NoteRealm.class)
+                .equalTo("externalId", "");
+        if (!filter.isEmpty()) {
+            query = query.equalTo("customer.customerId", filter);
+        }
+        List<NoteRealm> res = curInst.copyFromRealm(query.findAll());
+        closeQueryInstance(curInst);
+        return Observable.fromIterable(res);
+    }
+
+    void updateNoteExternalId(String noteId, String newId) {
+        Realm curInstance = getQueryRealmInstance();
+        NoteRealm note = curInstance.where(NoteRealm.class).equalTo("noteId", noteId).findFirst();
+        if (note != null && note.isValid()) {
+            curInstance.executeTransaction(db-> note.setExternalId(newId));
+        }
+        closeQueryInstance(curInstance);
+
+    }
+
+    //endregion ====================  Customer Notes  =========================
+
+
+
+    //region =======================  Customer Tasks  =========================
+
+    Observable<List<TaskRealm>> getCustomerTasks(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<TaskRealm> qAll = curInstance
+                .where(TaskRealm.class)
+                .equalTo("customer.customerId", customerId);
+        qAll.sort("taskType");
+
+        return getListObservable(curInstance, qAll);
+    }
+
+    Observable<List<TaskRealm>> getCustomerTaskByType(String customerId, int taskType) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<TaskRealm> qAll = curInstance
+                .where(TaskRealm.class)
+                .equalTo("customer.customerId", customerId)
+                .equalTo("taskType", taskType);
+        qAll.sort("done",Sort.ASCENDING, "text", Sort.ASCENDING);
+        return getListObservable(curInstance, qAll);
+    }
+
+    void updateCustomerTask(String taskId, boolean checked, String result) {
+        Realm curInstance = getQueryRealmInstance();
+        TaskRealm task = curInstance
+                .where(TaskRealm.class)
+                .equalTo("taskId", taskId).findFirst();
+        if (task != null && task.isLoaded() && task.isValid()) {
+            curInstance.executeTransaction(db -> {
+                task.setDone(checked);
+                task.setResult(result);
+            });
+        }
+        closeQueryInstance(curInstance);
+    }
+
+    //endregion ====================  Customer Tasks  =========================
+
+
+    //region =======================  Customer Plan  =========================
+
+    Observable<List<OrderPlanRealm>> getCustomerPlan(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<OrderPlanRealm> qAll = curInstance
+                .where(OrderPlanRealm.class)
+                .equalTo("customer.customerId", customerId);
+        qAll.sort("category.name",Sort.ASCENDING);
+        return getListObservable(curInstance, qAll);
+    }
+
+    //endregion ====================  Customer Plan  =========================
+
+
+    //region =======================  Customer Visits  =========================
+
+
+    Observable<List<CustomerRealm>> getCustomersByVisitDate(Date day) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<CustomerRealm> qAll = curInstance
+                        .where(CustomerRealm.class)
+                        .equalTo("visits.date", day)
+                        .sort("name", Sort.ASCENDING)
+                        ;
+        return getListObservable(curInstance, qAll);
+    }
+
+    //endregion ====================  Customer Visits  =========================
+
+
+    //region =======================  Customer Discounts  =========================
+
+    Float getCustomerDiscount(String customerId, String itemId) {
+        //try find discount for item
+        Realm curInstance = getQueryRealmInstance();
+        CustomerDiscountRealm discRealm = curInstance
+                .where(CustomerDiscountRealm.class)
+                .equalTo("customer.customerId", customerId)
+                .equalTo("discountType", ConstantManager.DISCOUNT_TYPE_ITEM)
+                .equalTo("item.itemId", itemId)
+                .findFirst();
+        ItemRealm item = curInstance.where(ItemRealm.class).equalTo("itemId", itemId).findFirst();
+        if (discRealm == null && item != null && item.isValid() && item.getCategory()!= null){
+            //no... try find discount for category
+            discRealm = curInstance
+                    .where(CustomerDiscountRealm.class)
+                    .equalTo("customer.customerId", customerId)
+                    .equalTo("discountType", ConstantManager.DISCOUNT_TYPE_CATEGORY)
+                    .equalTo("category.categoryId", item.getCategory().getCategoryId())
+                    .findFirst();
+        }
+
+        float discount = (discRealm == null ? 0f : discRealm.getPercent());
+
+        closeQueryInstance(curInstance);
+
+        return discount;
+    }
+
+
+    //endregion ====================  Customer Discounts  =========================
+
+    //region =======================  Orders  =========================
+
+    Observable<List<OrderRealm>> getCustomerOrders(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<OrderRealm> qAll = curInstance
+                .where(OrderRealm.class)
+                .equalTo("customer.customerId", customerId)
+                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
+               ;
+        return getListObservable(curInstance, qAll);
+    }
+
+    Observable<List<OrderRealm>> getAllOrders() {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<OrderRealm> qAll = curInstance
+                .where(OrderRealm.class)
+                .notEqualTo("status", ConstantManager.ORDER_STATUS_CART)
+                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
+                ;
+        return getListObservable(curInstance, qAll);
+    }
+
+    void updateOrderExternalId(String orderId, String newId) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = getOrderById(orderId);
+        curInstance.executeTransaction(db ->{
+                order.setExternalId(newId);
+                order.setStatus(ConstantManager.ORDER_STATUS_SENT);
+            }
+        );
+        closeQueryInstance(curInstance);
+    }
+
+
+    void updateOrderItemPrice(String orderId, String itemId, Float value) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderLineRealm line = curInstance
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", orderId)
+                .equalTo("item.itemId", itemId)
+                .findFirst();
+        if (line != null) {
+            curInstance.executeTransaction(db -> line.setPrice(value));
+        }
+        closeQueryInstance(curInstance);
+    }
+
+    void updateOrderItemQty(String orderId, String itemId, Float value) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderLineRealm line = curInstance
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", orderId)
+                .equalTo("item.itemId", itemId)
+                .findFirst();
+        if (line != null) {
+            curInstance.executeTransaction(db -> line.setQuantity(value));
+        }
+        closeQueryInstance(curInstance);
+    }
+
+
+    void removeOrderItem(String orderId, String itemId) {
+        OrderLineRealm line = getQueryRealmInstance()
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", orderId)
+                .equalTo("item.itemId", itemId)
+                .findFirst();
+        if (line != null) {
+            line.removeAllChangeListeners();
+            getQueryRealmInstance().executeTransaction(db -> line.deleteFromRealm());
+        }
+    }
+
+    Observable<List<OrderLineRealm>> getOrderLinesList(String orderId) {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<OrderLineRealm> qAll = curInstance
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", orderId)
+                .sort("item.artNumber");
+        return getListObservable(curInstance, qAll);
+    }
+
+    void updateOrderStatus(String orderId, int orderStatus) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = getOrderById(orderId);
+        curInstance.executeTransaction(db -> order.setStatus(orderStatus));
+        closeQueryInstance(curInstance);
+    }
+
+    void clearOrderLines(String orderId) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = getOrderById(orderId);
+        if (order!=null && !order.getLines().isEmpty()){
+            //order.getLines().removeAllChangeListeners();
+            curInstance.executeTransaction(db -> order.getLines().deleteAllFromRealm());
+        }
+        closeQueryInstance(curInstance);
+    }
+
+    OrderRealm getCartForCustomer(String customerId) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm result = curInstance.where(OrderRealm.class)
+                .equalTo("customer.customerId", customerId)
+                .equalTo("status", ConstantManager.ORDER_STATUS_CART)
+                .findFirst();
+        if (result == null){
+            CustomerRealm customer = getCustomerById(customerId);
+            if (customer != null) {
+                OrderRealm tmp = new OrderRealm(customer);
+                curInstance.executeTransaction(db -> db.insertOrUpdate(tmp));
+                result = getCartForCustomer(customerId);
+            }
+        }
+        return result;
+    }
+
+    void updateOrderComment(String orderId, String comment) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = getOrderById(orderId);
+        curInstance.executeTransaction(db -> order.setComments(comment));
+        closeQueryInstance(curInstance);
+    }
+
+    void updateOrderPayment(String orderId, int payment) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = getOrderById(orderId);
+        curInstance.executeTransaction(db -> order.setPayment(payment));
+        closeQueryInstance(curInstance);
+    }
+
+    void addItemToCart(String orderId, String itemId, float newQty, float newPrice) {
+        Realm curInstance = getQueryRealmInstance();
+        OrderLineRealm line = curInstance
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", orderId)
+                .equalTo("item.itemId", itemId)
+                .findFirst();
+        if (line == null){
+            OrderRealm order = getOrderById(orderId);
+            ItemRealm item = getItemById(itemId);
+            if (order != null && item != null) {
+                OrderLineRealm tmpLine = new OrderLineRealm(order, item, newQty, newPrice);
+                curInstance.executeTransaction(db->db.insertOrUpdate(tmpLine));
+            }
+        }else{
+            curInstance.executeTransaction(db->{
+                line.setQuantity(line.getQuantity()+newQty);
+                line.setPrice(newPrice);
+            });
+        }
+        closeQueryInstance(curInstance);
+    }
+
+    OrderRealm getOrderById(String orderId) {
+        Realm curInstance = getQueryRealmInstance();
+
+        OrderRealm res = curInstance
+                .where(OrderRealm.class)
+                .equalTo("id", orderId)
+                .findFirst();
+        if (!isUIThread() && res!=null){
+            res = curInstance.copyFromRealm(res);
+            closeQueryInstance(curInstance);
+        }
+
+        return res;
+    }
+
+
+    void saveOrderToRealm(OrderRes orderRes, boolean createOnly) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Realm curInstance = Realm.getDefaultInstance();
+        Realm curInstance = getQueryRealmInstance();
         curInstance.refresh();
+
 
         RealmResults<OrderRealm> diffOrders = curInstance.where(OrderRealm.class).equalTo("external_id", orderRes.getId()).notEqualTo("id", orderRes.getId()).findAll();
         RealmResults<OrderLineRealm> diffOrderLines = curInstance.where(OrderLineRealm.class).equalTo("order.external_id", orderRes.getId()).notEqualTo("order.id", orderRes.getId()).findAll();
 
         CustomerRealm mCustomer = curInstance.where(CustomerRealm.class).equalTo("customerId", orderRes.getCustomerId()).findFirst();
         if (mCustomer == null){
-            curInstance.close();
+            closeQueryInstance(curInstance);
             return;
         }
         Date orderDate;
         Date deliveryDate;
         try{
-             orderDate = sdf.parse(orderRes.getDate());
+            orderDate = sdf.parse(orderRes.getDate());
         } catch (ParseException e) {
             orderDate = Calendar.getInstance().getTime();
         }
@@ -704,12 +819,21 @@ public class RealmManager {
                 orderRes.getComments()
         );
 
+
+        if (createOnly){
+            if (curInstance.where(OrderRealm.class).equalTo("id", orderRes.getId()).or().equalTo("external_id", orderRes.getId()).findFirst() == null) {
+                curInstance.executeTransaction(db-> db.insertOrUpdate(newOrder));
+            }
+            closeQueryInstance(curInstance);
+            return;
+        }
+
         RealmList<OrderLineRealm> lines = new RealmList<>();
         if (orderRes.getLines() != null) {
             for (OrderLineRes line : orderRes.getLines()){
                 ItemRealm mItem = curInstance.where(ItemRealm.class).equalTo("itemId", line.getItemId()).findFirst();
                 if (mItem == null) {
-                    mItem = new ItemRealm(line.getItemId(),line.getItemName(),line.getItemArticle());
+                    mItem = new ItemRealm(line.getItemId(),line.getItemName(),line.getItemArticle(), null);
                 }
                 lines.add(new OrderLineRealm(newOrder, mItem, line.getQuantity(), line.getPrice()));
             }
@@ -724,11 +848,13 @@ public class RealmManager {
             db.insertOrUpdate(lines);
         });
 
-        curInstance.close();
+        closeQueryInstance(curInstance);
     }
 
-    public void deleteOrder(String orderId) {
-        Realm curInstance = Realm.getDefaultInstance();
+
+
+    void deleteOrderFromRealm(String orderId) {
+        Realm curInstance = getQueryRealmInstance();
         OrderRealm tmpOrder = curInstance.where(OrderRealm.class).equalTo("id",orderId).findFirst();
         if (tmpOrder == null) {
             return;
@@ -743,75 +869,286 @@ public class RealmManager {
             lines.deleteAllFromRealm();
             tmpOrder.deleteFromRealm();
         });
-        curInstance.close();
+        closeQueryInstance(curInstance);
     }
 
-    public RealmResults<OrderRealm> getOrdersQuery() {
-        return getQueryRealmInstance()
-                .where(OrderRealm.class)
-                .sort("status", Sort.ASCENDING, "date", Sort.DESCENDING)
-                .findAll();
-    }
 
-    public Observable<OrderRealm> getOrdersToSend(String filter) {
-        RealmQuery<OrderRealm> query = Realm.getDefaultInstance()
+    Observable<OrderRealm> getOrdersToSend(String filter) {
+        Realm curInst = getQueryRealmInstance();
+        RealmQuery<OrderRealm> query = curInst
                 .where(OrderRealm.class)
                 .equalTo("status", ConstantManager.ORDER_STATUS_IN_PROGRESS);
         if (!filter.isEmpty()) {
             query = query.equalTo("id", filter);
         }
-        //List<OrderRealm> res = getQueryRealmInstance().copyFromRealm(query.findAll());
-        RealmResults<OrderRealm> res = query.findAll();
+        List<OrderRealm> res = curInst.copyFromRealm(query.findAll());
+        closeQueryInstance(curInst);
         return Observable.fromIterable(res);
     }
 
-    public Observable<NoteRealm> getNotesToSend(String filter) {
-        RealmQuery<NoteRealm> query = Realm.getDefaultInstance()
-                .where(NoteRealm.class)
-                .equalTo("externalId", "");
-        if (!filter.isEmpty()) {
-            query = query.equalTo("customer.customerId", filter);
+    //endregion ====================  Orders  =========================
+
+
+
+    //region =======================  Item Groups  =========================
+
+    Observable<List<GoodsGroupRealm>> getGroupList(final String parentId, String brand) {
+
+        Realm curInstance = getQueryRealmInstance();
+
+        RealmQuery<GoodsGroupRealm> resQuery;
+        if (parentId == null || parentId.isEmpty()) {
+            resQuery = curInstance
+                    .where(GoodsGroupRealm.class)
+                    .isNull("parent");
+        } else {
+            resQuery = curInstance
+                    .where(GoodsGroupRealm.class)
+                    .equalTo("parent.groupId", parentId);
         }
-        //List<OrderRealm> res = getQueryRealmInstance().copyFromRealm(query.findAll());
-        RealmResults<NoteRealm> res = query.findAll();
-        return Observable.fromIterable(res);
+
+        if (brand != null && !brand.isEmpty()) {
+            if (parentId == null || parentId.isEmpty()) {
+                resQuery.equalTo("subGroups.items.brand.name", brand);
+            }else {
+                resQuery.equalTo("items.brand.name", brand);
+            }
+            resQuery.distinct("groupId");
+        }
+
+        resQuery.sort("name", Sort.ASCENDING);
+
+        return getListObservable(curInstance, resQuery);
     }
 
-    public void updateNoteExternalId(NoteRealm note, String newId) {
-        Realm curInstance = Realm.getDefaultInstance();
-        curInstance.executeTransaction(db-> note.setExternalId(newId));
-        curInstance.close();
 
-    }
+    void saveGoodGroupToRealm(GoodGroupRes groupRes, boolean createOnly) {
+        Realm curInstance = getQueryRealmInstance();
 
-    public NoteRealm getCustomerNoteById(String mId) {
-        return Realm.getDefaultInstance().where(NoteRealm.class).equalTo("noteId", mId).findFirst();
-    }
+        if (createOnly){
+            if (curInstance.where(GoodsGroupRealm.class).equalTo("groupId", groupRes.getId()).findFirst() == null) {
+                curInstance.executeTransaction(db -> db.insertOrUpdate(new GoodsGroupRealm(groupRes.getId(), groupRes.getName())));
+            }
+            closeQueryInstance(curInstance);
+            return;
+        }
 
-    public Float getCustomerDiscount(CustomerRealm customer, ItemRealm item) {
-        //try find discount for item
-        CustomerDiscountRealm discRealm = getQueryRealmInstance()
-                .where(CustomerDiscountRealm.class)
-                .equalTo("customer.customerId", customer.getCustomerId())
-                .equalTo("discountType", ConstantManager.DISCOUNT_TYPE_ITEM)
-                .equalTo("item.itemId", item.getItemId())
-                .findFirst();
-        if (discRealm == null && item.getCategory()!= null){
-            //no... try find discount for category
-            discRealm = getQueryRealmInstance()
-                    .where(CustomerDiscountRealm.class)
-                    .equalTo("customer.customerId", customer.getCustomerId())
-                    .equalTo("discountType", ConstantManager.DISCOUNT_TYPE_CATEGORY)
-                    .equalTo("category.categoryId", item.getCategory().getCategoryId())
+        GoodsGroupRealm mParent=null;
+        if (groupRes.getParent() != null && !groupRes.getParent().isEmpty()) {
+            mParent = curInstance
+                    .where(GoodsGroupRealm.class)
+                    .equalTo("groupId", groupRes.getParent())
                     .findFirst();
+            if (mParent == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(groupRes.getParent(),"no_name")));
+                mParent = curInstance
+                        .where(GoodsGroupRealm.class)
+                        .equalTo("groupId", groupRes.getParent())
+                        .findFirst();
+            }
         }
 
-        return discRealm==null ? 0f : discRealm.getPercent();
+        String mImageURL = "";
+        if (groupRes.getImage() != null) {
+            mImageURL = UiHelper.saveImageFromBase64(groupRes.getImage(), groupRes.getId());
+        }
+
+
+        GoodsGroupRealm newGroup = new GoodsGroupRealm(groupRes.getId(), groupRes.getName(), mParent, mImageURL);
+        curInstance.executeTransaction(db -> db.insertOrUpdate(newGroup));
+        closeQueryInstance(curInstance);
     }
 
-    public RealmResults<BrandsRealm> getBrands() {
-        return getQueryRealmInstance().where(BrandsRealm.class).findAll();
+    GoodsGroupRealm getGroupById(String groupId) {
+        Realm curInstance = getQueryRealmInstance();
+        GoodsGroupRealm result = curInstance.where(GoodsGroupRealm.class).equalTo("groupId", groupId).findFirst();
+        if (result != null) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
     }
+
+    void deleteGoodsGroupFromRealm(String id) {
+        Realm curInstance = getQueryRealmInstance();
+
+        List<GoodsGroupRealm> subs = curInstance.copyFromRealm(curInstance.where(GoodsGroupRealm.class).equalTo("parent.groupId", id).findAll());
+        for (GoodsGroupRealm sub : subs){
+            deleteGoodsGroupFromRealm(sub.getGroupId());
+        }
+
+        curInstance = getQueryRealmInstance();
+        List<ItemRealm> items = curInstance.copyFromRealm(curInstance.where(ItemRealm.class).equalTo("group.groupId", id).findAll());
+        for (ItemRealm item : items){
+            deleteGoodItemFromRealm(item.getItemId());
+        }
+
+        curInstance = getQueryRealmInstance();
+
+        GoodsGroupRealm group = curInstance.where(GoodsGroupRealm.class).equalTo("groupId", id).findFirst();
+        if (group != null && group.isValid()) {
+            group.removeAllChangeListeners();
+            curInstance.executeTransaction(db->group.deleteFromRealm());
+        }
+
+        closeQueryInstance(curInstance);
+    }
+
+
+
+    //endregion ====================  Item Groups  =========================
+
+
+    //region =======================  Items  =========================
+
+    Observable<List<ItemRealm>> getItemList(String parentId, String filter, String brand, String categoryId) {
+        Realm curInstance = getQueryRealmInstance();
+
+        RealmQuery<ItemRealm> resQuery = curInstance.where(ItemRealm.class);
+        if (parentId != null && !parentId.isEmpty()) {
+            GoodsGroupRealm parent = getGroupById(parentId);
+            if(parent.getParent() == null){
+                resQuery.equalTo("group.parent.groupId", parentId);
+            }else{
+                resQuery.equalTo("group.groupId", parentId);
+            }
+        }
+        if (filter != null && !filter.isEmpty()){
+            resQuery.contains("index", filter.toLowerCase());
+        }
+        if (brand != null && !brand.isEmpty()){
+            resQuery.equalTo("brand.name", brand);
+        }
+        if (categoryId != null && !categoryId.isEmpty()){
+            resQuery.equalTo("category.categoryId", categoryId);
+        }
+        resQuery.isNotNull("group");
+        resQuery.sort("name", Sort.ASCENDING);
+
+
+        return getListObservable(curInstance, resQuery);
+    }
+
+    void saveGoodItemToRealm(GoodItemRes goodItemRes, boolean createOnly) {
+        Realm curInstance = getQueryRealmInstance();
+        curInstance.refresh();
+
+        if (createOnly){
+            if (curInstance.where(ItemRealm.class).equalTo("itemId", goodItemRes.getId()).findFirst() == null) {
+                curInstance.executeTransaction(db -> db.insertOrUpdate(new ItemRealm(goodItemRes.getId(), goodItemRes.getName(), goodItemRes.getName(), null)));
+            }
+            closeQueryInstance(curInstance);
+            return;
+        }
+
+
+        GoodsGroupRealm mParent=null;
+        if (goodItemRes.getGroupId() != null && !goodItemRes.getGroupId().isEmpty()) {
+            mParent = curInstance
+                    .where(GoodsGroupRealm.class)
+                    .equalTo("groupId", goodItemRes.getGroupId())
+                    .findFirst();
+            if (mParent == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsGroupRealm(goodItemRes.getGroupId(),"no_name",null,null)));
+                mParent = curInstance
+                        .where(GoodsGroupRealm.class)
+                        .equalTo("groupId", goodItemRes.getGroupId())
+                        .findFirst();
+            }
+        }
+
+        BrandsRealm mBrand = null;
+        if (goodItemRes.getBrand() != null && goodItemRes.getBrand().getId() != null && !goodItemRes.getBrand().getId().isEmpty()) {
+            mBrand = curInstance
+                    .where(BrandsRealm.class)
+                    .equalTo("brandId", goodItemRes.getBrand().getId())
+                    .findFirst();
+            if (mBrand == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new BrandsRealm(goodItemRes.getBrand().getId(),goodItemRes.getBrand().getName(),null)));
+                mBrand = curInstance
+                        .where(BrandsRealm.class)
+                        .equalTo("brandId", goodItemRes.getBrand().getId())
+                        .findFirst();
+            }
+        }
+
+        GoodsCategoryRealm mCat = null;
+        if (goodItemRes.getCategory() != null && goodItemRes.getCategory().getId() != null && !goodItemRes.getCategory().getId().isEmpty()) {
+            mCat = curInstance
+                    .where(GoodsCategoryRealm.class)
+                    .equalTo("categoryId", goodItemRes.getCategory().getId())
+                    .findFirst();
+            if (mCat == null){
+                curInstance.executeTransaction(db->db.insertOrUpdate(new GoodsCategoryRealm(goodItemRes.getCategory().getId(),goodItemRes.getCategory().getName(),null)));
+                mCat = curInstance
+                        .where(GoodsCategoryRealm.class)
+                        .equalTo("categoryId", goodItemRes.getCategory().getId())
+                        .findFirst();
+            }
+        }
+
+        ItemRealm  newItem = new ItemRealm(
+                goodItemRes.getId(),
+                goodItemRes.getName(),
+                goodItemRes.getArticle(),
+                goodItemRes.getPrice() != null ? goodItemRes.getPrice().getBase() : 0f,
+                goodItemRes.getPrice() != null ? goodItemRes.getPrice().getMin() : 0f,
+                goodItemRes.getRest() != null ? goodItemRes.getRest().getStore() : 0f,
+                goodItemRes.getRest() != null ? goodItemRes.getRest().getDistribution() : 0f,
+                goodItemRes.getRest() != null ? goodItemRes.getRest().getOfficial() : 0f,
+                mCat,
+                mParent,
+                mBrand
+        );
+        curInstance.executeTransaction(db -> db.insertOrUpdate(newItem));
+        closeQueryInstance(curInstance);
+
+    }
+
+
+    ItemRealm getItemById(String itemId) {
+        Realm curInstance = getQueryRealmInstance();
+        ItemRealm result = curInstance.where(ItemRealm.class).equalTo("itemId", itemId).findFirst();
+        if (result != null) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    Observable<List<BrandsRealm>> getAllBrands() {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<BrandsRealm> qAll = curInstance.where(BrandsRealm.class);
+        return getListObservable(curInstance, qAll);
+    }
+
+
+    void deleteGoodItemFromRealm(String id) {
+        Realm curInstance = getQueryRealmInstance();
+
+        boolean safeDelete = (curInstance.where(CustomerDiscountRealm.class).equalTo("item.itemId", id).findFirst() == null)
+                           && (curInstance.where(OrderLineRealm.class).equalTo("item.itemId", id).findFirst() == null);
+
+        ItemRealm item = curInstance.where(ItemRealm.class).equalTo("itemId", id).findFirst();
+        if (item!=null && item.isValid()) {
+            if (safeDelete) {
+                item.removeAllChangeListeners();
+                curInstance.executeTransaction(db -> item.deleteFromRealm());
+            } else {
+                item.setGroup(null);
+            }
+        }
+    }
+
+    //endregion ====================  Items  =========================
+
+
+
+
+
+
+
+
 }
 
 

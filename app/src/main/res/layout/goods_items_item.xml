@@ -22,32 +22,20 @@
         tools:text="88890"
         />
 
-    <TextView
-        android:id="@+id/good_brand_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:paddingTop="@dimen/good_list_margin_half"
-        android:textColor="@color/color_black"
-        android:fontFamily="@string/roboto_condensed"
-        android:textSize="12sp"
-        tools:text="Sokol TM"
-        />
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/good_rests"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:layout_toLeftOf="@+id/good_brand_text"
-        android:layout_toStartOf="@+id/good_brand_text"
         android:layout_toRightOf="@+id/good_article_text"
         android:layout_toEndOf="@+id/good_article_text"
         android:orientation="horizontal"
         android:paddingTop="@dimen/good_list_margin_half"
+        android:paddingLeft="@dimen/good_list_margin"
         android:paddingStart="@dimen/good_list_margin"
         android:paddingEnd="@dimen/good_list_margin"
+        android:paddingRight="@dimen/good_list_margin"
         >
         <TextView
             android:layout_width="wrap_content"
@@ -118,6 +106,23 @@
             />
 
     </LinearLayout>
+    <TextView
+        android:id="@+id/good_brand_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/good_rests"
+        android:layout_toEndOf="@+id/good_rests"
+        android:paddingTop="@dimen/good_list_margin_half"
+        android:textColor="@color/color_black"
+        android:fontFamily="@string/roboto_condensed"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:gravity="end"
+        tools:text="Sokol TM"
+         />
     <LinearLayout
         android:id="@+id/price_value_group"
         android:layout_width="wrap_content"

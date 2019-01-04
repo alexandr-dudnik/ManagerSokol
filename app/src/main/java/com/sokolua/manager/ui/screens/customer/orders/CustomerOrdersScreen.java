@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
@@ -22,8 +23,6 @@ import javax.inject.Inject;
 
 import dagger.Provides;
 import flow.Flow;
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_customer_orders)
@@ -79,8 +78,6 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
     public class Presenter extends AbstractPresenter<CustomerOrdersView, CustomerModel> {
         @Inject
         protected CustomerRealm mCustomer;
-        private RealmChangeListener<RealmResults<OrderPlanRealm>> mPlanListener;
-        private RealmChangeListener<RealmResults<OrderRealm>> mOrderListener;
 
 
         public Presenter() {
@@ -99,35 +96,41 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
 
             //Plan realm adapter
             ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderPlanRealm> planViewAndHolderFactory = (parent, pViewType) -> {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_plan_item, parent, false);
+                View view;
+                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_EMPTY){
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+                } else {
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_plan_item, parent, false);
+                }
+
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new CustomerPlanViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mPlanAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerPlan(mCustomer.getCustomerId()), planViewAndHolderFactory);
+            ReactiveRecyclerAdapter mPlanAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerPlan(mCustomer.getCustomerId()), planViewAndHolderFactory, true);
             getView().setPlanAdapter(mPlanAdapter);
-            mPlanListener = orderPlanRealms -> mPlanAdapter.refreshList(mModel.getCustomerPlan(mCustomer.getCustomerId()));
-            mCustomer.getPlan().addChangeListener(mPlanListener);
 
             //Orders realm adapter
             ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> orderViewAndHolderFactory = (parent, pViewType) -> {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_order_item, parent, false);
+                View view;
+                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_EMPTY){
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+                } else {
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_order_item, parent, false);
+                }
+
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
                         new CustomerOrderViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mOrderAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerOrders(mCustomer.getCustomerId()), orderViewAndHolderFactory);
+            ReactiveRecyclerAdapter mOrderAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerOrders(mCustomer.getCustomerId()), orderViewAndHolderFactory, true);
             getView().setOrdersAdapter(mOrderAdapter);
-            mOrderListener = ordersRealms -> mOrderAdapter.refreshList(mModel.getCustomerOrders(mCustomer.getCustomerId()));
-            mCustomer.getOrders().addChangeListener(mOrderListener);
         }
 
         @Override
         public void dropView(CustomerOrdersView view) {
-            mCustomer.getPlan().removeChangeListener(mPlanListener);
-            mCustomer.getOrders().removeChangeListener(mOrderListener);
 
             super.dropView(view);
         }
@@ -138,9 +141,9 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
         }
 
 
-        public void openOrder(OrderRealm order) {
+        public void openOrder(String orderId) {
             if (getRootView() != null) {
-                Flow.get(getView()).set(new OrderScreen(order));
+                Flow.get(getView()).set(new OrderScreen(orderId));
             }
         }
 

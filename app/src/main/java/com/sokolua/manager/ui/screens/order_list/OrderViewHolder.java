@@ -99,7 +99,7 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
 
     @OnClick(R.id.order_placeholder)
     void onClick(View view){
-        mPresenter.openOrder(currentItem);
+        mPresenter.openOrder(currentItem.getId());
     }
 
 }

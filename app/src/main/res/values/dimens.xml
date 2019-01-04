@@ -41,4 +41,5 @@
     <dimen name="goods_cart_image_size">32dp</dimen>
     <dimen name="customer_routes_margin">8dp</dimen>
     <dimen name="settings_padding">8dp</dimen>
+    <dimen name="list_item_margin">8dp</dimen>
 </resources>

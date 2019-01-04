@@ -15,8 +15,10 @@ public class OrderRes {
     private List<OrderLineRes> lines;
     private String currency;
     private String comments;
+    private Boolean active;
 
-    public OrderRes(String id, String date, String delivery, String customer_id, String delivered, String payment, List<OrderLineRes> lines, String currency, String comments) {
+
+    public OrderRes(String id, String date, String delivery, String customer_id, String delivered, String payment, List<OrderLineRes> lines, String currency, String comments, Boolean active) {
         this.id = id;
         this.date = date;
         this.delivery = delivery;
@@ -26,6 +28,7 @@ public class OrderRes {
         this.lines = lines;
         this.currency = currency;
         this.comments = comments;
+        this.active = active;
     }
 
     public String getId() {
@@ -62,5 +65,9 @@ public class OrderRes {
 
     public String getComments() {
         return comments;
+    }
+
+    public Boolean isActive() {
+        return active==null?false:active;
     }
 }

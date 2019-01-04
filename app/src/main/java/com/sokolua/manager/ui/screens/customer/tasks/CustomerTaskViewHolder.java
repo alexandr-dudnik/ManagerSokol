@@ -10,6 +10,7 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
+import com.sokolua.manager.utils.App;
 
 import javax.inject.Inject;
 
@@ -38,6 +39,9 @@ public class CustomerTaskViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     @Nullable
     @BindView(R.id.task_comment_edit)
     EditText mEditComment;
+    @Nullable
+    @BindView(R.id.empty_list_text)
+    TextView mEmptyText;
 
     @Inject
     CustomerTasksScreen.Presenter mPresenter;
@@ -49,6 +53,10 @@ public class CustomerTaskViewHolder extends ReactiveRecyclerAdapter.ReactiveView
         super(itemView);
         DaggerService.<CustomerTasksScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
+
+        if (mEmptyText != null){
+            mEmptyText.setText(App.getStringRes(R.string.customer_task_no_tasks));
+        }
     }
 
 

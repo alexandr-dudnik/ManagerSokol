@@ -91,10 +91,16 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             viewAndHolderFactory = (parent, pViewType) -> {
                 View view;
-                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_HEADER) {
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_header, parent, false);
-                }else{
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_item, parent, false);
+                switch (pViewType){
+                    case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
+                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_header, parent, false);
+                        break;
+                    case ConstantManager.RECYCLER_VIEW_TYPE_ITEM:
+                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_item, parent, false);
+                        break;
+                    default:
+                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+
                 }
                 return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
                         view,
@@ -102,7 +108,7 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
                 );
             };
 
-            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory);
+            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory, true);
             getView().setAdapter(reactiveRecyclerAdapter);
         }
 

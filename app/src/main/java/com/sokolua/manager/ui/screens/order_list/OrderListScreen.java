@@ -19,8 +19,7 @@ import com.sokolua.manager.utils.App;
 
 import dagger.Provides;
 import flow.Flow;
-import io.realm.OrderedRealmCollectionChangeListener;
-import io.realm.RealmResults;
+import io.reactivex.Observable;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order_list)
@@ -71,8 +70,7 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
     public class Presenter extends AbstractPresenter<OrderListView, OrderListModel> {
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> viewAndHolderFactory;
-        OrderedRealmCollectionChangeListener<RealmResults<OrderRealm>> orderChangeListener;
-        private RealmResults<OrderRealm> mQR;
+        private ReactiveRecyclerAdapter ordersAdapter;
 
         public Presenter() {
         }
@@ -95,25 +93,14 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
                 );
             };
 
-
-            orderChangeListener = (orderRealms, changeSet) -> {
-                if (orderRealms.isValid() && orderRealms.isLoaded()) {
-                    setOrderListFilter();
-                }
-            };
-
-
-            mQR = mModel.getOrdersQuery();
-            mQR.addChangeListener(orderChangeListener);
+            ordersAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory, false);
+            getView().setAdapter(ordersAdapter);
 
             setOrderListFilter();
         }
 
         public void setOrderListFilter(){
-
-            ReactiveRecyclerAdapter reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(mModel.getOrderList(), viewAndHolderFactory);
-
-            getView().setAdapter(reactiveRecyclerAdapter);
+            ordersAdapter.refreshList(mModel.getOrderList());
         }
 
         @Override
@@ -140,12 +127,11 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         @Override
         public void dropView(OrderListView view) {
-            mQR.removeChangeListener(orderChangeListener);
             super.dropView(view);
         }
 
-        public void openOrder(OrderRealm order) {
-            Flow.get(getView()).set(new OrderScreen(order));
+        public void openOrder(String orderId) {
+            Flow.get(getView()).set(new OrderScreen(orderId));
         }
     }
 

@@ -9,7 +9,7 @@ import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
 public class PreferencesManager {
-    private static final String PRICE_LAST_UPDATE_KEY = "pref_last_update";
+    private static final String LAST_UPDATE_KEY = "pref_last_update";
     private static final String SERVER_ADDRESS_STRING = "pref_server_address";
     private static final String AUTO_SYNCHRONIZE = "auto_synchronize";
     private static final String USER_NAME = "user_name";
@@ -26,18 +26,28 @@ public class PreferencesManager {
     }
 
 
-    public String getLastProductUpdate(){
-        // TODO: 23.03.2017 uncomment this
-        //return mSharedPreferences.getString(PRODUCT_LAST_UPDATE_KEY, "Thu, 01 Jan 1970 00:00:00 GMT");
-        return "Thu, 01 Jan 1970 00:00:00 GMT";
+    public String getLastUpdate(String module){
+        return mSharedPreferences.getString(LAST_UPDATE_KEY+"_"+module, "1900-01-01 00:00:00");
     }
 
-    public void saveLastProductUpdate(String lastModified){
+    public void saveLastUpdate(String module, String lastModified){
         SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(PRICE_LAST_UPDATE_KEY, lastModified);
+        spEditor.putString(LAST_UPDATE_KEY+"_"+module, lastModified);
         spEditor.apply();
     }
 
+    public void clearLastUpdate() {
+        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
+        for (String key : mSharedPreferences.getAll().keySet()) {
+            if (key.startsWith(LAST_UPDATE_KEY)){
+                spEditor.remove(key);
+            }
+        }
+        spEditor.apply();
+    }
+
+    
+    
     public String getServerAddress() {
         return mSharedPreferences.getString(SERVER_ADDRESS_STRING, AppConfig.API_SERVERS[0]);
     }
@@ -103,6 +113,5 @@ public class PreferencesManager {
         spEditor.putString(USER_MANAGER_NAME, managerName );
         spEditor.apply();
     }
-
 
 }

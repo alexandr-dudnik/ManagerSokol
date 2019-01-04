@@ -9,6 +9,7 @@ import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 @Keep
+
 public class BrandsRealm extends RealmObject implements Serializable{
     @PrimaryKey
     @Required

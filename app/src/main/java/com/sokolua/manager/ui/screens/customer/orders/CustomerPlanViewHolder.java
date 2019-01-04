@@ -1,5 +1,6 @@
 package com.sokolua.manager.ui.screens.customer.orders;
 
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,10 +19,10 @@ import butterknife.ButterKnife;
 
 public class CustomerPlanViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<OrderPlanRealm> {
 
-    @BindView(R.id.plan_group_text)
-    TextView mGroupText;
-    @BindView(R.id.plan_value_text)
-    TextView mValueText;
+    @Nullable    @BindView(R.id.plan_group_text)     TextView mGroupText;
+    @Nullable    @BindView(R.id.plan_value_text)     TextView mValueText;
+    @Nullable    @BindView(R.id.empty_list_text)     TextView mEmptyText;
+
 
     @Inject
     CustomerOrdersScreen.Presenter mPresenter;
@@ -30,6 +31,10 @@ public class CustomerPlanViewHolder extends ReactiveRecyclerAdapter.ReactiveView
         super(itemView);
         DaggerService.<CustomerOrdersScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
+
+        if (mEmptyText != null){
+            mEmptyText.setText(App.getStringRes(R.string.customer_plan_no_plans));
+        }
     }
 
 
@@ -37,8 +42,13 @@ public class CustomerPlanViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     public void setCurrentItem(OrderPlanRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-        mGroupText.setText(currentItem.getCategory().getName());
-        mValueText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getAmount()));
+        if (mGroupText != null) {
+            mGroupText.setText(currentItem.getCategory().getName());
+        }
+
+        if (mValueText != null) {
+            mValueText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getAmount()));
+        }
 
     }
 

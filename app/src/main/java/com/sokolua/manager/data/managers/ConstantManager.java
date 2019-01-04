@@ -20,6 +20,7 @@ public class ConstantManager {
 
     public static final int RECYCLER_VIEW_TYPE_HEADER = 1;
     public static final int RECYCLER_VIEW_TYPE_ITEM = 0;
+    public static final int RECYCLER_VIEW_TYPE_EMPTY = -1;
 
     public static final int MENU_ITEM_TYPE_ITEM = 0;
     public static final int MENU_ITEM_TYPE_ACTION = 1;
