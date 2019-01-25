@@ -8,7 +8,7 @@
               android:orientation="vertical"
               tools:showIn="@layout/screen_auth">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/server_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         android:textColor="@color/color_black"
         android:textSize="18sp" />
 
-    <Spinner
+    <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/server_name"
         android:layout_width="match_parent"
         android:layout_height="24dp"
@@ -27,7 +27,7 @@
         android:layout_marginRight="@dimen/login_form_padding"
         />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/login_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         >
 
-        <android.support.design.widget.TextInputEditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/user_name"
             android:layout_width="match_parent"
             android:layout_height="24dp"
@@ -58,7 +58,7 @@
         app:passwordToggleEnabled="true"
         >
 
-        <android.support.design.widget.TextInputEditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/user_password"
             android:layout_width="match_parent"
             android:layout_height="24dp"
@@ -69,7 +69,7 @@
             style="@style/password_input_text" />
     </android.support.design.widget.TextInputLayout>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/login_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

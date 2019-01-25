@@ -19,7 +19,7 @@ public class UpdateGoodItemJob extends Job {
             .requireNetwork()
             .persist()
             .singleInstanceBy(goodItemId)
-            //.groupBy("GoodItems")
+            .groupBy("GoodItems")
         );
 
         this.goodItemId = goodItemId;

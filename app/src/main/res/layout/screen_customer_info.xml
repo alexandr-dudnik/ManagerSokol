@@ -24,14 +24,14 @@
                 tools:itemCount="5"
                 tools:listitem="@layout/customer_info_data_item" />
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/customer_notes_header"
                 style="@style/customer_list_header"
                 android:layout_below="@id/customer_info_list"
                 android:layout_margin="@dimen/customer_info_margin"
                 android:text="@string/customer_info_notes" />
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/note_add_image"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/customer_info_icon"

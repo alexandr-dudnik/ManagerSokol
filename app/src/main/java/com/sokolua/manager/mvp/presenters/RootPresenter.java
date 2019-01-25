@@ -61,14 +61,16 @@ public class RootPresenter extends Presenter<IRootView> {
     protected void onLoad(Bundle savedInstanceState) {
         super.onLoad(savedInstanceState);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && getView() != null) {
             getView().setBottomBarVisibility(savedInstanceState.getBoolean(BOTTOM_BAR_VISIBILITY_KEY, true));
         }
     }
 
     @Override
     protected void onSave(Bundle outState) {
-        outState.putBoolean(BOTTOM_BAR_VISIBILITY_KEY, getView().getBottomBarVisibility());
+        if (getView() != null) {
+            outState.putBoolean(BOTTOM_BAR_VISIBILITY_KEY, getView().getBottomBarVisibility());
+        }
 
         super.onSave(outState);
     }
@@ -88,14 +90,14 @@ public class RootPresenter extends Presenter<IRootView> {
     public void doUserLogin(String userName, String password) {
         AbstractView scr = (AbstractView) getView().getCurrentScreen();
         if (!mAuthModel.isUserNameValid(userName)) {
-            if (scr != null && scr instanceof IAuthView) {
+            if (scr instanceof IAuthView) {
                 ((IAuthView) scr).showInvalidUserName();
             }
             getView().showMessage(App.getStringRes(R.string.error_empty_login));
             return;
         }
         if (!mAuthModel.isPasswordValid(password)) {
-            if (scr != null && scr instanceof IAuthView) {
+            if (scr instanceof IAuthView) {
                 ((IAuthView) scr).showInvalidPassword();
             }
             getView().showMessage(App.getStringRes(R.string.error_bad_password));
@@ -122,7 +124,7 @@ public class RootPresenter extends Presenter<IRootView> {
                             public void onError(Throwable e) {
                                 getView().showError(e);
                                 ((RootActivity) getView()).runOnUiThread(() -> getView().hideLoad());
-                                if (scr != null && scr instanceof IAuthView) {
+                                if (scr instanceof IAuthView) {
                                     ((IAuthView) scr).login_error();
                                 }
                             }
@@ -132,7 +134,9 @@ public class RootPresenter extends Presenter<IRootView> {
                                 ((RootActivity) getView()).runOnUiThread(() -> getView().hideLoad());
                                 if (mAuthModel.isUserAuth()) {
                                     getView().showMessage(App.getStringRes(R.string.message_auth_success));
-                                    Flow.get(scr).replaceHistory(new MainScreen(), Direction.REPLACE);
+                                    if (scr != null) {
+                                        Flow.get(scr).replaceHistory(new MainScreen(), Direction.REPLACE);
+                                    }
                                 }
                             }
                         }

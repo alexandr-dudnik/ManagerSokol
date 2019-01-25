@@ -287,7 +287,7 @@ public class DebugManager {
         
     }
 
-    public static UserRes loginUser(String userName, String password) {
+    static UserRes loginUser(String userName, String password) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Calendar mCal = Calendar.getInstance();
         mCal.setLenient(true);

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         >
 
-        <android.support.design.widget.TextInputEditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/item_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,12 +33,12 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             >
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_base_price_label"
                 android:layout_margin="8dp"/>
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/item_base_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,12 +55,12 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             >
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_discount_label"
                 android:layout_margin="8dp"/>
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/item_discount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         >
 
-        <android.support.design.widget.TextInputEditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/item_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

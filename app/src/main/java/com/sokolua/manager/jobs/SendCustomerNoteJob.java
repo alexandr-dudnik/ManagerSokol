@@ -19,7 +19,7 @@ public class SendCustomerNoteJob extends Job {
             .requireNetwork()
             .persist()
             .singleInstanceBy(noteId)
-            //.groupBy("Customers")
+            .groupBy("Customers")
         );
 
         this.noteId = noteId;

@@ -2,7 +2,6 @@ package com.sokolua.manager.di.modules;
 
 import android.content.Context;
 
-
 import com.sokolua.manager.data.managers.PreferencesManager;
 import com.sokolua.manager.data.managers.RealmManager;
 

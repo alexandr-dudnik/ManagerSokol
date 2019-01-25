@@ -22,7 +22,7 @@
                 android:background="@color/main_background"
                 >
 
-                <ImageView
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/cart_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
 
                     />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/cart_customer_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                     android:textSize="12sp"
                     tools:text="Customer name" />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/cart_currency"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                     android:textSize="12sp"
                     tools:text="UAH" />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/cart_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                     android:textSize="12sp"
                     tools:text="1500.00" />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/cart_amount_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                     android:textColor="@color/color_gray"
                     android:textSize="12sp" />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/cart_items_counter_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                     android:textColor="@color/color_gray"
                     android:textSize="12sp" />
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/cart_items_counter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

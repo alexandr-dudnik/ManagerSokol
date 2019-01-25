@@ -66,7 +66,7 @@ public class UiHelper {
     }
 
     public static String saveImageFromBase64(final String imageSource, String name){
-        File cacheDir = App.getContext().getCacheDir();
+        File cacheDir = App.getContext().getFilesDir();
         String result = cacheDir.getPath() + "/" + name+".png";
         FileOutputStream fos = null;
         try {

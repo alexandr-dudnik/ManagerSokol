@@ -180,13 +180,17 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCancelable(false);
-            mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            if (mProgressDialog.getWindow() != null) {
+                mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
             mProgressDialog.show();
             mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             mProgressDialog.setContentView(R.layout.progress_root);
         } else {
             mProgressDialog.show();
-            mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            if (mProgressDialog.getWindow() != null) {
+                mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            }
             mProgressDialog.setContentView(R.layout.progress_root);
         }
         ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);

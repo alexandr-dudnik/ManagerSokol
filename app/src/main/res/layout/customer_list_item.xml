@@ -6,13 +6,13 @@
                 android:id="@+id/customer_list_item"
     >
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         style="@style/customer_list_icon.exclamation"
         android:id="@+id/exclamation_img"
         app:srcCompat="@drawable/ic_report_problem"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/call_img"
         style="@style/customer_list_icon.call"
         android:layout_alignParentRight="true"
@@ -20,14 +20,14 @@
         app:srcCompat="@drawable/ic_call"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/map_pin_img"
         style="@style/customer_list_icon.map"
         android:layout_toLeftOf="@id/call_img"
         android:layout_toStartOf="@id/call_img"
         app:srcCompat="@drawable/ic_person_pin"/>
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         style="@style/customer_list_item_text"
         android:id="@+id/customer_name_text"
         android:layout_toEndOf="@id/exclamation_img"
