@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
 
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
@@ -34,7 +34,7 @@
 
     </android.support.v7.widget.CardView>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/login_form"
@@ -43,7 +43,7 @@
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_logo_bird"/>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/login_form"

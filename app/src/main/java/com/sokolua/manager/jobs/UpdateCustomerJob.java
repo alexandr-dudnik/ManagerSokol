@@ -19,7 +19,7 @@ public class UpdateCustomerJob extends Job {
             .requireNetwork()
             .persist()
             .singleInstanceBy(customerId)
-            //.groupBy("Customers")
+            .groupBy("Customers")
         );
 
         this.customerId = customerId;

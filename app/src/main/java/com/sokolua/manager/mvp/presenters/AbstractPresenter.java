@@ -26,7 +26,7 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
     @Inject
     protected RootPresenter mRootPresenter;
 
-    protected CompositeDisposable mCompSubs;
+    private CompositeDisposable mCompSubs;
 
 
     @Override

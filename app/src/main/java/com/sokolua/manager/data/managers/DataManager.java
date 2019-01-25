@@ -100,6 +100,7 @@ public class DataManager {
     }
 
 
+
     private void updateLocalDataWithTimer() {
         Observable.interval(AppConfig.JOB_UPDATE_DATA_INTERVAL, TimeUnit.SECONDS) //генерируем последовательность из элдементов каждые 30 сек
                 .filter(aLong -> mPreferencesManager.getAutoSynchronize()) //идем дальше только если интернет есть
@@ -143,10 +144,10 @@ public class DataManager {
         Job jCustomers = new FetchRemoteCustomersJob();
         Job jOrders = new FetchRemoteOrdersJob();
 
-        mJobManager.addJobInBackground(jGroups);
-        mJobManager.addJobInBackground(jItems);
-        mJobManager.addJobInBackground(jCustomers);
-        mJobManager.addJobInBackground(jOrders);
+        try {mJobManager.addJobInBackground(jGroups);}catch (Throwable ignore){}
+        try {mJobManager.addJobInBackground(jItems);}catch (Throwable ignore){}
+        try {mJobManager.addJobInBackground(jCustomers);}catch (Throwable ignore){}
+        try {mJobManager.addJobInBackground(jOrders);}catch (Throwable ignore){}
     }
 
 
@@ -305,7 +306,7 @@ public class DataManager {
                 .flatMap(cust->{
                     mRealmManager.saveCustomerToRealm(cust, true);
                     Job job = new UpdateCustomerJob(cust.getId());
-                    mJobManager.addJobInBackground(job);
+                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     CustomerRealm customer = getCustomerById(cust.getId());
                     if (customer!=null) {
                         return Observable.just(customer);
@@ -363,7 +364,7 @@ public class DataManager {
                 .observeOn(Schedulers.io())
                 .doOnNext(note ->{
                     Job job= new SendCustomerNoteJob(note.getNoteId());
-                    mJobManager.addJobInBackground(job);
+                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     }
                 )
                 .subscribe();
@@ -460,7 +461,7 @@ public class DataManager {
                 .flatMap(order -> {
                     mRealmManager.saveOrderToRealm(order, true);
                     Job job = new UpdateOrderJob(order.getId());
-                    mJobManager.addJobInBackground(job);
+                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     OrderRealm tmpOrder = getOrderById(order.getId());
                     if (tmpOrder != null) {
                         return Observable.just(tmpOrder);
@@ -493,10 +494,11 @@ public class DataManager {
 
     public Observable<OrderRealm> sendSingleOrder(String orderId){
         OrderRealm order = mRealmManager.getOrderById(orderId);
-        if (!order.isValid()){
+        List<OrderLineRealm> lines = mRealmManager.getOrderLines(orderId);
+        if (order==null || !order.isValid()){
             return Observable.empty();
         }
-        return mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), new SendOrderReq(order))
+        return mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), new SendOrderReq(order, lines))
                 .compose(new RestCallTransformer<>())
                 .doOnNext(ids -> {
                     try {
@@ -520,7 +522,7 @@ public class DataManager {
                 .observeOn(Schedulers.io())
                 .doOnNext(order ->{
                         Job job = new SendOrderJob(order.getId());
-                        mJobManager.addJobInBackground(job);
+                        try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     }
                 )
                 .subscribe();
@@ -565,7 +567,7 @@ public class DataManager {
                 .flatMap(group ->{
                     mRealmManager.saveGoodGroupToRealm(group, true);
                     Job job = new UpdateGoodGroupJob(group.getId());
-                    mJobManager.addJobInBackground(job);
+                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     GoodsGroupRealm tmpGroup = getGoodGroupById(group.getId());
                     if (tmpGroup != null) {
                         return Observable.just(tmpGroup);
@@ -624,7 +626,7 @@ public class DataManager {
                 .flatMap(item -> {
                     mRealmManager.saveGoodItemToRealm(item, true); //Save data on disk
                     Job job = new UpdateGoodItemJob(item.getId());
-                    mJobManager.addJobInBackground(job);
+                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     ItemRealm tmpItem = getItemById(item.getId());
                     if (tmpItem != null) {
                         return Observable.just(tmpItem);

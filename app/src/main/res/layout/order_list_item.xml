@@ -8,7 +8,7 @@
     android:layout_marginRight="@dimen/order_list_margin"
     >
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/customer_name_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:textSize="16sp"
         tools:text="Покупатель ЧП" />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/order_status_img"
         android:layout_width="@dimen/customer_order_icon"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         tools:srcCompat="@drawable/ic_cart" />
 
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/order_date_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:textSize="16sp"
         tools:text="12-07-2018" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/order_type_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         tools:text="ЧП" />
 
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/order_currency_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
         android:textSize="12sp"
         tools:text="ГРН" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/order_amount_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
         android:textSize="16sp"
         tools:text="1000.00" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/order_delivery_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
         android:textSize="12sp"
         tools:text="на: 12-07-2018" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/order_comment_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

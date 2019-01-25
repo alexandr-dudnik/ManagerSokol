@@ -19,7 +19,7 @@ public class SendOrderJob extends Job {
             .requireNetwork()
             .persist()
             .singleInstanceBy(orderId)
-            //.groupBy("Orders")
+            .groupBy("Orders")
         );
 
         this.orderId = orderId;

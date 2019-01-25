@@ -28,7 +28,7 @@ public class OrderRealm extends RealmObject implements Serializable{
     private int status;
     private int payment;
     @LinkingObjects("order")
-    private final RealmResults<OrderLineRealm> lines = null;
+    private final RealmResults<OrderLineRealm> lines=null;
     private String currency;
     private String comments;
 
@@ -69,7 +69,7 @@ public class OrderRealm extends RealmObject implements Serializable{
         if (this.status == ConstantManager.ORDER_STATUS_CART){
             return Calendar.getInstance().getTime();
         }
-        return date;
+        return this.date;
     }
 
     public int getStatus() {

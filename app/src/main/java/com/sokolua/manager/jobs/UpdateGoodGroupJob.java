@@ -19,7 +19,7 @@ public class UpdateGoodGroupJob extends Job {
             .requireNetwork()
             .persist()
             .singleInstanceBy(goodGroupId)
-            //.groupBy("GoodGroups")
+            .groupBy("GoodGroups")
         );
 
         this.goodGroupId = goodGroupId;

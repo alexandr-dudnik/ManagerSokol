@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             >
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/order_status_image"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/order_icon"
@@ -29,7 +29,7 @@
                 android:scaleType="fitCenter"
                 tools:srcCompat="@drawable/ic_cart"/>
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/order_date_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -43,7 +43,7 @@
                 android:textSize="20sp"
                 tools:text="20-07-2018"/>
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/order_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -78,7 +78,7 @@
                 android:orientation="vertical"
                 >
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/order_currency_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <Spinner
+                    <android.support.v7.widget.AppCompatSpinner
                         android:id="@+id/order_type_spin"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
                         android:textSize="18sp"
                         android:visibility="gone"/>
 
-                    <TextView
+                    <android.support.v7.widget.AppCompatTextView
                         android:id="@+id/order_type_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
                         android:textSize="18sp"/>
                 </ViewSwitcher>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/order_delivery_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -127,7 +127,7 @@
                     android:textSize="18sp"
                     tools:text="23-07-2018"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/order_amount_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
                 android:orientation="vertical"
                 >
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/order_margin"
@@ -162,7 +162,7 @@
                     android:textColor="@color/color_black"
                     android:textSize="18sp"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/order_margin"
@@ -172,7 +172,7 @@
                     android:textColor="@color/color_black"
                     android:textSize="18sp"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/order_margin"
@@ -184,7 +184,7 @@
                     android:textColor="@color/color_black"
                     android:textSize="18sp"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/order_margin"
@@ -205,7 +205,7 @@
                 android:orientation="horizontal"
                 >
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -215,7 +215,7 @@
                     android:text="@string/order_items_header_article"
                     android:textSize="12sp"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
@@ -224,7 +224,7 @@
                     android:text="@string/order_items_header_name"
                     android:textSize="12sp"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -234,7 +234,7 @@
                     android:text="@string/order_items_header_price"
                     android:textSize="12sp"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -265,7 +265,7 @@
                 android:orientation="horizontal"
                 >
 
-                <ImageView
+                <android.support.v7.widget.AppCompatImageView
                     android:id="@+id/order_items_add_image"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/order_lines_add_image_size"
@@ -277,7 +277,7 @@
             <!-- end Table -->
 
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/order_comment_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -298,7 +298,7 @@
                 android:layout_below="@id/order_comment_title"
                 >
 
-                <EditText
+                <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/order_comment_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -310,7 +310,7 @@
                     android:textStyle="italic"
                     tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero."/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/order_comment_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

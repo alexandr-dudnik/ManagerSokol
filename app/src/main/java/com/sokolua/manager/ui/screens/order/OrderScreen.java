@@ -266,7 +266,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 input.setRawInputType(Configuration.KEYBOARD_12KEY);
 
                 alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
-                    float newValue = Float.parseFloat(input.getText().toString().replace(",","."));
+                    float newValue = 0f;
+                    try{
+                        newValue = Float.parseFloat(input.getText().toString().replace(",","."));
+                    }catch (Throwable ignore){}
                     //check price
                     if (newValue < line.getItem().getLowPrice()) {
                         if (getRootView() != null) {
@@ -295,7 +298,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 input.setRawInputType(Configuration.KEYBOARD_12KEY);
 
                 alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
-                    float newValue = Float.parseFloat(input.getText().toString());
+                    float newValue = 0f;
+                    try {
+                        newValue = Float.parseFloat(input.getText().toString());
+                    }catch (Throwable ignore){}
                     if (newValue == 0f) {
                         mModel.removeOrderItem(currentOrderId, line.getItem().getItemId());
                     } else {

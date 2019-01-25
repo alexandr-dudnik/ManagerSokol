@@ -22,7 +22,7 @@ public class SendOrderReq {
     private String currency;
     private String comments;
 
-    public SendOrderReq(OrderRealm order) {
+    public SendOrderReq(OrderRealm order, List<OrderLineRealm> orderLines) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         this.id = order.getId();
         this.date = sdf.format(order.getDate())+"T00:00:00";
@@ -32,7 +32,7 @@ public class SendOrderReq {
         this.currency = order.getCurrency();
         this.comments = order.getComments();
 
-        for (OrderLineRealm line : order.getLines()){
+        for (OrderLineRealm line : orderLines){
             lines.add(new OrderLineReq(line));
         }
     }
