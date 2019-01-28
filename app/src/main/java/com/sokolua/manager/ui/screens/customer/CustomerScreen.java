@@ -31,6 +31,7 @@ import mortar.MortarScope;
 @Screen(R.layout.screen_customer)
 public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  implements TreeKey {
     private CustomerRealm mCustomer;
+    private String mCustomerId;
 
 
     @Override
@@ -42,12 +43,13 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
     }
 
     public CustomerScreen(String customerId) {
+        mCustomerId = customerId;
         mCustomer = DataManager.getInstance().getCustomerById(customerId);
     }
 
     @Override
     public String getScopeName() {
-        return super.getScopeName()+"_"+mCustomer.getCustomerId();
+        return super.getScopeName()+"_"+mCustomerId;
     }
 
 
@@ -130,12 +132,12 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                     .setTitle(mCustomer.getName())
                     .setTabs(getView().getViewPager())
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.cart_title), R.drawable.ic_cart, item ->{
-                                OrderRealm cart = mModel.getCartForCustomer(mCustomer.getCustomerId());
+                                OrderRealm cart = mModel.getCartForCustomer(mCustomerId);
                                 Flow.get(getView()).set(new OrderScreen(cart.getId()));
                                 return false;
                             } , ConstantManager.MENU_ITEM_TYPE_ACTION))
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
-                        mModel.updateCustomerFromRemote(mCustomer.getCustomerId());
+                        mModel.updateCustomerFromRemote(mCustomerId);
                         return false;
                     } , ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .build();
