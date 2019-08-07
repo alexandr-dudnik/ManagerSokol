@@ -9,7 +9,7 @@
     android:layout_marginRight="@dimen/customer_info_margin"
     >
     <!-- Название -->
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/customer_info_icon"
         style = "@style/customer_info_icon"
         android:layout_alignParentRight="true"
@@ -17,14 +17,14 @@
         android:layout_centerVertical="true"
         tools:src="@drawable/ic_person_pin"
         />
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/customer_info_header"
         style="@style/customer_info_header"
         android:layout_toLeftOf="@id/customer_info_icon"
         android:layout_toStartOf="@id/customer_info_icon"
         tools:text="@string/customer_info_name_header"
         />
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/customer_info_data"
         style="@style/customer_info_item"
         android:layout_below="@id/customer_info_header"

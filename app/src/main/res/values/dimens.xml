@@ -7,6 +7,8 @@
     <dimen name="login_form_corners">15dp</dimen>
     <dimen name="login_form_elevation">10dp</dimen>
     <dimen name="login_form_padding">8dp</dimen>
+    <dimen name="login_form_text_size">18sp</dimen>
+    <dimen name="login_form_fields_height">48dp</dimen>
 
     <!-- Customers list  -->
     <dimen name="cust_list_item_margin">8dp</dimen>
@@ -42,4 +44,7 @@
     <dimen name="customer_routes_margin">8dp</dimen>
     <dimen name="settings_padding">8dp</dimen>
     <dimen name="list_item_margin">8dp</dimen>
+    <dimen name="order_header_text_size">15sp</dimen>
+
+
 </resources>

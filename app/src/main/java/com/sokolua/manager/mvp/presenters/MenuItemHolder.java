@@ -1,7 +1,8 @@
 package com.sokolua.manager.mvp.presenters;
 
-import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
+
+import androidx.appcompat.widget.SearchView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;

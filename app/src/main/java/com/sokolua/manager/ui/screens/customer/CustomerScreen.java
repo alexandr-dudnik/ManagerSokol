@@ -2,7 +2,8 @@ package com.sokolua.manager.ui.screens.customer;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;

@@ -1,15 +1,16 @@
 package com.sokolua.manager.ui.screens.routes;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
@@ -25,7 +26,7 @@ import butterknife.BindViews;
 import butterknife.OnClick;
 
 public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
-    @BindView(R.id.customer_list)  RecyclerView mCustomerList;
+    @BindView(R.id.customer_list)    RecyclerView mCustomerList;
     @BindViews({R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7}) List<AppCompatButton> mButtons;
 
     public RoutesView(@NonNull Context context, @Nullable AttributeSet attrs) {

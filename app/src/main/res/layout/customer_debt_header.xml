@@ -10,13 +10,13 @@
               android:background="@color/color_gray_tint"
     >
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/debt_type_icon"
         android:layout_width="@dimen/customer_debt_icon"
         android:layout_height="@dimen/customer_debt_icon"
         app:srcCompat="@drawable/ic_report_problem"
         />
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/debt_type_text"
         android:layout_height="match_parent"
         android:layout_width="match_parent"

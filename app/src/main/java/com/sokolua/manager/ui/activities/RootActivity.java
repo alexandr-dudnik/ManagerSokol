@@ -7,18 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -27,6 +15,19 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -180,19 +181,13 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCancelable(false);
-            if (mProgressDialog.getWindow() != null) {
+            if (!this.isFinishing() && mProgressDialog.getWindow() != null) {
                 mProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            }
-            mProgressDialog.show();
-            mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            mProgressDialog.setContentView(R.layout.progress_root);
-        } else {
-            mProgressDialog.show();
-            if (mProgressDialog.getWindow() != null) {
                 mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
-            mProgressDialog.setContentView(R.layout.progress_root);
         }
+        mProgressDialog.show();
+        mProgressDialog.setContentView(R.layout.progress_root);
         ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
         mProgressBar.setVisibility(View.GONE);
     }
@@ -224,7 +219,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
             if (mProgressBar.getVisibility() == View.VISIBLE){
                 mProgressBar.setVisibility(View.GONE);
             }
-           mProgressDialog.hide();
+           mProgressDialog.dismiss();
         }
     }
 

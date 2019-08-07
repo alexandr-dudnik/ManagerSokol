@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             >
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/order_status_image"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/order_icon"
@@ -29,7 +29,7 @@
                 android:scaleType="fitCenter"
                 tools:srcCompat="@drawable/ic_cart"/>
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_date_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -43,7 +43,7 @@
                 android:textSize="20sp"
                 tools:text="20-07-2018"/>
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -66,146 +66,170 @@
                 android:layout_height="1dp"
                 android:layout_below="@id/order_status_image"/>
 
-            <LinearLayout
-                android:id="@+id/order_header_values_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+            <!-- region Header -->
+            <!--Price List -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_price_list_group"
                 android:layout_below="@id/order_divider_1"
-                android:layout_toEndOf="@id/order_title_text"
-                android:layout_toRightOf="@id/order_title_text"
-                android:orientation="vertical"
-                >
+                style="@style/order_header_line">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/order_currency_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
-                    android:fontFamily="@string/roboto_medium"
-                    android:textColor="@color/color_green"
-                    android:textSize="18sp"
-                    tools:text="USD"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:text="@string/order_price_title"
+                    style="@style/order_header_text"
+                    />
 
-                <ViewSwitcher
-                    android:layout_width="match_parent"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/order_price_text"
+                    tools:text="Price Opt"
+                    style="@style/order_header_value"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <!--Trade Conditions -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_trade_group"
+                android:layout_below="@id/order_header_price_list_group"
+                style="@style/order_header_line">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:text="@string/order_trade_title"
+                    style="@style/order_header_text" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <android.support.v7.widget.AppCompatSpinner
-                        android:id="@+id/order_type_spin"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/order_margin"
-                        android:layout_marginStart="@dimen/order_margin"
-                        android:fontFamily="@string/roboto_medium"
-                        android:textColor="@color/color_green"
-                        android:textSize="18sp"
-                        android:visibility="gone"/>
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/order_trade_spin"
+                        tools:listitem="@layout/simple_item"
+                        style="@style/order_header_value"
+                        />
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/order_type_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/order_margin"
-                        android:layout_marginStart="@dimen/order_margin"
-                        android:fontFamily="@string/roboto_medium"
-                        android:textColor="@color/color_green"
-                        android:textSize="18sp"/>
-                </ViewSwitcher>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/order_trade_text"
+                        android:visibility="gone"
+                        style="@style/order_header_value"
+                        />
+                </FrameLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <!--Pay by fact -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_fact_group"
+                android:layout_below="@id/order_header_trade_group"
+                style="@style/order_header_line">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/order_delivery_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
-                    android:background="@android:color/transparent"
-                    android:fontFamily="@string/roboto_medium"
-                    android:textColor="@color/color_green"
-                    android:textSize="18sp"
-                    tools:text="23-07-2018"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:text="@string/order_fact_title"
+                    style="@style/order_header_text" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/order_amount_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
-                    android:fontFamily="@string/roboto_medium"
-                    android:textColor="@color/color_green"
-                    android:textSize="18sp"
-                    tools:text="100000.00"/>
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/order_fact_chb"
+                    style="@style/order_header_value"
+                    tools:checked="false"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:translationY="-5dp"
+                    android:focusableInTouchMode="false"
+                    android:focusable="false"
+                    android:saveEnabled="false"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <!--Currency -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_currency_group"
+                android:layout_below="@id/order_header_fact_group"
+                style="@style/order_header_line">
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/order_header_titles_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/order_divider_1"
-                android:layout_toLeftOf="@id/order_header_values_group"
-                android:layout_toStartOf="@id/order_header_values_group"
-                android:orientation="vertical"
-                >
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
-                    android:fontFamily="@string/roboto_regular"
+                <androidx.appcompat.widget.AppCompatTextView
                     android:text="@string/order_currency_title"
-                    android:textColor="@color/color_black"
-                    android:textSize="18sp"/>
+                    style="@style/order_header_text" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
-                    android:fontFamily="@string/roboto_regular"
+                    >
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/order_currency_spin"
+                        style="@style/order_header_value"
+                        tools:listitem="@layout/simple_item" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/order_currency_text"
+                        android:visibility="gone"
+                        style="@style/order_header_value" />
+                </FrameLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <!--Payment -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_payment_group"
+                android:layout_below="@id/order_header_currency_group"
+                style="@style/order_header_line">
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:text="@string/order_type_title"
-                    android:textColor="@color/color_black"
-                    android:textSize="18sp"/>
+                    style="@style/order_header_text" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/order_type_spin"
+                        tools:listitem="@layout/simple_item"
+                        style="@style/order_header_value" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/order_type_text"
+                        android:visibility="gone"
+                        style="@style/order_header_value" />
+                </FrameLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <!--Delivery -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_delivery_group"
+                android:layout_below="@id/order_header_payment_group"
+                style="@style/order_header_line">
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:background="@android:color/transparent"
-                    android:fontFamily="@string/roboto_regular"
-                    android:hint="@string/order_delivery_date_title"
                     android:text="@string/order_delivery_date_title"
-                    android:textColor="@color/color_black"
-                    android:textSize="18sp"/>
+                    style="@style/order_header_text" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/order_margin"
-                    android:layout_marginStart="@dimen/order_margin"
-                    android:fontFamily="@string/roboto_regular"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/order_delivery_text"
+                    android:background="@android:color/transparent"
+                    tools:text="23-07-2018"
+                    style="@style/order_header_value" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <!--Amount -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/order_header_amount_group"
+                android:layout_below="@id/order_header_delivery_group"
+                style="@style/order_header_line">
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:text="@string/order_amount_title"
-                    android:textColor="@color/color_black"
-                    android:textSize="18sp"/>
+                    style="@style/order_header_text" />
 
-            </LinearLayout>
-            <!-- Table -->
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/order_amount_text"
+                    tools:text="100000.00"
+                    style="@style/order_header_value" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <!-- endregion Header -->
+
+            <!-- region Table -->
+            <!-- Table Header -->
             <LinearLayout
                 android:id="@+id/order_items_list_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/order_header_titles_group"
+                android:layout_below="@id/order_header_amount_group"
                 android:layout_marginTop="@dimen/order_margin"
                 android:orientation="horizontal"
                 >
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -215,7 +239,7 @@
                     android:text="@string/order_items_header_article"
                     android:textSize="12sp"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
@@ -224,7 +248,7 @@
                     android:text="@string/order_items_header_name"
                     android:textSize="12sp"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -234,7 +258,7 @@
                     android:text="@string/order_items_header_price"
                     android:textSize="12sp"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -245,16 +269,18 @@
                     android:textSize="12sp"/>
 
             </LinearLayout>
-
-            <android.support.v7.widget.RecyclerView
+            <!-- Lines -->
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/order_items_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/order_items_list_header"
                 android:isScrollContainer="false"
                 android:overScrollMode="never"
-                tools:listitem="@layout/order_list_item"
+                tools:listitem="@layout/order_line_item"
                 />
+
+            <!-- endregion Table -->
 
             <LinearLayout
                 android:id="@+id/order_items_list_footer"
@@ -265,7 +291,7 @@
                 android:orientation="horizontal"
                 >
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/order_items_add_image"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/order_lines_add_image_size"
@@ -277,7 +303,7 @@
             <!-- end Table -->
 
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_comment_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -298,7 +324,7 @@
                 android:layout_below="@id/order_comment_title"
                 >
 
-                <android.support.v7.widget.AppCompatEditText
+                <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/order_comment_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -308,9 +334,11 @@
                     android:textColor="@color/color_gray"
                     android:textSize="16sp"
                     android:textStyle="italic"
+                    android:focusableInTouchMode="false"
+                    android:focusable="false"
                     tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse interdum lorem vitae libero efficitur sodales. Nulla velit libero, ultricies tincidunt vulputate fringilla, molestie non libero."/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/order_comment_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

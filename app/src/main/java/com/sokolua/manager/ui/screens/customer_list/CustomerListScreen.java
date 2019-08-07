@@ -1,9 +1,10 @@
 package com.sokolua.manager.ui.screens.customer_list;
 
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import androidx.appcompat.widget.SearchView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;

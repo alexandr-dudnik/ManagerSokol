@@ -1,6 +1,6 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.util.Date;
 
@@ -18,6 +18,11 @@ public class VisitRealm extends RealmObject {
     @Index
     private Date date;
     private boolean done;
+    private boolean toSync = false;
+    private float latitude = 0;
+    private float longitude = 0;
+    private Date visited;
+    private String imageURI;
 
     public VisitRealm() {
     }
@@ -47,6 +52,26 @@ public class VisitRealm extends RealmObject {
         return done;
     }
 
+    public boolean isToSync() {
+        return toSync;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public Date getVisited() {
+        return visited;
+    }
+
+    public String getImageURI() {
+        return imageURI;
+    }
+
     //endregion ================== Getters =========================
 
     //region ===================== Setters =========================
@@ -54,6 +79,19 @@ public class VisitRealm extends RealmObject {
     public void setDone(boolean done) {
         this.done = done;
     }
+
+    public void setToSync(boolean toSync) {
+        this.toSync = toSync;
+    }
+
+    public void setVisited(Date visited, float longitude, float latitude, String imageURI) {
+        this.visited = visited;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.imageURI = imageURI;
+        this.toSync = true;
+    }
+
 
     //endregion ================== Setters =========================
 

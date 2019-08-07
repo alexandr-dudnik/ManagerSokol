@@ -2,7 +2,8 @@ package com.sokolua.manager.di;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;

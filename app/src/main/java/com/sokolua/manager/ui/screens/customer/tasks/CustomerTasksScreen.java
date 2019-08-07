@@ -92,49 +92,52 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
 
 
 
-            //Debt realm adapter
-            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerDebtItem> debtViewAndHolderFactory = (parent, pViewType) -> {
-                View view;
-                switch(pViewType){
-                    case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
-                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_debt_header, parent, false);
-                        break;
-                    case ConstantManager.RECYCLER_VIEW_TYPE_ITEM:
-                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_debt_item, parent, false);
-                        break;
-                    default:
-                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
-                }
-                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
-                        view,
-                        new CustomerDebtViewHolder(view)
-                );
-            };
-            ReactiveRecyclerAdapter mDebtAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()), debtViewAndHolderFactory, true);
-            getView().setDebtAdapter(mDebtAdapter);
+            if (mCustomer!= null && mCustomer.isValid()) {
+                //Debt realm adapter
+                ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerDebtItem> debtViewAndHolderFactory = (parent, pViewType) -> {
+                    View view;
+                    switch (pViewType) {
+                        case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
+                            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_debt_header, parent, false);
+                            break;
+                        case ConstantManager.RECYCLER_VIEW_TYPE_ITEM:
+                            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_debt_item, parent, false);
+                            break;
+                        default:
+                            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+                    }
+                    return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                            view,
+                            new CustomerDebtViewHolder(view)
+                    );
+                };
+
+                ReactiveRecyclerAdapter mDebtAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()), debtViewAndHolderFactory, true);
+                getView().setDebtAdapter(mDebtAdapter);
 
 
-            //Task Realm adapter
-            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerTaskItem> taskViewAndHolderFactory = (parent, pViewType) -> {
-                View view;
-                switch (pViewType){
-                    case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
-                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_task_header, parent, false);
-                        break;
-                    case ConstantManager.RECYCLER_VIEW_TYPE_ITEM:
-                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_task_item, parent, false);
-                        break;
-                    default:
-                        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
-                }
-                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
-                        view,
-                        new CustomerTaskViewHolder(view)
-                );
-            };
-            ReactiveRecyclerAdapter mTaskAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()), taskViewAndHolderFactory, true);
-            getView().setTaskAdapter(mTaskAdapter);
+                //Task Realm adapter
+                ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerTaskItem> taskViewAndHolderFactory = (parent, pViewType) -> {
+                    View view;
+                    switch (pViewType) {
+                        case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
+                            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_task_header, parent, false);
+                            break;
+                        case ConstantManager.RECYCLER_VIEW_TYPE_ITEM:
+                            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_task_item, parent, false);
+                            break;
+                        default:
+                            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
+                    }
+                    return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
+                            view,
+                            new CustomerTaskViewHolder(view)
+                    );
+                };
+                ReactiveRecyclerAdapter mTaskAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()), taskViewAndHolderFactory, true);
+                getView().setTaskAdapter(mTaskAdapter);
 
+            }
 
         }
 

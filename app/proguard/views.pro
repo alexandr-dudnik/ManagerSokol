@@ -16,6 +16,6 @@
 #   public *;
 #}
 
--keepclassmembers public class * extends android.view.View {
+-keepclassmembers public class * extends androidx.core.view {
    public <init>(...);
 }

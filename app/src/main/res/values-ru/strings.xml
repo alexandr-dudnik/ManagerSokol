@@ -3,6 +3,13 @@
 
     <string name="app_name">Менеджер Sokol</string>
 
+    <!-- Fabric -->
+    <string name="com.crashlytics.CrashSubmissionAlwaysSendTitle">Отправлять всегда</string>
+    <string name="com.crashlytics.CrashSubmissionCancelTitle">Не отправлять</string>
+    <string name="com.crashlytics.CrashSubmissionPromptMessage">Похоже что-то сломалось. Помогите нам исправить проблему, отослав нам отчет об ошибке.</string>
+    <string name="com.crashlytics.CrashSubmissionPromptTitle">Отправить Отчет об Ошибке?</string>
+    <string name="com.crashlytics.CrashSubmissionSendTitle">Отослать</string>
+
     <!-- Errors -->
     <string name="error_message">Ошибка приложения</string>
     <string name="error_empty_login">Вы забыли ввести логин!</string>
@@ -103,7 +110,7 @@
     <string name="item_wh_rest_label">СФ</string>
     <string name="item_cwh_rest_label">ЦС</string>
     <string name="item_official_rest_label">БН</string>
-    <string name="item_base_price_label">Прайс</string>
+    <string name="item_base_price_label">Цена прайс</string>
     <string name="item_min_price_label">Мин.</string>
     <string name="all_brands">ВСЕ</string>
     <string name="item_discount_label">Скидка</string>
@@ -121,9 +128,18 @@
     <!-- Sync screen -->
     <string name="settings_auto_sync">Авто. синхронизация</string>
     <string name="settings_server_address">Адрес сервера</string>
-    <string name="message_sync_complete">Сихронизация завершена</string>
+    <string name="message_sync_complete">Сихронизация завершена! Начинато фоновое обновление...</string>
     <string name="api_error_text">Ошибка API</string>
     <string name="error_text">Ошибка</string>
+    <string name="illegal_database_update">Невозможно обновить данные с версии v%d на версию v%d</string>
+    <string name="connection_timeout">Не возможно соединиться с сервером</string>
+    <string name="menu_prices">Прайс</string>
+    <string name="menu_trades">Условия</string>
+    <string name="no_trades">Без условий</string>
+    <string name="menu_currency">Валюта</string>
+    <string name="order_price_title">Прайс</string>
+    <string name="order_trade_title">Условия</string>
+    <string name="order_fact_title">Оплата по факту</string>
 
 
     <!-- newly added -->

@@ -1,11 +1,12 @@
 package com.sokolua.manager.ui.screens.customer;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;

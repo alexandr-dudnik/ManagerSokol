@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/order_plan_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 android:textColor="@color/color_gray_dark"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/plan_list"
                 android:layout_below="@id/order_plan_header"
                 android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                 tools:listitem="@layout/customer_plan_item"
                 />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/orders_list_header"
                 android:layout_below="@id/plan_list"
                 android:layout_width="match_parent"
@@ -49,7 +49,7 @@
                 android:textColor="@color/color_gray_dark"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/orders_list"
                 android:layout_below="@id/orders_list_header"
                 android:layout_width="match_parent"

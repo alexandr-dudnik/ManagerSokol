@@ -1,6 +1,7 @@
 package com.sokolua.manager.data.network.res;
 
-import android.support.annotation.Keep;
+
+import io.realm.internal.Keep;
 
 @Keep
 public class UserRes {
@@ -18,7 +19,7 @@ public class UserRes {
         return token;
     }
 
-    public String getFullname() {
+    public String getFullName() {
         return fullname;
     }
 

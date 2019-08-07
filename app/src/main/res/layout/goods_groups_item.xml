@@ -14,7 +14,7 @@
         android:scaleType="centerCrop"
         tools:src="@drawable/no_image"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/good_group_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

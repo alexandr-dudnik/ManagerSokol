@@ -7,7 +7,7 @@ public class CustomerInfoDataItem {
     public static final int ACTION_TYPE_SEND_MAIL = 3;
     private String header;
     private String data;
-    private int actionType = ACTION_TYPE_NO_ACTION;
+    private int actionType;
 
     public CustomerInfoDataItem(String header, String data, int actionType) {
         this.header = header;
@@ -32,9 +32,12 @@ public class CustomerInfoDataItem {
 
     //endregion ============================= Getters ==================================
 
+    public String getId(){
+        return this.header+"#"+this.data;
+    }
 
     @Override
     public boolean equals(Object obj) {
-        return this.header.equals(((CustomerInfoDataItem)obj).getHeader());
+        return this.getId().equals(((CustomerInfoDataItem)obj).getId());
     }
 }

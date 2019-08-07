@@ -37,7 +37,7 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
 
 
 
-    public ItemViewHolder(View itemView) {
+    ItemViewHolder(View itemView) {
         super(itemView);
         DaggerService.<GoodsScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
         ButterKnife.bind(this, itemView);
@@ -48,19 +48,10 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
     public void setCurrentItem(ItemRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-//        currentItem.addChangeListener((ItemRealm item, ObjectChangeSet changeSet) ->{
-//            if (changeSet != null) {
-//                if (changeSet.isDeleted()) {
-//                    currentItem.removeAllChangeListeners();
-//                } else {
-//                    updateFields(item);
-//                }
-//            }
-//        } );
         updateFields(currentItem);
     }
 
-    public void updateFields(ItemRealm currentItem){
+    private void updateFields(ItemRealm currentItem){
 
         if (currentItem.isLoaded() && currentItem.isValid()) {
             mArticle.setText(currentItem.getArtNumber());
@@ -72,12 +63,8 @@ public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<I
             } else {
                 mRestOF.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestOfficial()));
             }
-            if (cartId == null || cartId.isEmpty()) {
-                mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getBasePrice()));
-            } else {
-                mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getCustomerPrice(currentItem.getItemId())));
-            }
-            mMinPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getLowPrice()));
+            mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getItemPrice(currentItem.getItemId())));
+            mMinPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getLowPrice(currentItem.getItemId())));
             mName.setText(currentItem.getName());
         }
     }

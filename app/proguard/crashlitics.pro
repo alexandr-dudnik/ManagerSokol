@@ -21,4 +21,5 @@
 -keep public class * extends java.lang.Exception
 
 -keep class com.crashlytics.** { *; }
+-keep class com.google.firebase.** { *; }
 -dontwarn com.crashlytics.**

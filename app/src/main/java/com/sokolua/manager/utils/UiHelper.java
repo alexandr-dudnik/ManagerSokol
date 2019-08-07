@@ -2,13 +2,14 @@ package com.sokolua.manager.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.IdRes;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
+
+import androidx.annotation.IdRes;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;

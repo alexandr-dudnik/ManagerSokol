@@ -3,10 +3,11 @@ package com.sokolua.manager.mvp.views;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorRes;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+
+import androidx.annotation.ColorRes;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
 

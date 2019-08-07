@@ -1,6 +1,6 @@
 package com.sokolua.manager.data.network.res;
 
-import android.support.annotation.Keep;
+import io.realm.internal.Keep;
 
 @Keep
 public class GoodGroupRes {
@@ -17,6 +17,8 @@ public class GoodGroupRes {
         this.parent = parent;
         this.active = active;
     }
+
+    //region ============================== Getters =================
 
     public String getId() {
         return id;
@@ -37,4 +39,6 @@ public class GoodGroupRes {
     public Boolean isActive() {
         return active==null?false:active;
     }
+
+    //endregion =========================== Getters =================
 }

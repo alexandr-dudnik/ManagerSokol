@@ -3,6 +3,13 @@
 
     <string name="app_name">Менеджер Sokol</string>
 
+    <!-- Fabric -->
+    <string name="com.crashlytics.CrashSubmissionAlwaysSendTitle">Надсилати завжди</string>
+    <string name="com.crashlytics.CrashSubmissionCancelTitle">Не надсилати</string>
+    <string name="com.crashlytics.CrashSubmissionPromptMessage">Схоже щось зламалось. Допоможiть нам виправити проблему, надiславши нам звiт про помилку.</string>
+    <string name="com.crashlytics.CrashSubmissionPromptTitle">Надiслати Звiт про Помилку?</string>
+    <string name="com.crashlytics.CrashSubmissionSendTitle">Надiслати</string>
+
     <!-- Errors -->
     <string name="error_message">Помилка додатка</string>
     <string name="error_empty_login">Ви забули ввести ім\'я!</string>
@@ -103,10 +110,10 @@
     <string name="item_wh_rest_label">СФ</string>
     <string name="item_cwh_rest_label">ЦС</string>
     <string name="item_official_rest_label">БГ</string>
-    <string name="item_base_price_label">Прайс</string>
+    <string name="item_base_price_label">Ціна прайс</string>
     <string name="item_min_price_label">Мін.</string>
-    <string name="all_brands">ВСІ</string>
-    <string name="item_discount_label">Снижка</string>
+    <string name="all_brands">УСІ</string>
+    <string name="item_discount_label">Знижка</string>
 
     <!-- Routes screen -->
     <string name="monday">ПН</string>
@@ -122,9 +129,19 @@
     <!-- Sync screen -->
     <string name="settings_auto_sync">Авто. синхронізація</string>
     <string name="settings_server_address">Адрес серверу</string>
-    <string name="message_sync_complete">Сихронізацію завершено!</string>
+    <string name="message_sync_complete">Сихронізацію завершено! Розпочато оновлення фоном...</string>
     <string name="api_error_text">Помилка API</string>
     <string name="error_text">Помилка</string>
+    <string name="illegal_database_update">Неможливо оновити дані з варсії v%d на версію v%d</string>
+    <string name="connection_timeout">Неможливо з\'єднатися з сервером</string>
+    <string name="menu_prices">Прайс</string>
+    <string name="menu_trades">Умови</string>
+    <string name="no_trades">Без умов</string>
+    <string name="menu_currency">Валюта</string>
+    <string name="order_price_title">Прайс</string>
+    <string name="order_trade_title">Умови</string>
+    <string name="order_fact_title">Оплата по факту</string>
+
 
     <!-- newly added -->
 

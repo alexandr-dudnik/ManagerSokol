@@ -4,7 +4,7 @@
     android:orientation="vertical"
     style="@style/customer_list_header">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/item_header_text"
         style="@style/customer_list_header_text"
         tools:text="А" />

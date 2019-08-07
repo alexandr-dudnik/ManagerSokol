@@ -1,6 +1,6 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.io.Serializable;
 

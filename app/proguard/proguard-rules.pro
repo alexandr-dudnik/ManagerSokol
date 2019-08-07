@@ -16,17 +16,21 @@
 #   public *;
 #}
 
--keep @interface android.support.annotation.Keep
--keep @android.support.annotation.Keep class *
+-printusage usage.txt
+-printseeds seeds.txt
+
+-keep @interface androidx.annotation.Keep
+-keep @androidx.annotation.Keep class *
 -keepclasseswithmembers class * {
-    @android.support.annotation.Keep <fields>;
+    @androidx.annotation.Keep <fields>;
 }
 -keepclasseswithmembers class * {
-    @android.support.annotation.Keep <methods>;
+    @androidx.annotation.Keep <methods>;
 }
 
-#-keep class com.sokolua.manager.data.network.** { *; }
-#-keep class com.sokolua.manager.data.storage.** { *; }
+-keep class com.sokolua.manager.data.** { *; }
+
+-keep class java.** { *; }
 
 
 -keepattributes InnerClasses
@@ -36,3 +40,5 @@
 
 
 -dontwarn java.lang.annotation.Annotation
+
+-ignorewarnings

@@ -1,7 +1,7 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -21,9 +21,11 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private String name;
     private String contactName = "";
     private String address = "";
-    private String phone = "";
     private String email = "";
     private String category = "";
+    private PriceListRealm price = null;
+    private TradeRealm tradeCash = null;
+    private TradeRealm tradeOfficial = null;
     @Index
     private String index = "";
     @LinkingObjects("customer")
@@ -40,19 +42,23 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private final RealmResults<VisitRealm> visits = null;
     @LinkingObjects("customer")
     private final RealmResults<OrderRealm> orders = null;
+    @LinkingObjects("customer")
+    private final RealmResults<CustomerPhoneRealm> phones = null;
 
     public CustomerRealm() {
     }
 
-    public CustomerRealm(String customerId, @NonNull String name, String contactName, String address, String phone, String email, String category) {
+    public CustomerRealm(String customerId, @NonNull String name, String contactName, String address, String email, String category, PriceListRealm price, TradeRealm tradeCash, TradeRealm tradeOfficial) {
         this.customerId = customerId;
         this.name = name;
         this.contactName = contactName;
         this.address = address;
-        this.phone = phone;
         this.email = email;
         this.category = category;
         this.index = name.toLowerCase();
+        this.price = price;
+        this.tradeCash = tradeCash;
+        this.tradeOfficial = tradeOfficial;
     }
 
     //region ===================== Getters =========================
@@ -73,9 +79,6 @@ public class CustomerRealm extends RealmObject implements Serializable{
         return address==null?"":address;
     }
 
-    public String getPhone() {
-        return phone==null?"":phone;
-    }
 
     public String getEmail() {
         return email==null?"":email;
@@ -109,9 +112,32 @@ public class CustomerRealm extends RealmObject implements Serializable{
         return orders;
     }
 
+    public RealmResults<CustomerPhoneRealm> getPhones() {
+        return phones;
+    }
+
     public String getCategory() {
         return category==null?"":category;
     }
 
-    //endregion ================== Getters =========================
+    public String getPhone(){
+        if (this.isManaged() && this.isValid() && phones!=null && !this.phones.isEmpty()){
+            return phones.first().getPhoneNumber();
+        }
+        return "";
+    }
+
+    public PriceListRealm getPrice() {
+        return price;
+    }
+
+    public TradeRealm getTradeCash() {
+        return tradeCash;
+    }
+
+    public TradeRealm getTradeOfficial() {
+        return tradeOfficial;
+    }
+
+//endregion ================== Getters =========================
 }

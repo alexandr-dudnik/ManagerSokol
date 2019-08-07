@@ -3,6 +3,8 @@ package com.sokolua.manager.data.managers;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.network.res.UserRes;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
+import com.sokolua.manager.data.storage.realm.CurrencyRealm;
+import com.sokolua.manager.data.storage.realm.CustomerPhoneRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsCategoryRealm;
@@ -34,6 +36,8 @@ public class DebugManager {
         Calendar mCal = Calendar.getInstance();
         Date curTime = mCal.getTime();
 
+        CurrencyRealm mainCurrency = new CurrencyRealm(ConstantManager.MAIN_CURRENCY_CODE, ConstantManager.MAIN_CURRENCY, 1f);
+
         RealmList<CustomerRealm> managedCustomers= new RealmList<>();
         RealmList<OrderRealm> managedOrders= new RealmList<>();
         RealmList<OrderLineRealm> managedOrderLines= new RealmList<>();
@@ -46,6 +50,7 @@ public class DebugManager {
         RealmList<TaskRealm> managedTaskRealms= new RealmList<>();
         RealmList<NoteRealm> managedNoteRealms= new RealmList<>();
         RealmList<OrderPlanRealm> managedPlanRealms= new RealmList<>();
+        RealmList<CustomerPhoneRealm> managedPhoneRealms= new RealmList<>();
 
         GoodsCategoryRealm cat1 = new GoodsCategoryRealm("cat001","01. кабельно-проводниковая продукция","");
         GoodsCategoryRealm cat2 = new GoodsCategoryRealm("cat002","02.1. кабельные каналы","");
@@ -119,40 +124,40 @@ public class DebugManager {
 
 
 
-        ItemRealm item1 = new ItemRealm("it00001", "Провід ШВВП 2х 1,5  220тм", "84255", 12.65f, 9.35f, 1200f, 5000f, 4000f, cat1, grp1, brand1);
-        ItemRealm item2 = new ItemRealm("it00002", "Провід ШВВП 2х 4,0  220тм", "87722", 19.94f, 14.76f, 0f, 1000f, 400f, cat1, grp1, brand1);
-        ItemRealm item3 = new ItemRealm("it00003", "Провід ШВВП 3х 2,5  Титан", "94295", 31.63f, 23.38f, 100f, 3000f, 5000f, cat1, grp1, brand5);
-        ItemRealm item4 = new ItemRealm("it00004", "Провід ПВС 2х 4,0  220тм", "88516", 21.18f, 15.90f, 530f, 4700f, 6000f, cat1, grp2, brand1);
-        ItemRealm item5 = new ItemRealm("it00005", "Провід ПВС 3х 2,5  220тм", "88518", 33.28f, 24.75f, 660f, 1300f, 3500f, cat1, grp2, brand1);
-        ItemRealm item6 = new ItemRealm("it00006", "Кабельний канал  12х12 (200)  220тм", "65663", 4.68f, 3.03f, 20000f, 5000f, 50000f, cat2, grp3, brand3);
-        ItemRealm item7 = new ItemRealm("it00007", "Кабельний канал  40х16 (80)  220тм", "65670", 12.38f, 8.25f, 15000f, 35000f, 55000f, cat2, grp3, brand3);
-        ItemRealm item8 = new ItemRealm("it00008", "Кабельний канал  12х12 (200) преміум 220тм", "86486", 5.38f, 4.25f, 1000f, 300f, 5000f, cat2, grp3, brand1);
-        ItemRealm item9 = new ItemRealm("it00009", "Металорукав РЗЦ з протяжкою d 09 (50) 220тм", "67416", 8.80f, 5.78f, 15000f, 17300f, 25000f, cat3, grp4, brand1);
-        ItemRealm item10 = new ItemRealm("it00010", "Металорукав РЗЦХ з протяжкою d 11 (50) 220тм", "35181", 9.80f, 6.78f, 0f, 3000f, 5000f, cat4, grp5, brand1);
-        ItemRealm item11 = new ItemRealm("it00011", "EPH2900121 розетка 1-а з/з біл. Schneider  ASFORA", "88196", 80.40f, 60.55f, 10f, 30f, 20f, cat5, grp6, brand2);
-        ItemRealm item12 = new ItemRealm("it00012", "EPH0300121 вимикач 2кл. біл. Schneider  ASFORA", "96450", 75.40f, 70.35f, 2f, 40f, 100f, cat5, grp7, brand2);
-        ItemRealm item13 = new ItemRealm("it00013", "Вимикач двухклавішний з підсвічуванням ТМ \"220\" білий", "74424", 60.50f, 42.90f, 200f, 50f, 1000f, cat6, grp7, brand1);
-        ItemRealm item14 = new ItemRealm("it00014", "Вимикач одноклавішний ТМ \"220\"  крем", "74534", 48.13f, 34.10f, 120f, 1050f, 325f, cat6, grp7, brand1);
-        ItemRealm item15 = new ItemRealm("it00015", "Розетка зі шторками з заземленням з кришкою ТМ \"220\" біла", "74544", 61.88f, 44.10f, 15f, 125f, 5f, cat6, grp6, brand1);
-        ItemRealm item16 = new ItemRealm("it00016", "Розетка зі шторками подвійна з заземленням ТМ \"220\" крем", "74554", 96.25f, 68.48f, 15f, 125f, 5f, cat6, grp6, brand1);
-        ItemRealm item17 = new ItemRealm("it00017", "LED лампа G45  5.0W 220В E14 3000К 220тм", "90135", 45.38f, 30.53f, 5000f, 12500f, 50000f, cat7, grp8, brand1);
-        ItemRealm item18 = new ItemRealm("it00018", "LED лампа A60 10.0W 220В E27 4100К 220тм", "86627", 53.63f, 36.03f, 3500f, 0f, 53000f, cat7, grp8, brand1);
-        ItemRealm item19 = new ItemRealm("it00019", "144-01 Лампа LED MR16 3W 4100K 220V GU5.3 Maxus", "84227", 109.18f, 87.45f, 3f, 10f, 5f, cat8, grp8, brand4);
-        ItemRealm item20 = new ItemRealm("it00020", "563 (461) Лампа LED A65 12W 3000K 220V E27 Maxus", "77913", 271.43f, 217.25f, 4f, 0f, 4f, cat8, grp8, brand4);
-        ItemRealm item21 = new ItemRealm("it00021", "Світлодіодна LED панель 40.0W 220В 3000lm 600х600х8,5 IP 20 5000К Sokol", "95433", 605.00f, 405.35f, 40f, 10f, 400f, cat9, grp9, brand3);
-        ItemRealm item22 = new ItemRealm("it00022", "Світлодіодна LED панель 36.0W 220В 3000lm 300х1200х8,5 IP 20", "83632", 1502.33f, 1006.78f, 25f, 150f, 300f, cat9, grp9, brand3);
+        ItemRealm item1 = new ItemRealm("it00001", "Провід ШВВП 2х 1,5  220тм", "84255",  1200f, 5000f, 4000f, cat1, grp1, brand1);
+        ItemRealm item2 = new ItemRealm("it00002", "Провід ШВВП 2х 4,0  220тм", "87722",  0f, 1000f, 400f, cat1, grp1, brand1);
+        ItemRealm item3 = new ItemRealm("it00003", "Провід ШВВП 3х 2,5  Титан", "94295",  100f, 3000f, 5000f, cat1, grp1, brand5);
+        ItemRealm item4 = new ItemRealm("it00004", "Провід ПВС 2х 4,0  220тм", "88516", 530f, 4700f, 6000f, cat1, grp2, brand1);
+        ItemRealm item5 = new ItemRealm("it00005", "Провід ПВС 3х 2,5  220тм", "88518", 660f, 1300f, 3500f, cat1, grp2, brand1);
+        ItemRealm item6 = new ItemRealm("it00006", "Кабельний канал  12х12 (200)  220тм", "65663",  20000f, 5000f, 50000f, cat2, grp3, brand3);
+        ItemRealm item7 = new ItemRealm("it00007", "Кабельний канал  40х16 (80)  220тм", "65670", 15000f, 35000f, 55000f, cat2, grp3, brand3);
+        ItemRealm item8 = new ItemRealm("it00008", "Кабельний канал  12х12 (200) преміум 220тм", "86486",  1000f, 300f, 5000f, cat2, grp3, brand1);
+        ItemRealm item9 = new ItemRealm("it00009", "Металорукав РЗЦ з протяжкою d 09 (50) 220тм", "67416",  15000f, 17300f, 25000f, cat3, grp4, brand1);
+        ItemRealm item10 = new ItemRealm("it00010", "Металорукав РЗЦХ з протяжкою d 11 (50) 220тм", "35181",  0f, 3000f, 5000f, cat4, grp5, brand1);
+        ItemRealm item11 = new ItemRealm("it00011", "EPH2900121 розетка 1-а з/з біл. Schneider  ASFORA", "88196",  10f, 30f, 20f, cat5, grp6, brand2);
+        ItemRealm item12 = new ItemRealm("it00012", "EPH0300121 вимикач 2кл. біл. Schneider  ASFORA", "96450",  2f, 40f, 100f, cat5, grp7, brand2);
+        ItemRealm item13 = new ItemRealm("it00013", "Вимикач двухклавішний з підсвічуванням ТМ \"220\" білий", "74424",  200f, 50f, 1000f, cat6, grp7, brand1);
+        ItemRealm item14 = new ItemRealm("it00014", "Вимикач одноклавішний ТМ \"220\"  крем", "74534",  120f, 1050f, 325f, cat6, grp7, brand1);
+        ItemRealm item15 = new ItemRealm("it00015", "Розетка зі шторками з заземленням з кришкою ТМ \"220\" біла", "74544",  15f, 125f, 5f, cat6, grp6, brand1);
+        ItemRealm item16 = new ItemRealm("it00016", "Розетка зі шторками подвійна з заземленням ТМ \"220\" крем", "74554",  15f, 125f, 5f, cat6, grp6, brand1);
+        ItemRealm item17 = new ItemRealm("it00017", "LED лампа G45  5.0W 220В E14 3000К 220тм", "90135",  5000f, 12500f, 50000f, cat7, grp8, brand1);
+        ItemRealm item18 = new ItemRealm("it00018", "LED лампа A60 10.0W 220В E27 4100К 220тм", "86627",  3500f, 0f, 53000f, cat7, grp8, brand1);
+        ItemRealm item19 = new ItemRealm("it00019", "144-01 Лампа LED MR16 3W 4100K 220V GU5.3 Maxus", "84227",  3f, 10f, 5f, cat8, grp8, brand4);
+        ItemRealm item20 = new ItemRealm("it00020", "563 (461) Лампа LED A65 12W 3000K 220V E27 Maxus", "77913",  4f, 0f, 4f, cat8, grp8, brand4);
+        ItemRealm item21 = new ItemRealm("it00021", "Світлодіодна LED панель 40.0W 220В 3000lm 600х600х8,5 IP 20 5000К Sokol", "95433",  40f, 10f, 400f, cat9, grp9, brand3);
+        ItemRealm item22 = new ItemRealm("it00022", "Світлодіодна LED панель 36.0W 220В 3000lm 300х1200х8,5 IP 20", "83632",  25f, 150f, 300f, cat9, grp9, brand3);
 
 
-        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "123-23-12", "averianov@ukr.net", "A");
+        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "averianov@ukr.net", "A",null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"USD",1250,1250,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",3500,150,false));
         managedNoteRealms.add(new NoteRealm(temp, "note0101", dateFormat.parse("2018-05-01"),"Клиент попросил скидку 7% на кабельный канал - обсуждаем с руководством"));
         managedNoteRealms.add(new NoteRealm(temp, "note0102",dateFormat.parse("2018-07-05"),"Договорились о поставке крупной партии металлорукава"));
-        managedTaskRealms.add(new TaskRealm(temp, "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH,false,""));
-        managedTaskRealms.add(new TaskRealm(temp, "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH,false,""));
-        managedTaskRealms.add(new TaskRealm(temp, "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL,false,""));
-        managedTaskRealms.add(new TaskRealm(temp, "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL,true,"Отправил открытку и СМС-ку"));
+        managedTaskRealms.add(new TaskRealm(temp, "task0101","Металлорукав", ConstantManager.TASK_TYPE_RESEARCH));
+        managedTaskRealms.add(new TaskRealm(temp, "task0102","LED лампы", ConstantManager.TASK_TYPE_RESEARCH));
+        managedTaskRealms.add(new TaskRealm(temp, "task0103","Забрать дебет", ConstantManager.TASK_TYPE_INDIVIDUAL));
+        managedTaskRealms.add(new TaskRealm(temp, "task0104","Поздравить 05.08 директора с днем рождения", ConstantManager.TASK_TYPE_INDIVIDUAL,dateFormat.parse("2018-08-11"),true,"Отправил открытку и СМС-ку"));
         managedPlanRealms.add(new OrderPlanRealm(temp, cat1, 1500f));
         managedPlanRealms.add(new OrderPlanRealm(temp, cat2, 5000f));
         managedPlanRealms.add(new OrderPlanRealm(temp, cat3, 3500f));
@@ -175,26 +180,27 @@ public class DebugManager {
         mCal.add(Calendar.DATE, 15);
         managedVisitRealms.add(new VisitRealm(temp, "visit00009", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
+        managedPhoneRealms.add(new CustomerPhoneRealm(temp, "123-23-12"));
 
-        OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "Заказ взял, клиет должен уточнить по количеству");
+        OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency,null,null, "Заказ взял, клиет должен уточнить по количеству");
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item1, 10f, 12.5f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item21, 1f, 500f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item3, 5f, 30f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item5, 25f, 29.8f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, "UAH", "Отгрузка на среду, платит по факту");
+        tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, mainCurrency, null,null,"Отгрузка на среду, платит по факту");
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 10f, 81.95f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 30f, 90f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 5f, 1300.2f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, "UAH", "Отгрузка на среду, оплата на месте по факту");
+        tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, mainCurrency, null,null, "Отгрузка на среду, оплата на месте по факту");
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item6, 1000f, 4.5f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item17, 35f, 43.25f));
         managedOrders.add(tmpOrder);
 
-        tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "Нужно привезти в пятницу, берет под клиента.");
+        tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency, null,null, "Нужно привезти в пятницу, берет под клиента.");
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 1500f, 9.5f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 2000f, 20f));
@@ -202,7 +208,7 @@ public class DebugManager {
         managedOrders.add(tmpOrder);
 
         //--------------------------
-        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "222-77-55", "orders@ua.fm", "C");
+        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "orders@ua.fm", "C",null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"UAH",500,18,false));
         mCal.setTime(curTime);
         managedVisitRealms.add(new VisitRealm(temp, "visit00010", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
@@ -215,24 +221,30 @@ public class DebugManager {
         mCal.add(Calendar.DATE, 6);
         managedVisitRealms.add(new VisitRealm(temp, "visit00014", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
+        managedPhoneRealms.add(new CustomerPhoneRealm(temp, "222-77-55"));
 
-        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "");
+        tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency, null,null, "");
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 3f, 90f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f));
         managedOrders.add(tmpOrder);
 
         //--------------------------
-        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "", "info@aviator.ua", "A");
+        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "info@aviator.ua", "A",null,null,null);
         managedNoteRealms.add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
         managedNoteRealms.add(new NoteRealm(temp, "note0302",dateFormat.parse("2018-07-01"),"Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
+
         //--------------------------
-        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "067-667-88-00","", "D");
+        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "", "D",null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
         managedDebtRealms.add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
-        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "","golova@boroda.com", "X");
+        managedPhoneRealms.add(new CustomerPhoneRealm(temp, "067-667-88-00"));
+
+
+        //--------------------------
+        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "golova@boroda.com", "X",null,null,null);
         mCal.setTime(curTime);
         managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
         mCal.add(Calendar.DATE, -1);
@@ -244,8 +256,9 @@ public class DebugManager {
         mCal.add(Calendar.DATE, 10);
         managedVisitRealms.add(new VisitRealm(temp, "visit00019", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
+
         //--------------------------
-        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "","", "");
+        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "", "",null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"USD",130,130,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",250,9.50f,false));
         mCal.setTime(curTime);
@@ -260,7 +273,7 @@ public class DebugManager {
         managedVisitRealms.add(new VisitRealm(temp, "visit00024", dateFormat.parse(dateFormat.format(mCal.getTime())), false));
         managedCustomers.add(temp);
 
-        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, "UAH", "плановый заказ");
+        tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency, null,null, "плановый заказ");
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
         managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 200f, 20f));
@@ -269,6 +282,7 @@ public class DebugManager {
 
 
         realm.executeTransaction(db ->{
+            db.insertOrUpdate(mainCurrency);
             db.insertOrUpdate(managedCats);
             db.insertOrUpdate(managedBrands);
             db.insertOrUpdate(managedGroups);
@@ -280,6 +294,7 @@ public class DebugManager {
             db.insertOrUpdate(managedTaskRealms);
             db.insertOrUpdate(managedNoteRealms);
             db.insertOrUpdate(managedPlanRealms);
+            db.insertOrUpdate(managedPhoneRealms);
             db.insertOrUpdate(managedOrderLines);
         });
         realm.close();

@@ -1,9 +1,10 @@
 package com.sokolua.manager.ui.screens.customer.tasks;
 
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -65,7 +66,7 @@ public class CustomerDebtViewHolder extends ReactiveRecyclerAdapter.ReactiveView
                 mDebtTypeText.setText(currentItem.getHeaderText());
             }
         }else{
-            if (mDebtValueSum !=null && mDebtCurrency != null && currentItem.getDebt() != null) {
+            if (mDebtValueSum !=null && mDebtCurrency != null && currentItem.getDebt() != null && currentItem.getDebt().isValid()) {
                 mDebtCurrency.setText(currentItem.getDebt().getCurrency());
                 mDebtValueSum.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format),currentItem.getDebt().getAmount()));
             }
