@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/debt_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 android:textColor="@color/color_gray_dark"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/debt_list"
                 android:layout_below="@id/debt_header"
                 android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                 tools:listitem="@layout/customer_debt_item"
                 />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tasks_header"
                 android:layout_below="@id/debt_list"
                 android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                 android:textColor="@color/color_gray_dark"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/tasks_list"
                 android:layout_below="@id/tasks_header"
                 android:layout_width="match_parent"

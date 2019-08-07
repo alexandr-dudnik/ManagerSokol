@@ -1,11 +1,14 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
+
+import androidx.annotation.Keep;
 
 import java.io.Serializable;
 
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.Index;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
@@ -20,8 +23,6 @@ public class ItemRealm extends RealmObject implements Serializable{
     @Required
     @Index
     private String artNumber;
-    private Float basePrice = 0f;
-    private Float lowPrice = 0f;
     private Float restStore = 0f;
     private Float restDistr = 0f;
     private Float restOfficial = 0f;
@@ -30,16 +31,16 @@ public class ItemRealm extends RealmObject implements Serializable{
     private BrandsRealm brand;
     @Index
     private String index;
+    @LinkingObjects("item")
+    private final RealmResults<PriceListItemRealm> priceList = null;
 
     public ItemRealm() {
     }
 
-    public ItemRealm(String itemId, String name, String artNumber, Float basePrice, Float lowPrice, Float restStore, Float restDistr, Float restOfficial, GoodsCategoryRealm category, GoodsGroupRealm group, BrandsRealm brand) {
+    public ItemRealm(String itemId, String name, String artNumber, Float restStore, Float restDistr, Float restOfficial, GoodsCategoryRealm category, GoodsGroupRealm group, BrandsRealm brand) {
         this.itemId = itemId;
         this.name = name;
         this.artNumber = artNumber;
-        this.basePrice = basePrice;
-        this.lowPrice = lowPrice;
         this.restStore = restStore;
         this.restDistr = restDistr;
         this.restOfficial = restOfficial;
@@ -53,8 +54,6 @@ public class ItemRealm extends RealmObject implements Serializable{
         this.itemId = itemId;
         this.name = itemName;
         this.artNumber = artNumber;
-        this.basePrice = 0f;
-        this.lowPrice = 0f;
         this.restStore = 0f;
         this.restDistr = 0f;
         this.restOfficial = 0f;
@@ -76,14 +75,6 @@ public class ItemRealm extends RealmObject implements Serializable{
 
     public String getArtNumber() {
         return artNumber;
-    }
-
-    public Float getBasePrice() {
-        return basePrice;
-    }
-
-    public Float getLowPrice() {
-        return lowPrice;
     }
 
     public Float getRestStore() {
@@ -110,8 +101,8 @@ public class ItemRealm extends RealmObject implements Serializable{
         return brand;
     }
 
-
     //endregion ================== Getters =========================
+
 
     //region =======================  Setters  =========================
 

@@ -5,11 +5,11 @@
     android:layout_height="wrap_content"
     style="@style/customer_note_block"
     >
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/note_date_text"
         style="@style/customer_note_date"
         tools:text="01.01.2018"/>
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/note_data_text"
         style="@style/customer_note_data"
         android:layout_below="@id/note_date_text"

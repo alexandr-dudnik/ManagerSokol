@@ -61,4 +61,8 @@ public class AuthModel extends AbstractModel {
     public void updateServerName(String serverName) {
         mDataManager.updateServerAddress(serverName);
     }
+
+    public void updateAutoSynchronize(Boolean status) {
+        mDataManager.updateAutoSynchronize(status);
+    }
 }

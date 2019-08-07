@@ -1,11 +1,12 @@
 package com.sokolua.manager.ui.screens.customer_list;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
@@ -16,7 +17,7 @@ import com.sokolua.manager.utils.App;
 import butterknife.BindView;
 
 public class CustomerListView extends AbstractView<CustomerListScreen.Presenter> {
-    @BindView(R.id.customer_list)    RecyclerView mCustomerList;
+    @BindView(R.id.customer_list)   RecyclerView mCustomerList;
 
 
     public CustomerListView(@NonNull Context context, @Nullable AttributeSet attrs) {

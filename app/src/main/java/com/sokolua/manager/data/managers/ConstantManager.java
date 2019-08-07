@@ -4,6 +4,7 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.utils.App;
 
 public class ConstantManager {
+    public static final int UPDATE_REQUEST_CODE = 556677;
     public static final int REQUEST_PERMISSION_READ_EXTERNAL_MEMORY = 3001;
     public static final String FILE_PROVIDER_AUTHORITY = "com.sokolua.manager.fileprovider";
     public static final String HEADER_LAST_MODIFIED = "Last-Modified";
@@ -37,6 +38,17 @@ public class ConstantManager {
     public static final int DISCOUNT_TYPE_ITEM = 0;
     public static final int DISCOUNT_TYPE_CATEGORY = 1;
 
-    public static final String MAIN_CURRENCY = App.getStringRes(R.string.national_currency);
+    public static final String PRICE_BASE_PRICE_ID = "BASE";
+    public static final String PRICE_LOW_PRICE_ID = "MIN";
 
+    public static final String MAIN_CURRENCY = App.getStringRes(R.string.national_currency);
+    public static final String MAIN_CURRENCY_CODE = "980";
+
+    public static final String STATE_GOODS_ORDER_KEY = "CART_ORDER";
+    public static final String STATE_GOODS_CATEGORY_KEY = "CART_CATEGORY";
+    public static final String STATE_GOODS_PRICE_KEY = "CART_PRICE";
+    public static final String STATE_GOODS_TRADE_KEY = "CART_TRADE";
+    public static final String STATE_GOODS_CURRENCY_KEY = "CART_CURRENCY";
+
+    public static final String UPDATE_JOB_TAG = App.getContext().getPackageName() + ".update_job";
 }

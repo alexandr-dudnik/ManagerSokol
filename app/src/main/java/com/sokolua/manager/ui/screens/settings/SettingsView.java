@@ -1,8 +1,6 @@
 package com.sokolua.manager.ui.screens.settings;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
@@ -13,6 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;

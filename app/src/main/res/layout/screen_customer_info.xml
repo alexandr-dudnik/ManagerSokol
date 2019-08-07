@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/customer_info_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -24,14 +24,14 @@
                 tools:itemCount="5"
                 tools:listitem="@layout/customer_info_data_item" />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/customer_notes_header"
                 style="@style/customer_list_header"
                 android:layout_below="@id/customer_info_list"
                 android:layout_margin="@dimen/customer_info_margin"
                 android:text="@string/customer_info_notes" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/note_add_image"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/customer_info_icon"
@@ -41,7 +41,7 @@
                 android:tint="@color/color_green"
                 app:srcCompat="@drawable/ic_add_circle" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/customer_notes_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

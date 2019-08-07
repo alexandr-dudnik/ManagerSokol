@@ -22,4 +22,8 @@ public class ErrorUtils {
 
         return error;
     }
+
+    public static ApiError customError(int statusCode, String message){
+        return new ApiError(statusCode, message);
+    }
 }

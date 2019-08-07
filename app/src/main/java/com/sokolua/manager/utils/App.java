@@ -2,11 +2,12 @@ package com.sokolua.manager.utils;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.AppCompatDelegate;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
-import com.sokolua.manager.data.storage.realm.RealmMigrations;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.components.DaggerAppComponent;
@@ -34,6 +35,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        MultiDex.install(this);
+
         Fabric.with(this, new Crashlytics());
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -57,13 +60,20 @@ public class App extends Application {
                 .name("sokol.manager.realm")
                 .compactOnLaunch()
                 .schemaVersion(1)
-                .migration(new RealmMigrations())
+                //.migration(new RealmMigrations())
+                .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(configuration);
 
         ScreenScoper.registerScope(mRootScope);
         ScreenScoper.registerScope(mRootActivityScope);
 
+    }
+
+    @Override
+    public void onTerminate() {
+        Realm.getDefaultInstance().close();
+        super.onTerminate();
     }
 
     @Override
@@ -113,5 +123,13 @@ public class App extends Application {
     public static int getColorRes(int res_id){
         return ResourcesCompat.getColor(sContext.getResources(), res_id, sContext.getTheme());
     }
+
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
 
 }

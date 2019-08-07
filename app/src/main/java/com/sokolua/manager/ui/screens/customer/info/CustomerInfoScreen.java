@@ -1,14 +1,16 @@
 package com.sokolua.manager.ui.screens.customer.info;
 
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.textfield.TextInputEditText;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.storage.realm.CustomerPhoneRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.di.DaggerService;
@@ -161,11 +163,13 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             }else{
                 mDataAdapter.removeItem(item);
             }
-            item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header), mCustomer.getPhone(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL);
-            if (!mCustomer.getPhone().isEmpty()) {
-                mDataAdapter.addItem(item);
-            }else{
-                mDataAdapter.removeItem(item);
+            for (CustomerPhoneRealm phone : mCustomer.getPhones()){
+                item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header), phone.getPhoneNumber(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL);
+                if (!phone.getPhoneNumber().isEmpty()) {
+                    mDataAdapter.addItem(item);
+                }else{
+                    mDataAdapter.removeItem(item);
+                }
             }
             item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header), mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL);
             if (!mCustomer.getEmail().isEmpty()) {
@@ -211,7 +215,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         }
 
         public void addNewNote() {
-            final EditText input = new EditText(getView().getContext());
+            final TextInputEditText input = new TextInputEditText(getView().getContext());
             input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 
             AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())

@@ -1,5 +1,13 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Manager Sokol</string>
+
+
+    <!-- Fabric -->
+    <string name="com.crashlytics.CrashSubmissionPromptTitle" tools:ignore="ExtraTranslation">Send Crash Report?</string>
+    <string name="com.crashlytics.CrashSubmissionPromptMessage" tools:ignore="ExtraTranslation">Looks like we crashed! Please help us fix the problem by sending a crash report.</string>
+    <string name="com.crashlytics.CrashSubmissionSendTitle" tools:ignore="ExtraTranslation">Send</string>
+    <string name="com.crashlytics.CrashSubmissionAlwaysSendTitle" tools:ignore="ExtraTranslation">Always Send</string>
+    <string name="com.crashlytics.CrashSubmissionCancelTitle" tools:ignore="ExtraTranslation">Don\'t Send</string>
 
     <!-- Fonts -->
     <string name="roboto_regular" translatable="false">sans-serif</string>
@@ -128,9 +136,18 @@
     <!-- Sync screen -->
     <string name="settings_auto_sync">Auto synchronization</string>
     <string name="settings_server_address">Server address</string>
-    <string name="message_sync_complete">Synchronization complete</string>
+    <string name="message_sync_complete">Synchronization complete! Start background update..</string>
     <string name="api_error_text">API error</string>
     <string name="error_text">Error</string>
+    <string name="illegal_database_update">Migration missing from v%d to v%d</string>
+    <string name="connection_timeout">Can\'t connect to server</string>
+    <string name="menu_prices">Price</string>
+    <string name="menu_trades">TC</string>
+    <string name="no_trades">No conditions</string>
+    <string name="menu_currency">Currency</string>
+    <string name="order_price_title">Price list</string>
+    <string name="order_trade_title">Trade cond.</string>
+    <string name="order_fact_title">Pay by fact</string>
 
 
     <!-- newly added -->

@@ -1,7 +1,8 @@
 package com.sokolua.manager.mvp.presenters;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.sokolua.manager.mvp.models.AbstractModel;
 import com.sokolua.manager.mvp.views.AbstractView;
@@ -26,7 +27,7 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
     @Inject
     protected RootPresenter mRootPresenter;
 
-    private CompositeDisposable mCompSubs;
+    protected CompositeDisposable mCompSubs;
 
 
     @Override

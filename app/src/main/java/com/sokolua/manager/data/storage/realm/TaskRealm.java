@@ -1,8 +1,10 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
@@ -19,28 +21,34 @@ public class TaskRealm extends RealmObject implements Serializable {
     private String text;
     @Index
     private int taskType;
+    private Date date;
     private boolean done = false;
-    private String result="";
+    private String result = "";
+    private boolean toSync = false;
 
     public TaskRealm() {
     }
 
-    public TaskRealm(CustomerRealm customer, String taskId,  String text, int taskType, boolean done, String result) {
+    public TaskRealm(CustomerRealm customer, String taskId,  String text, int taskType, Date date, boolean done, String result) {
         this.taskId = taskId;
         this.customer = customer;
         this.text = text;
         this.taskType = taskType;
         this.done = done;
         this.result = result;
+        this.date = date;
     }
 
     public TaskRealm(CustomerRealm customer, String taskId,  String text, int taskType) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
         this.taskId = taskId;
         this.customer = customer;
+        this.date = cal.getTime();
         this.text = text;
         this.taskType = taskType;
-        this.done = false;
-        this.result = "";
     }
 
     //region ===================== Getters =========================
@@ -69,8 +77,15 @@ public class TaskRealm extends RealmObject implements Serializable {
         return result;
     }
 
+    public boolean isToSync() {
+        return toSync;
+    }
 
-    //endregion ================== Getters =========================
+    public Date getDate() {
+        return date;
+    }
+
+//endregion ================== Getters =========================
 
     //region ===================== Setters =========================
     public void setResult(String result) {
@@ -79,6 +94,10 @@ public class TaskRealm extends RealmObject implements Serializable {
 
     public void setDone(boolean done) {
         this.done = done;
+    }
+
+    public void setToSync(boolean toSync) {
+        this.toSync = toSync;
     }
 
     //endregion ================== Setters =========================

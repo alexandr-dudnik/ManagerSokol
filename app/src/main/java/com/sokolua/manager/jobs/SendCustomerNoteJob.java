@@ -1,11 +1,12 @@
 package com.sokolua.manager.jobs;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.utils.AppConfig;
 
@@ -20,6 +21,7 @@ public class SendCustomerNoteJob extends Job {
             .persist()
             .singleInstanceBy(noteId)
             .groupBy("Customers")
+                .addTags(ConstantManager.UPDATE_JOB_TAG)
         );
 
         this.noteId = noteId;

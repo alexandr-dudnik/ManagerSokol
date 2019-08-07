@@ -1,11 +1,11 @@
 package com.sokolua.manager.data.network.req;
 
-import android.support.annotation.Keep;
-
 import com.sokolua.manager.data.storage.realm.NoteRealm;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+
+import io.realm.internal.Keep;
 
 @Keep
 public class SendNoteReq {

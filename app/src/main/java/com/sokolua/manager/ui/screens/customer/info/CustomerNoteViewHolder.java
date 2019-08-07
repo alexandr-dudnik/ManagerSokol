@@ -1,8 +1,9 @@
 package com.sokolua.manager.ui.screens.customer.info;
 
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.NoteRealm;
@@ -20,8 +21,8 @@ import butterknife.ButterKnife;
 
 public class CustomerNoteViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<NoteRealm> {
 
-    @Nullable  @BindView(R.id.note_date_text)    TextView mNoteDate;
-    @Nullable  @BindView(R.id.note_data_text)    TextView mNoteData;
+    @Nullable @BindView(R.id.note_date_text)    TextView mNoteDate;
+    @Nullable @BindView(R.id.note_data_text)    TextView mNoteData;
     @Nullable @BindView(R.id.empty_list_text)    TextView mEmptyText;
 
     @Inject
@@ -42,10 +43,11 @@ public class CustomerNoteViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     public void setCurrentItem(NoteRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat(App.getStringRes(R.string.date_format), Locale.getDefault());
-        mNoteDate.setText(dateFormat.format(currentItem.getDate()));
-        mNoteData.setText(currentItem.getData());
-
+        if (mNoteDate != null && currentItem.isValid()) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(App.getStringRes(R.string.date_format), Locale.getDefault());
+            mNoteDate.setText(dateFormat.format(currentItem.getDate()));
+            mNoteData.setText(currentItem.getData());
+        }
     }
 
 

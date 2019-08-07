@@ -2,22 +2,26 @@ package com.sokolua.manager.ui.screens.goods;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
+import com.sokolua.manager.data.storage.realm.CurrencyRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
+import com.sokolua.manager.data.storage.realm.PriceListRealm;
+import com.sokolua.manager.data.storage.realm.TradeRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -25,6 +29,7 @@ import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.GoodsModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
+import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.order.OrderScreen;
@@ -142,6 +147,17 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         private String currentFilter = "";
         private String currentBrand = "";
+        private String currentPrice = "";
+        private String currentTrade = "";
+        private String currentCurrency = "";
+
+        private MenuItemHolder brandsSubMenu;
+        private MenuItemHolder pricesSubMenu;
+        private MenuItemHolder tradesSubMenu;
+        private MenuItemHolder currencySubMenu;
+        private String priceId;
+        private String tradeId;
+        private String currencyId;
 
 
         public Presenter() {
@@ -155,13 +171,6 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
-            super.onLoad(savedInstanceState);
-
-            if (mCustomerOrderId!=null && !mCustomerOrderId.isEmpty()) {
-                currentCart = mModel.getOrderById(mCustomerOrderId);
-                mCustomer = currentCart.getCustomer();
-            }
-
 
             groupViewHolder = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goods_groups_item, parent, false);
@@ -170,13 +179,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new GroupViewHolder(view)
                 );
             };
-
-            //noinspection unchecked
             groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupViewHolder, false);
 
             getView().setGroupsAdapter(groupsAdapter);
-
-
 
             itemViewHolder = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goods_items_item, parent, false);
@@ -185,10 +190,35 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new ItemViewHolder(view)
                 );
             };
-            //noinspection unchecked
             itemsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), itemViewHolder, false);
 
             getView().setItemsAdapter(itemsAdapter);
+
+            if (savedInstanceState != null){
+                mCustomerOrderId = savedInstanceState.getString(ConstantManager.STATE_GOODS_ORDER_KEY,"");
+                mFilterCategoryId = savedInstanceState.getString(ConstantManager.STATE_GOODS_CATEGORY_KEY,"");
+                currentPrice = savedInstanceState.getString(ConstantManager.STATE_GOODS_PRICE_KEY,"");
+                currentTrade = savedInstanceState.getString(ConstantManager.STATE_GOODS_TRADE_KEY,"");
+                currentCurrency = savedInstanceState.getString(ConstantManager.STATE_GOODS_CURRENCY_KEY,"");
+            }
+
+            if (mCustomerOrderId!=null && !mCustomerOrderId.isEmpty()) {
+                currentCart = mModel.getOrderById(mCustomerOrderId);
+                mCustomer = currentCart.getCustomer();
+                currentPrice = mCustomer.getPrice()==null?"":mCustomer.getPrice().getName();
+                TradeRealm mTrade = currentCart.getTrade()==null?currentCart.getPayment() == ConstantManager.ORDER_PAYMENT_CASH ? mCustomer.getTradeCash() : mCustomer.getTradeOfficial() : currentCart.getTrade();
+                currentTrade = mTrade == null ? "" : mTrade.getName();
+                currentCurrency = currentCart.getCurrency().getName();
+            }
+
+
+            checkTrade(currentTrade);
+            checkPrice(currentPrice);
+            checkCurrency(currentCurrency);
+
+            if (currentCurrency==null || currentCurrency.isEmpty()) currentCurrency = ConstantManager.MAIN_CURRENCY;
+
+            super.onLoad(savedInstanceState);
 
 
             updateGoodsList();
@@ -217,7 +247,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         getView().setCustomer(currentCart.getCustomer().getName());
                     }
                     if (changeSet.isFieldChanged("currency")) {
-                        getView().setCartCurrency(currentCart.getCurrency());
+                        getView().setCartCurrency(currentCart.getCurrency().getName());
                     }
                 };
                 currentCart.addChangeListener(orderChangeListener);
@@ -240,20 +270,69 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         @Override
+        protected void onSave(Bundle outState) {
+            outState.putString(ConstantManager.STATE_GOODS_ORDER_KEY, mCustomerOrderId);
+            outState.putString(ConstantManager.STATE_GOODS_CATEGORY_KEY, mFilterCategoryId);
+            outState.putString(ConstantManager.STATE_GOODS_PRICE_KEY, currentPrice);
+            outState.putString(ConstantManager.STATE_GOODS_TRADE_KEY, currentTrade);
+            outState.putString(ConstantManager.STATE_GOODS_CURRENCY_KEY, currentCurrency);
+
+            super.onSave(outState);
+        }
+
+        @Override
         public void dropView(GoodsView view) {
             if (currentCart != null){
                 currentCart.removeChangeListener(orderChangeListener);
                 currentCart.getLines().removeChangeListener(orderLinesChangeListener);
                 currentCart = null;
             }
-
             super.dropView(view);
         }
+
+        private void checkTrade(String tradeName){
+            final TradeRealm mTrade = mModel.getTradeByName(tradeName);
+            if (mTrade == null){
+                currentTrade = "";
+                tradeId = "";
+            }else{
+                currentTrade = mTrade.getName();
+                tradeId = mTrade.getTradeId();
+            }
+            updateGoodsList();
+        }
+
+        private void checkPrice(String priceName){
+            PriceListRealm mPrice = mModel.getPriceByName(priceName);
+            if (mPrice == null) mPrice = mModel.getPriceById(ConstantManager.PRICE_BASE_PRICE_ID);
+            if (mPrice == null){
+                currentPrice = "";
+                priceId = "";
+            }else{
+                currentPrice = mPrice.getName();
+                priceId = mPrice.getPriceId();
+            }
+            updateGoodsList();
+        }
+
+        private void checkCurrency(String currencyName){
+            final CurrencyRealm mCurrency = mModel.getCurrencyByName(currencyName);
+            if (mCurrency == null) mModel.getCurrencyByName(ConstantManager.MAIN_CURRENCY);
+            if (mCurrency == null){
+                currentCurrency = "";
+                currencyId = "";
+            }else{
+                currentCurrency = mCurrency.getName();
+                currencyId = mCurrency.getCurrencyId();
+            }
+            updateGoodsList();
+        }
+
 
         void updateCartFields() {
 
             getView().setCustomer(currentCart.getCustomer().getName());
-            getView().setCartCurrency(currentCart.getCurrency());
+            getView().setCartCurrency(currentCart.getCurrency().getName());
             getView().setCartAmount(currentCart.getTotal());
             getView().setCartItemsCount(currentCart.getLines().size());
 
@@ -278,58 +357,141 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             }
         }
 
+        private void subMenuItemAction(MenuItem item, String parentTitle){
+            if (getRootView() != null) {
+                MenuItem groupItem = ((RootActivity)getRootView()).getMainMenuItemParent(item.getItemId());
+                if (groupItem != null) {
+                    groupItem.setTitle(String.format("%s: %s",parentTitle, item.getTitle()));
+                }
+            }
+            item.setChecked(true);
+            updateGoodsList();
+        }
+
+        private void rebuildActionBar(){
+            if (getView() != null) {
+                RootPresenter.ActionBarBuilder mActionBarBuilder = mRootPresenter.newActionBarBuilder()
+                        .setVisible(true)
+                        .setBackArrow(currentCart != null)
+                        .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
+                        .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                currentFilter = query;
+                                updateGoodsList();
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                currentFilter = newText;
+                                updateGoodsList();
+                                return true;
+                            }
+                        }))
+                        .setTitle(App.getStringRes(R.string.menu_goods));
+
+                mActionBarBuilder.addAction(brandsSubMenu);
+                if (pricesSubMenu != null) mActionBarBuilder.addAction(pricesSubMenu);
+                if (tradesSubMenu != null) mActionBarBuilder.addAction(tradesSubMenu);
+                if (currencySubMenu != null) mActionBarBuilder.addAction(currencySubMenu);
+
+                mActionBarBuilder.build();
+            }
+        }
+
+
         @Override
         protected void initActionBar() {
 
             MenuItem.OnMenuItemClickListener brandListener = item -> {
-                if (getRootView() != null) {
-                    MenuItem groupItem = ((RootActivity)getRootView()).getMainMenuItemParent(item.getItemId());
-                    if (groupItem != null) {
-                        groupItem.setTitle(String.format("%s: %s",App.getStringRes(R.string.menu_brands), item.getTitle()));
-                    }
-                }
-                item.setChecked(true);
                 currentBrand = item.getTitle().toString().equals(App.getStringRes(R.string.all_brands)) ? "" : item.getTitle().toString();
-                updateGoodsList();
+                subMenuItemAction(item, App.getStringRes(R.string.menu_brands));
                 return true;
             };
 
-            MenuItemHolder brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty()?App.getStringRes(R.string.all_brands):currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+            brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty()?App.getStringRes(R.string.all_brands):currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
             brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
+            mModel.getBrands()
+                    .take(1)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(brands -> {
+                            for (BrandsRealm brand : brands) {
+                                brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
+                            }
+                            rebuildActionBar();
+                        }).subscribe()
+            ;
 
+            if (currentCart == null) {
+                MenuItem.OnMenuItemClickListener priceListener = item -> {
+                    checkPrice(item.getTitle().toString());
+                    subMenuItemAction(item, App.getStringRes(R.string.menu_prices));
+                    return true;
+                };
+                MenuItem.OnMenuItemClickListener tradeListener = item -> {
+                    checkTrade(item.getTitle().toString().equals(App.getStringRes(R.string.no_trades)) ? "" : item.getTitle().toString());
+                    subMenuItemAction(item, App.getStringRes(R.string.menu_trades));
+                    return true;
+                };
+                MenuItem.OnMenuItemClickListener currencyListener = item -> {
+                    checkCurrency(item.getTitle().toString());
+                    subMenuItemAction(item, App.getStringRes(R.string.menu_currency));
+                    return true;
+                };
 
-            Disposable mBrandsSub = mModel.getBrands()
-                    .subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext(brands -> {
-                        for (BrandsRealm brand : brands) {
-                            brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
-                        }
-                        mRootPresenter.newActionBarBuilder()
-                                .setVisible(true)
-                                .setBackArrow(currentCart != null)
-                                .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
-                                .addAction(brandsSubMenu)
-                                .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_search), new SearchView.OnQueryTextListener() {
-                                    @Override
-                                    public boolean onQueryTextSubmit(String query) {
-                                        currentFilter = query;
-                                        updateGoodsList();
-                                        return true;
-                                    }
+                pricesSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_prices), currentPrice), R.drawable.ic_price, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
 
-                                    @Override
-                                    public boolean onQueryTextChange(String newText) {
-                                        currentFilter = newText;
-                                        updateGoodsList();
-                                        return true;
-                                    }
-                                }))
-                                .setTitle(App.getStringRes(R.string.menu_goods))
-                                .build();
+                mModel.getPrices()
+                        //.take(1)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(prices -> {
+                            for (PriceListRealm price : prices) {
+                                pricesSubMenu.addSubMenuItem(new MenuItemHolder(price.getName(), priceListener, 1, (currentPrice.equals(price.getName()))));
+                            }
+                            rebuildActionBar();
+                        })
+                        .subscribe()
+                ;
 
-                    })
-                    .subscribe();
+                tradesSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_trades), (currentTrade.isEmpty()?App.getStringRes(R.string.no_trades):currentTrade)), R.drawable.ic_trade, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+                tradesSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.no_trades), tradeListener, 1, (currentTrade.isEmpty())));
+
+                mModel.getTrades(null, null, null)
+                        //.take(1)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(trades -> {
+                            for (TradeRealm trade : trades) {
+                                tradesSubMenu.addSubMenuItem(new MenuItemHolder(trade.getName(), tradeListener, 1, (currentPrice.equals(trade.getName()))));
+                            }
+                            rebuildActionBar();
+                        })
+                        .subscribe()
+                ;
+
+                currencySubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_currency), currentCurrency), R.drawable.ic_price, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+
+                mModel.getCurrencies()
+                        //.take(1)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(currencies -> {
+                            for (CurrencyRealm currency : currencies) {
+                                currencySubMenu.addSubMenuItem(new MenuItemHolder(currency.getName(), currencyListener, 1, (currentCurrency.equals(currency.getName()))));
+                            }
+                            rebuildActionBar();
+                        }).subscribe()
+                ;
+            }else{
+                pricesSubMenu = null;
+                tradesSubMenu = null;
+                currencySubMenu = null;
+            }
+
+            rebuildActionBar();
 
         }
 
@@ -397,11 +559,16 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             if (currentCart == null){
                 //TODO: make screen with item card
             }else{
-                if (getRootView() != null) {
+                if (getView() != null && getRootView() != null) {
                     ItemRealm selectedItem = mModel.getItemById(selectedItemId);
-                    Float itemBasePrice = selectedItem.getBasePrice();
-                    Float itemDiscount = getCustomerDiscount(selectedItemId);
-                    Float itemPrice = getCustomerPrice(selectedItemId);
+                    TradeRealm trade = mModel.getTradeById(tradeId);
+                    PriceListRealm price = mModel.getPriceById(priceId);
+                    PriceListRealm basePrice = mModel.getPriceById(ConstantManager.PRICE_BASE_PRICE_ID);
+
+
+                    Float itemBasePrice = mModel.getItemPrice(selectedItemId, priceId, null, currencyId, null, trade != null && !trade.isCash());
+                    Float itemDiscount = getCustomerDiscount(selectedItemId, tradeId);
+                    Float itemPrice = getItemPrice(selectedItemId);
 
                     LayoutInflater layoutInflater = ((Activity)getRootView()).getLayoutInflater();
                     View view = layoutInflater.inflate(R.layout.add_item_to_cart, null);
@@ -413,6 +580,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     textDiscount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemDiscount));
                     TextView textBasePrice  = view.findViewById(R.id.item_base_price);
                     textBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemBasePrice));
+                    TextView textPrice  = view.findViewById(R.id.price_name_label);
+                    textPrice.setText(price==null?basePrice.getName():price.getName());
+                    TextView textTrade  = view.findViewById(R.id.trade_name_label);
+                    textTrade.setText(trade==null?"":trade.getName());
 
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
@@ -425,9 +596,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         float newQty = 0 ;
                         try{newQty = Float.parseFloat(inputQty.getText().toString());}catch (Throwable ignore){}
                         //check price
-                        if (newPrice < selectedItem.getLowPrice()) {
+                        final float itemLowPrice = mModel.getItemLowPrice(selectedItemId, currencyId);
+                        if (newPrice < itemLowPrice) {
                             if (getRootView() != null) {
-                                getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), selectedItem.getLowPrice()) + ")");
+                                getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), itemLowPrice) + ")");
                             }
                         }
 
@@ -450,14 +622,17 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             }
         }
 
-        Float getCustomerDiscount(String itemId) {
-            return  mModel.getCustomerDiscount(mCustomer.getCustomerId(), itemId);
+        Float getCustomerDiscount(String itemId, String tradeId) {
+            return  mModel.getCustomerDiscount(mCustomer.getCustomerId(), itemId) - mModel.getTradePercent(itemId, tradeId);
         }
 
-        Float getCustomerPrice(String itemId) {
-            Float discount = getCustomerDiscount(itemId);
-            ItemRealm item = mModel.getItemById(itemId);
-            return  (float)(Math.round(item.getBasePrice() * (100 - discount))) / 100;
+        Float getItemPrice(String itemId){
+            TradeRealm trade = mModel.getTradeById(tradeId);
+            return mModel.getItemPrice(itemId, priceId, tradeId, currencyId, mCustomer==null?null:mCustomer.getCustomerId(), trade != null && !trade.isCash());
+        }
+
+        Float getLowPrice(String itemId){
+            return mModel.getItemLowPrice(itemId, currencyId);
         }
     }
 

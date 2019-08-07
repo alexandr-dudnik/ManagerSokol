@@ -1,6 +1,7 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
+
+import androidx.annotation.Keep;
 
 import java.io.Serializable;
 
@@ -44,7 +45,7 @@ public class GoodsGroupRealm extends RealmObject implements Serializable {
     }
 
 
-//region ================================ Getters ==================================
+    //region ================================ Getters ==================================
 
     public String getGroupId() {
         return groupId;

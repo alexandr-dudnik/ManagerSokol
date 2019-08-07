@@ -2,16 +2,19 @@ package com.sokolua.manager.ui.screens.order;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.data.storage.realm.CurrencyRealm;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
+import com.sokolua.manager.data.storage.realm.TradeRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
@@ -25,12 +28,16 @@ import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.goods.GoodsScreen;
 import com.sokolua.manager.utils.App;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 import dagger.Provides;
 import flow.Flow;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmChangeListener;
 import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
@@ -101,6 +108,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         private RealmObjectChangeListener<OrderRealm> orderChangeListener;
 
         OrderRealm currentOrder;
+        private Disposable tradesSub;
 
         public Presenter() {
         }
@@ -137,40 +145,91 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             };
             currentOrder.getLines().addChangeListener(lineChangeListener);
 
-
             orderChangeListener = (realmModel, changeSet) -> {
+                OrderView mView = getView();
                 if (!realmModel.isLoaded() || !realmModel.isValid()){
                     realmModel.removeAllChangeListeners();
-                    getView().viewOnBackPressed();
+                    mView.viewOnBackPressed();
                 }
                 if (changeSet == null) {
                     return;
                 }
                 if (changeSet.isDeleted()) {
                     realmModel.removeAllChangeListeners();
-                    getView().viewOnBackPressed();
+                    mView.viewOnBackPressed();
                 }
                 if (changeSet.isFieldChanged("comments")) {
-                    getView().setComment(currentOrder.getComments());
+                    mView.setComment(currentOrder.getComments());
                 }
                 if (changeSet.isFieldChanged("currency")) {
-                    getView().setCurrency(currentOrder.getCurrency());
+                    mView.setCurrency(currentOrder.getCurrency().getName());
                 }
                 if (changeSet.isFieldChanged("delivery")) {
-                    getView().setDeliveryDate(currentOrder.getDelivery());
+                    mView.setDeliveryDate(currentOrder.getDelivery());
                 }
                 if (changeSet.isFieldChanged("date")) {
-                    getView().setOrderDate(currentOrder.getDate());
+                    mView.setOrderDate(currentOrder.getDate());
                 }
                 if (changeSet.isFieldChanged("payment")) {
-                    getView().setOrderType(currentOrder.getPayment());
+                    mView.setOrderType(currentOrder.getPayment());
+                    refreshTrades();
+                }
+                if (changeSet.isFieldChanged("payOnFact")) {
+                    mView.setFact(currentOrder.isPayOnFact());
+                    refreshTrades();
+                }
+                if (changeSet.isFieldChanged("trade")) {
+                    mView.setTrade(currentOrder.getTrade()==null?null:currentOrder.getTrade().getName());
+                }
+                if (changeSet.isFieldChanged("currency")) {
+                    mView.setCurrency(currentOrder.getCurrency().getName());
+                }
+                if (changeSet.isFieldChanged("priceList")) {
+                    mView.setPriceList(currentOrder.getPriceList()==null?null:currentOrder.getPriceList().getName());
                 }
                 if (changeSet.isFieldChanged("status")) {
-                    getView().setStatus(currentOrder.getStatus());
+                    mView.setStatus(currentOrder.getStatus());
                     initActionBar();
                 }
             };
             currentOrder.addChangeListener(orderChangeListener);
+
+            mModel.getCurrencies()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(currencies -> {
+                        if (getView()!= null){
+                            ArrayList<String> arrCurrencies = new ArrayList<>();
+                            for(CurrencyRealm cur : currencies){
+                                arrCurrencies.add(cur.getName());
+                            }
+                            getView().setCurrencyList(arrCurrencies);
+                        }
+                    }).subscribe()
+            ;
+
+            refreshTrades();
+        }
+
+        private void refreshTrades() {
+            if (tradesSub!=null && !tradesSub.isDisposed()){
+                tradesSub.dispose();
+            }
+            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+                boolean isRemote = currentOrder.getCustomer().getTradeCash()==null? currentOrder.getCustomer().getTradeOfficial() != null && currentOrder.getCustomer().getTradeOfficial().isRemote() :currentOrder.getCustomer().getTradeCash().isRemote();
+                tradesSub = mModel.getTrades(currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_CASH, currentOrder.isPayOnFact(), isRemote)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(trades -> {
+                            if (getView() != null) {
+                                ArrayList<String> arrTrades = new ArrayList<>();
+                                for (TradeRealm trade : trades) {
+                                    arrTrades.add(trade.getName());
+                                }
+                                getView().setTradeList(arrTrades);
+                            }
+                        }).subscribe();
+            }
         }
 
         private void updateLines(){
@@ -235,15 +294,18 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
 
-        public void updateFields() {
-
-            getView().setComment(currentOrder.getComments());
-            getView().setCurrency(currentOrder.getCurrency());
-            getView().setDeliveryDate(currentOrder.getDelivery());
-            getView().setOrderAmount(currentOrder.getTotal());
-            getView().setOrderDate(currentOrder.getDate());
-            getView().setOrderType(currentOrder.getPayment());
-            getView().setStatus(currentOrder.getStatus());
+        public void updateAllFields() {
+            OrderView mView = getView();
+            mView.setComment(currentOrder.getComments());
+            mView.setDeliveryDate(currentOrder.getDelivery());
+            mView.setOrderAmount(currentOrder.getTotal());
+            mView.setOrderDate(currentOrder.getDate());
+            mView.setOrderType(currentOrder.getPayment());
+            mView.setStatus(currentOrder.getStatus());
+            mView.setFact(currentOrder.isPayOnFact());
+            mView.setCurrency(currentOrder.getCurrency().getName());
+            mView.setTrade(currentOrder.getTrade()==null?"":currentOrder.getTrade().getName());
+            mView.setPriceList(currentOrder.getPriceList()==null?"":currentOrder.getPriceList().getName());
 
         }
 
@@ -271,13 +333,14 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                         newValue = Float.parseFloat(input.getText().toString().replace(",","."));
                     }catch (Throwable ignore){}
                     //check price
-                    if (newValue < line.getItem().getLowPrice()) {
+                    final double itemLowPrice = mModel.getItemLowPrice(line.getItem().getItemId());
+                    if (newValue < itemLowPrice) {
                         if (getRootView() != null) {
-                            getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), line.getItem().getLowPrice()) + ")");
+                            getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), itemLowPrice) + ")");
                         }
-                    } else {
-                        mModel.updateOrderItemPrice(currentOrderId, line.getItem().getItemId(), newValue);
+//                    } else {
                     }
+                    mModel.updateOrderItemPrice(currentOrderId, line.getItem().getItemId(), newValue);
                 });
                 alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
                 });
@@ -333,6 +396,35 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             if (getRootView() != null) {
                 Flow.get((RootActivity)getRootView()).set(new GoodsScreen(currentOrderId));
             }
+        }
+
+        public void updateCurrency(String currency) {
+            mModel.updateOrderCurrency(currentOrderId, mModel.getCurrencyByName(currency).getCurrencyId());
+        }
+
+        public void updateTrade(String tradeName) {
+            mModel.updateOrderTrade(currentOrderId, mModel.getTradeByName(tradeName).getTradeId());
+        }
+
+        public void updateFactFlag(boolean checked) {
+            mModel.updateOrderFactFlag(currentOrderId, checked);
+        }
+
+        public void openCommentDialog() {
+            if (getView() == null) return;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getView().getContext());
+            builder.setTitle(App.getStringRes(R.string.order_comment_title));
+
+            final EditText input = new EditText(getView().getContext());
+            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
+            input.setText(currentOrder.getComments());
+            builder.setView(input);
+
+            builder.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> mModel.updateOrderComment(currentOrderId, input.getText().toString()));
+            builder.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {});
+
+            builder.show();
         }
     }
     //endregion ================== Presenter =========================

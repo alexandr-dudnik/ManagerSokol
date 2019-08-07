@@ -1,6 +1,6 @@
 package com.sokolua.manager.data.storage.realm;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import com.sokolua.manager.data.managers.ConstantManager;
 
@@ -38,7 +38,7 @@ public class CustomerDiscountRealm extends RealmObject implements Serializable{
         this.category = category;
         this.item = null;
         this.percent = percent;
-        this.discountId = discountType +"#"+customer.getCustomerId()+"#"+(discountType== ConstantManager.DISCOUNT_TYPE_ITEM?item.getItemId():category.getCategoryId());
+        this.discountId = discountType + "#" + customer.getCustomerId() + "#" + category.getCategoryId();
     }
     public CustomerDiscountRealm(CustomerRealm customer, ItemRealm item, Float percent) {
         this.discountType = ConstantManager.DISCOUNT_TYPE_ITEM;
@@ -46,7 +46,7 @@ public class CustomerDiscountRealm extends RealmObject implements Serializable{
         this.category = null;
         this.item = item;
         this.percent = percent;
-        this.discountId = discountType +"#"+customer.getCustomerId()+"#"+(discountType== ConstantManager.DISCOUNT_TYPE_ITEM?item.getItemId():category.getCategoryId());
+        this.discountId = discountType + "#" + customer.getCustomerId() + "#" + item.getItemId();
     }
 
 

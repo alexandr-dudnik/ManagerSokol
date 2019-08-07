@@ -2,6 +2,8 @@ package com.sokolua.manager.data.network;
 
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.network.error.AccessDenied;
+import com.sokolua.manager.data.network.error.AccessError;
 import com.sokolua.manager.data.network.error.ErrorUtils;
 import com.sokolua.manager.data.network.error.NetworkAvailableError;
 import com.sokolua.manager.utils.NetworkStatusChecker;
@@ -13,11 +15,11 @@ import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
 import retrofit2.Response;
 
-public class RestCallTransformer<R> implements ObservableTransformer<Response<R>, R> {
+public class RestCallTransformer<T> implements ObservableTransformer<Response<T>, T> {
 
 
     @Override
-    public ObservableSource<R> apply(Observable<Response<R>> responseObservable) {
+    public ObservableSource<T> apply(Observable<Response<T>> responseObservable) {
         return NetworkStatusChecker.isInternetAvailiableObs()
                 .flatMap(aBoolean -> aBoolean ? responseObservable : Observable.error(new NetworkAvailableError()))
                 .flatMap(rResponse ->{
@@ -44,11 +46,16 @@ public class RestCallTransformer<R> implements ObservableTransformer<Response<R>
                             }
                         case 304:
                             return Observable.empty();
+                        case 401:
+                            return Observable.error(AccessError::new);
+                        case 403:
+                            return Observable.error(AccessDenied::new);
                         default:
                             return Observable.error(ErrorUtils.parseError(rResponse));
                     }
 
-                });
+                })
+                ;
 
     }
 }

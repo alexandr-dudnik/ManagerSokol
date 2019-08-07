@@ -7,7 +7,7 @@
                 android:layout_marginRight="@dimen/customer_orders_margin"
     >
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/plan_value_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
         android:textSize="16sp"
         tools:text="100.00" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/plan_group_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

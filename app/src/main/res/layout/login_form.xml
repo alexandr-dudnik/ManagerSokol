@@ -8,7 +8,7 @@
               android:orientation="vertical"
               tools:showIn="@layout/screen_auth">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/server_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,18 +16,18 @@
         android:text="@string/settings_server_address"
         android:textAlignment="center"
         android:textColor="@color/color_black"
-        android:textSize="18sp" />
+        android:textSize="@dimen/login_form_text_size" />
 
-    <android.support.v7.widget.AppCompatSpinner
+    <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/server_name"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="@dimen/login_form_fields_height"
         android:spinnerMode="dropdown"
         android:layout_marginLeft="@dimen/login_form_padding"
         android:layout_marginRight="@dimen/login_form_padding"
         />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/login_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,41 +35,41 @@
         android:text="@string/login_form_caption"
         android:textAlignment="center"
         android:textColor="@color/color_black"
-        android:textSize="18sp" />
+        android:textSize="@dimen/login_form_text_size" />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/user_name"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="@dimen/login_form_fields_height"
             android:layout_marginLeft="@dimen/login_form_padding"
             android:layout_marginRight="@dimen/login_form_padding"
             android:inputType="text"
             style="@style/login_input_text" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:passwordToggleEnabled="true"
         >
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/user_password"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
+            android:layout_height="@dimen/login_form_fields_height"
             android:layout_marginLeft="@dimen/login_form_padding"
             android:layout_marginRight="@dimen/login_form_padding"
             android:layout_marginBottom="@dimen/login_form_padding"
             android:inputType="textWebPassword"
             style="@style/password_input_text" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/login_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

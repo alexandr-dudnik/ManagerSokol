@@ -22,7 +22,7 @@
             android:layout_weight="1"
             >
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/goods_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -31,7 +31,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/main_goods"/>
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/goods_text"
                 style="@style/MainScreen.Text"
                 android:text="@string/menu_goods"
@@ -43,7 +43,7 @@
             android:layout_weight="1"
             >
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/customers_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -52,7 +52,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/main_clients"/>
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/MainScreen.Text"
                 android:id="@+id/customers_text"
                 android:text="@string/menu_customers"
@@ -74,7 +74,7 @@
                 android:layout_weight="1"
                 >
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/route_img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -83,7 +83,7 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/main_route"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/route_text"
                     style="@style/MainScreen.Text"
                     android:text="@string/menu_route"
@@ -96,7 +96,7 @@
                 android:layout_weight="1"
                 >
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/orders_img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -105,7 +105,7 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/main_orders"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/orders_text"
                     style="@style/MainScreen.Text"
                     android:text="@string/menu_orders"

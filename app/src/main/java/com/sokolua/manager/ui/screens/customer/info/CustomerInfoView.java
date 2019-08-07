@@ -2,13 +2,14 @@ package com.sokolua.manager.ui.screens.customer.info;
 
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
@@ -57,7 +58,6 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
 
         });
         itemTouchHelper.attachToRecyclerView(mCustomerNotesList);
-
     }
 
 

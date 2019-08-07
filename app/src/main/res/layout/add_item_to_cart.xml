@@ -6,12 +6,31 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            tools:text="Price name"
+            android:id="@+id/price_name_label"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Trade"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:id="@+id/trade_name_label"/>
+
+    </LinearLayout>
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/item_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +40,7 @@
             android:textColorHint="@color/color_gray"
             android:background="@drawable/rectangle_shape"
         />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,12 +52,12 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             >
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_base_price_label"
                 android:layout_margin="8dp"/>
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/item_base_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,12 +74,12 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             >
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/item_discount_label"
                 android:layout_margin="8dp"/>
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/item_discount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,12 +91,12 @@
                 />
         </LinearLayout>
     </LinearLayout>
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/item_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +106,7 @@
             android:textColorHint="@color/color_gray"
             android:background="@drawable/rectangle_shape"
             />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 </LinearLayout>

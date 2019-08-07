@@ -215,5 +215,40 @@
         <item name="android:background">@drawable/server_spinner_background</item>
     </style>
 
+    <style name="order_header_text">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/order_margin</item>
+        <item name="android:layout_marginStart">@dimen/order_margin</item>
+        <item name="android:fontFamily">@string/roboto_regular</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:textSize">@dimen/order_header_text_size</item>
+
+    </style>
+
+    <style name="order_header_value">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/order_margin</item>
+        <item name="android:layout_marginStart">@dimen/order_margin</item>
+        <item name="android:fontFamily">@string/roboto_medium</item>
+        <item name="android:textColor">@color/color_green</item>
+        <item name="android:textSize">@dimen/order_header_text_size</item>
+        <item name="android:gravity">start</item>
+        <item name="android:checkMark">?android:attr/listChoiceIndicatorMultiple</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="order_header_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
 
 </resources>

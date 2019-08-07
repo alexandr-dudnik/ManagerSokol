@@ -40,10 +40,12 @@ public class OrderLineViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHol
     public void setCurrentItem(OrderLineRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-        mArticle.setText(currentItem.getItem().getArtNumber());
-        mName.setText(currentItem.getItem().getName());
-        mPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getPrice()));
-        mQty.setText(String.format(Locale.getDefault(),App.getStringRes(R.string.numeric_format_int),currentItem.getQuantity()));
+        if (currentItem.isValid()) {
+            mArticle.setText(currentItem.getItem().getArtNumber());
+            mName.setText(currentItem.getItem().getName());
+            mPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getPrice()));
+            mQty.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getQuantity()));
+        }
     }
 
 

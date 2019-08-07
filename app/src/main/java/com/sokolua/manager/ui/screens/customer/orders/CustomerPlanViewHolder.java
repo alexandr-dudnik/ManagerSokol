@@ -1,8 +1,9 @@
 package com.sokolua.manager.ui.screens.customer.orders;
 
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
@@ -42,12 +43,14 @@ public class CustomerPlanViewHolder extends ReactiveRecyclerAdapter.ReactiveView
     public void setCurrentItem(OrderPlanRealm currentItem) {
         super.setCurrentItem(currentItem);
 
-        if (mGroupText != null) {
-            mGroupText.setText(currentItem.getCategory().getName());
-        }
+        if (currentItem.isValid()) {
+            if (mGroupText != null) {
+                mGroupText.setText(currentItem.getCategory().getName());
+            }
 
-        if (mValueText != null) {
-            mValueText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),currentItem.getAmount()));
+            if (mValueText != null) {
+                mValueText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getAmount()));
+            }
         }
 
     }

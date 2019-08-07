@@ -1,9 +1,10 @@
 package com.sokolua.manager.ui.screens.routes;
 
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -50,7 +51,7 @@ public class RouteViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
         if (currentItem != null) {
             if (currentItem.isHeader() && mItemHeaderText != null){
                 mItemHeaderText.setText(currentItem.getHeaderText());
-            }else if (currentItem.getCustomer() != null){
+            }else if (currentItem.getCustomer() != null && currentItem.getCustomer().isValid()){
                 if (mExclamationImg != null) {
                     switch ( DataManager.getInstance().getCustomerDebtType(currentItem.getCustomer().getCustomerId())){
                         case ConstantManager.DEBT_TYPE_NORMAL:

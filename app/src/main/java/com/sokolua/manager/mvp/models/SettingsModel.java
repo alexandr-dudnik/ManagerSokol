@@ -1,9 +1,11 @@
 package com.sokolua.manager.mvp.models;
 
+import com.sokolua.manager.data.storage.realm.CurrencyRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
+import com.sokolua.manager.data.storage.realm.TradeRealm;
 
 import io.reactivex.Observable;
 
@@ -40,6 +42,14 @@ public class SettingsModel extends AbstractModel {
         return mDataManager.updateOrdersFromRemote();
     }
 
+    public Observable<CurrencyRealm> updateCurrencyFromRemote() {
+        return mDataManager.updateCurrencyFromRemote();
+    }
+
+    public Observable<TradeRealm> updateTradesFromRemote() {
+        return mDataManager.updateTradesFromRemote();
+    }
+
 
     public void clearDatabase() {
         mDataManager.clearDataBase();
@@ -53,6 +63,16 @@ public class SettingsModel extends AbstractModel {
         mDataManager.sendAllNotes("");
     }
 
+    public void sendAllTasks() {
+        mDataManager.sendAllTasks("");
+    }
 
 
+    public void cancelAllJobs() {
+        mDataManager.cancelAllJobs();
+    }
+
+    public Boolean checkAllJobsFinished() {
+        return mDataManager.jobQueueIsEmpty();
+    }
 }

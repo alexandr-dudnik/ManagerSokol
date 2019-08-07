@@ -3,12 +3,15 @@ package com.sokolua.manager.data.network;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.network.req.SendNoteReq;
 import com.sokolua.manager.data.network.req.SendOrderReq;
+import com.sokolua.manager.data.network.req.SendTaskReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
+import com.sokolua.manager.data.network.res.CurrencyRes;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
 import com.sokolua.manager.data.network.res.OrderRes;
 import com.sokolua.manager.data.network.res.SendNewObjectRes;
+import com.sokolua.manager.data.network.res.TradesRes;
 import com.sokolua.manager.data.network.res.UserRes;
 
 import java.util.List;
@@ -25,6 +28,7 @@ import retrofit2.http.Path;
 public interface RestService {
     @POST("auth")
     Observable<Response<UserRes>> loginUser(@Body UserLoginReq userLoginReq);
+
 
     @GET("groups")
     Observable<Response<List<GoodGroupRes>>> getGoodsGroupList(@Header(ConstantManager.HEADER_TOKEN)String token, @Header(ConstantManager.HEADER_IF_MODIFIED_SINCE)String modified);
@@ -48,6 +52,9 @@ public interface RestService {
     @PUT("customers/{customer_id}/notes")
     Observable<Response<SendNewObjectRes>> sendNote(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendNoteReq noteReq);
 
+    @PUT("/customers/{customer_id}/tasks")
+    Observable<Response<SendNewObjectRes>> sendTask(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendTaskReq noteReq);
+
 
 
     @GET("orders")
@@ -58,4 +65,12 @@ public interface RestService {
 
     @GET("orders/{order_id}")
     Observable<Response<OrderRes>> getOrder(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("order_id")String order_id);
+
+
+
+    @GET("currency")
+    Observable<Response<List<CurrencyRes>>> getCurrencyList(@Header(ConstantManager.HEADER_TOKEN)String token);
+
+    @GET("trades")
+    Observable<Response<List<TradesRes>>> getTradesList(@Header(ConstantManager.HEADER_TOKEN)String token);
 }

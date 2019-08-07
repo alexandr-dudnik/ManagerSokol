@@ -4,10 +4,11 @@ package com.sokolua.manager.mvp.presenters;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.network.res.UserRes;
@@ -134,6 +135,7 @@ public class RootPresenter extends Presenter<IRootView> {
                                 ((RootActivity) getView()).runOnUiThread(() -> getView().hideLoad());
                                 if (mAuthModel.isUserAuth()) {
                                     getView().showMessage(App.getStringRes(R.string.message_auth_success));
+                                    mAuthModel.updateAutoSynchronize(true);
                                     if (scr != null) {
                                         Flow.get(scr).replaceHistory(new MainScreen(), Direction.REPLACE);
                                     }

@@ -1,21 +1,22 @@
 package com.sokolua.manager.data.managers;
 
 import android.os.Looper;
-import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.sokolua.manager.data.network.res.CustomerDiscountRes;
+import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
+
+import com.sokolua.manager.data.network.res.CurrencyRes;
 import com.sokolua.manager.data.network.res.CustomerRes;
-import com.sokolua.manager.data.network.res.DebtRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
 import com.sokolua.manager.data.network.res.GoodItemRes;
-import com.sokolua.manager.data.network.res.NoteRes;
-import com.sokolua.manager.data.network.res.OrderLineRes;
-import com.sokolua.manager.data.network.res.OrderPlanRes;
 import com.sokolua.manager.data.network.res.OrderRes;
-import com.sokolua.manager.data.network.res.TaskRes;
-import com.sokolua.manager.data.network.res.VisitRes;
+import com.sokolua.manager.data.network.res.TradesRes;
 import com.sokolua.manager.data.storage.realm.BrandsRealm;
+import com.sokolua.manager.data.storage.realm.CurrencyRealm;
 import com.sokolua.manager.data.storage.realm.CustomerDiscountRealm;
+import com.sokolua.manager.data.storage.realm.CustomerPhoneRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
 import com.sokolua.manager.data.storage.realm.GoodsCategoryRealm;
@@ -25,16 +26,22 @@ import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderPlanRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
+import com.sokolua.manager.data.storage.realm.PriceListItemRealm;
+import com.sokolua.manager.data.storage.realm.PriceListRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
+import com.sokolua.manager.data.storage.realm.TradeCategoryRealm;
+import com.sokolua.manager.data.storage.realm.TradeRealm;
 import com.sokolua.manager.data.storage.realm.VisitRealm;
 import com.sokolua.manager.utils.UiHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -50,6 +57,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import io.realm.internal.ManagableObject;
 
+@Keep
 public class RealmManager {
 
     //region =======================  Realm instance  =========================
@@ -72,12 +80,6 @@ public class RealmManager {
             mUIRealm.refresh();
             return mUIRealm;
         }
-
-//        Realm currentRealm = mRealmInstance.get(Thread.currentThread().getId());
-//        if (currentRealm == null || currentRealm.isClosed()) {
-        //        }
-//        currentRealm.refresh();
-//        mRealmInstance.put(Thread.currentThread().getId(), currentRealm);
 
         Realm currentRealm = Realm.getDefaultInstance();
         currentRealm.refresh();
@@ -108,15 +110,6 @@ public class RealmManager {
 
     //region =======================  Service  =========================
 
-    public <T extends RealmObject> T getRealmCopy(T managedObject){
-        Realm curInstance = getQueryRealmInstance();
-        if (!managedObject.isManaged()){
-            return managedObject;
-        }
-        T copy = curInstance.copyFromRealm(managedObject);
-        closeQueryInstance(curInstance);
-        return copy;
-    }
 
     private boolean isUIThread(){
         return Thread.currentThread() == Looper.getMainLooper().getThread();
@@ -188,6 +181,7 @@ public class RealmManager {
 
     @Nullable
     CustomerRealm getCustomerById(String id) {
+        if (id == null || id.isEmpty()) return null;
         Realm curInstance = getQueryRealmInstance();
         CustomerRealm result = curInstance
                 .where(CustomerRealm.class)
@@ -213,15 +207,34 @@ public class RealmManager {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Realm curInstance = getQueryRealmInstance();
 
+        final CustomerRes.CustomerConditionRes tradeCondition = customerRes.getTradeCondition();
+
+        PriceListRealm price = null;
+        if (tradeCondition!=null && tradeCondition.getPrice() != null && !tradeCondition.getPrice().isEmpty()) {
+            price = getPriceListById(tradeCondition.getPrice());
+        }
+
+        TradeRealm cond_cash = null;
+        if (tradeCondition!=null && tradeCondition.getCash() != null && !tradeCondition.getCash().isEmpty()) {
+            cond_cash = getTradeById(tradeCondition.getCash());
+        }
+        TradeRealm cond_off = null;
+        if (tradeCondition!=null && tradeCondition.getOfficial() != null && !tradeCondition.getOfficial().isEmpty()) {
+            cond_off = getTradeById(tradeCondition.getOfficial());
+        }
+
+
 
         CustomerRealm newCust =  new CustomerRealm(
                 customerRes.getId(),
                 customerRes.getName(),
                 customerRes.getContactName(),
                 customerRes.getAddress(),
-                customerRes.getPhone(),
                 customerRes.getEmail(),
-                customerRes.getCategory()
+                customerRes.getCategory(),
+                price,
+                cond_cash,
+                cond_off
         );
 
         if (createOnly){
@@ -236,14 +249,14 @@ public class RealmManager {
 
         RealmList<DebtRealm> mDebt = new RealmList<>();
         if (customerRes.getDebt() != null) {
-            for (DebtRes debt : customerRes.getDebt()){
+            for (CustomerRes.DebtRes debt : customerRes.getDebt()){
                 mDebt.add(new DebtRealm(newCust, debt.getCurrency(), debt.getAmount(), debt.getAmountUSD(), debt.isOutdated()));
             }
         }
 
         RealmList<NoteRealm> mNotes = new RealmList<>();
         if (customerRes.getNotes() != null) {
-            for (NoteRes note : customerRes.getNotes()){
+            for (CustomerRes.NoteRes note : customerRes.getNotes()){
                 Date noteDate;
                 try {
                     noteDate = sdf.parse(note.getDate());
@@ -256,15 +269,22 @@ public class RealmManager {
 
         RealmList<TaskRealm> mTasks = new RealmList<>();
         if (customerRes.getTasks() != null) {
-            for (TaskRes task : customerRes.getTasks()){
+            for (CustomerRes.TaskRes task : customerRes.getTasks()){
                 mTasks.add(new TaskRealm(newCust, task.getId(), task.getText(), task.getType()));
+            }
+        }
+
+        RealmList<CustomerPhoneRealm> mPhones = new RealmList<>();
+        if (customerRes.getPhones() != null) {
+            for (String phone : customerRes.getPhones()){
+                mPhones.add(new CustomerPhoneRealm(newCust, phone));
             }
         }
 
         RealmList<OrderPlanRealm> mPlan = new RealmList<>();
         RealmList<GoodsCategoryRealm> mCats = new RealmList<>();
         if (customerRes.getPlan() != null) {
-            for (OrderPlanRes plan : customerRes.getPlan()){
+            for (CustomerRes.OrderPlanRes plan : customerRes.getPlan()){
                 GoodsCategoryRealm cat = curInstance.where(GoodsCategoryRealm.class).equalTo("categoryId", plan.getCategoryId()).findFirst();
                 if (cat == null){
                     cat = new GoodsCategoryRealm(plan.getCategoryId(), plan.getCategoryName(), "");
@@ -277,7 +297,7 @@ public class RealmManager {
         RealmList<CustomerDiscountRealm> mDisc = new RealmList<>();
         RealmList<ItemRealm> mItems = new RealmList<>();
         if (customerRes.getDiscounts() != null) {
-            for (CustomerDiscountRes disc : customerRes.getDiscounts()){
+            for (CustomerRes.CustomerDiscountRes disc : customerRes.getDiscounts()){
                 if (disc.getType() == ConstantManager.DISCOUNT_TYPE_ITEM){
                     ItemRealm item = curInstance.where(ItemRealm.class).equalTo("itemId", disc.getTargetId()).findFirst();
                     if (item == null){
@@ -316,7 +336,7 @@ public class RealmManager {
 
         RealmList<VisitRealm> mVisits = new RealmList<>();
         if (customerRes.getVisits() != null) {
-            for (VisitRes visit : customerRes.getVisits()){
+            for (CustomerRes.VisitRes visit : customerRes.getVisits()){
                 Date visitDate;
                 try {
                     visitDate = sdf.parse(visit.getDate());
@@ -333,6 +353,9 @@ public class RealmManager {
         RealmResults<NoteRealm> oldNotes = curInstance.where(NoteRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
         RealmResults<CustomerDiscountRealm> oldDisc = curInstance.where(CustomerDiscountRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
         RealmResults<VisitRealm> oldVisits = curInstance.where(VisitRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+        RealmResults<CustomerPhoneRealm> oldPhones = curInstance.where(CustomerPhoneRealm.class).equalTo("customer.customerId", customerRes.getId()).findAll();
+
+        Log.i("DEBUG", mPhones.toString());
 
         curInstance.executeTransaction(db -> {
             db.insertOrUpdate(newCust);
@@ -342,6 +365,7 @@ public class RealmManager {
             oldNotes.deleteAllFromRealm();
             oldDisc.deleteAllFromRealm();
             oldVisits.deleteAllFromRealm();
+            oldPhones.deleteAllFromRealm();
 
             db.insertOrUpdate(mDebt);
             db.insertOrUpdate(mNotes);
@@ -349,12 +373,15 @@ public class RealmManager {
             db.insertOrUpdate(mPlan);
             db.insertOrUpdate(mDisc);
             db.insertOrUpdate(mVisits);
+            db.insertOrUpdate(mPhones);
+
         });
         closeQueryInstance(curInstance);
     }
 
 
     void deleteCustomerFromRealm(String id) {
+        if (id == null || id.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
 
         CustomerRealm mCustomer = curInstance
@@ -372,13 +399,13 @@ public class RealmManager {
             deleteOrderFromRealm(order.getId());
         }
 
-        curInstance = getQueryRealmInstance();
         RealmResults<TaskRealm> oldTasks = curInstance.where(TaskRealm.class).equalTo("customer.customerId", id).findAll();
         RealmResults<OrderPlanRealm> oldPlans = curInstance.where(OrderPlanRealm.class).equalTo("customer.customerId", id).findAll();
         RealmResults<DebtRealm> oldDebt = curInstance.where(DebtRealm.class).equalTo("customer.customerId", id).findAll();
         RealmResults<NoteRealm> oldNotes = curInstance.where(NoteRealm.class).equalTo("customer.customerId", id).findAll();
         RealmResults<CustomerDiscountRealm> oldDisc = curInstance.where(CustomerDiscountRealm.class).equalTo("customer.customerId", id).findAll();
         RealmResults<VisitRealm> oldVisits = curInstance.where(VisitRealm.class).equalTo("customer.customerId", id).findAll();
+        RealmResults<CustomerPhoneRealm> oldPhones = curInstance.where(CustomerPhoneRealm.class).equalTo("customer.customerId", id).findAll();
         curInstance.executeTransaction(db -> {
             mCustomer.deleteFromRealm();
             oldTasks.deleteAllFromRealm();
@@ -387,6 +414,7 @@ public class RealmManager {
             oldNotes.deleteAllFromRealm();
             oldDisc.deleteAllFromRealm();
             oldVisits.deleteAllFromRealm();
+            oldPhones.deleteAllFromRealm();
         });
 
         closeQueryInstance(curInstance);
@@ -402,6 +430,7 @@ public class RealmManager {
 
 
     int getCustomerDebtType(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return ConstantManager.DEBT_TYPE_NO_DEBT;
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<DebtRealm> qAll = curInstance
                 .where(DebtRealm.class)
@@ -417,6 +446,7 @@ public class RealmManager {
 
 
     Observable<List<DebtRealm>> getCustomerDebt(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<DebtRealm> qAll = curInstance
                 .where(DebtRealm.class)
@@ -429,6 +459,7 @@ public class RealmManager {
 
 
     Observable<List<DebtRealm>> getCustomerDebtByType(String customerId, int debtType) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<DebtRealm> qAll = curInstance
                 .where(DebtRealm.class)
@@ -470,6 +501,7 @@ public class RealmManager {
     //region =======================  Customer Notes  =========================
 
     Observable<List<NoteRealm>> getCustomerNotes(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<NoteRealm> qAll = curInstance
                 .where(NoteRealm.class)
@@ -479,6 +511,7 @@ public class RealmManager {
     }
 
     void addNewNote(String customerId, String note) {
+        if (customerId == null || customerId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         CustomerRealm cust = curInstance
                 .where(CustomerRealm.class)
@@ -491,6 +524,7 @@ public class RealmManager {
     }
 
     void deleteNote(String noteId) {
+        if (noteId == null || noteId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         NoteRealm tmp = curInstance
                 .where(NoteRealm.class)
@@ -507,6 +541,7 @@ public class RealmManager {
 
     @Nullable
     NoteRealm getCustomerNoteById(String mId) {
+        if (mId == null || mId.isEmpty()) return null;
         Realm curInstance = getQueryRealmInstance();
         NoteRealm mNote = curInstance.where(NoteRealm.class).equalTo("noteId", mId).findFirst();
 
@@ -532,6 +567,7 @@ public class RealmManager {
     }
 
     void updateNoteExternalId(String noteId, String newId) {
+        if (noteId == null || noteId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         NoteRealm note = curInstance
                 .where(NoteRealm.class)
@@ -551,16 +587,18 @@ public class RealmManager {
     //region =======================  Customer Tasks  =========================
 
     Observable<List<TaskRealm>> getCustomerTasks(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<TaskRealm> qAll = curInstance
                 .where(TaskRealm.class)
                 .equalTo("customer.customerId", customerId);
-        qAll.sort("taskType");
+        qAll.sort("taskType",Sort.ASCENDING, "date", Sort.ASCENDING);
 
         return getListObservable(curInstance, qAll);
     }
 
     Observable<List<TaskRealm>> getCustomerTaskByType(String customerId, int taskType) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<TaskRealm> qAll = curInstance
                 .where(TaskRealm.class)
@@ -571,6 +609,7 @@ public class RealmManager {
     }
 
     void updateCustomerTask(String taskId, boolean checked, String result) {
+        if (taskId == null || taskId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         TaskRealm task = curInstance
                 .where(TaskRealm.class)
@@ -579,10 +618,35 @@ public class RealmManager {
             curInstance.executeTransaction(db -> {
                 task.setDone(checked);
                 task.setResult(result);
+                task.setToSync(true);
             });
         }
         closeQueryInstance(curInstance);
     }
+
+    TaskRealm getCustomerTaskByTypeId(String taskId) {
+        if (taskId == null || taskId.isEmpty()) return null;
+        Realm curInstance = getQueryRealmInstance();
+        TaskRealm mTask = curInstance.where(TaskRealm.class).equalTo("taskId", taskId).findFirst();
+
+        if (isUIThread() || mTask==null) {
+            return mTask;
+        }
+        mTask = curInstance.copyFromRealm(mTask);
+        closeQueryInstance(curInstance);
+        return mTask;
+    }
+
+    void setCustomerTaskSynced(String taskId){
+        if (taskId == null || taskId.isEmpty()) return;
+        Realm curInstance = getQueryRealmInstance();
+        TaskRealm mTask = curInstance.where(TaskRealm.class).equalTo("taskId", taskId).findFirst();
+        if (mTask!=null && mTask.isValid()){
+            curInstance.executeTransaction(db-> mTask.setToSync(false));
+        }
+        closeQueryInstance(curInstance);
+    }
+
 
     //endregion ====================  Customer Tasks  =========================
 
@@ -590,6 +654,7 @@ public class RealmManager {
     //region =======================  Customer Plan  =========================
 
     Observable<List<OrderPlanRealm>> getCustomerPlan(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<OrderPlanRealm> qAll = curInstance
                 .where(OrderPlanRealm.class)
@@ -620,6 +685,10 @@ public class RealmManager {
     //region =======================  Customer Discounts  =========================
 
     Float getCustomerDiscount(String customerId, String itemId) {
+        if (customerId == null || customerId.isEmpty() || itemId == null || itemId.isEmpty()) {
+            return 0f;
+        }
+
         //try find discount for item
         Realm curInstance = getQueryRealmInstance();
         CustomerDiscountRealm discRealm = curInstance
@@ -652,6 +721,7 @@ public class RealmManager {
     //region =======================  Orders  =========================
 
     Observable<List<OrderRealm>> getCustomerOrders(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<OrderRealm> qAll = curInstance
                 .where(OrderRealm.class)
@@ -672,6 +742,7 @@ public class RealmManager {
     }
 
     void updateOrderExternalId(String orderId, String newId) {
+        if (orderId == null || orderId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderRealm order = curInstance
                 .where(OrderRealm.class)
@@ -689,6 +760,7 @@ public class RealmManager {
 
 
     void updateOrderItemPrice(String orderId, String itemId, Float value) {
+        if (orderId == null || orderId.isEmpty() || itemId == null || itemId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderLineRealm line = curInstance
                 .where(OrderLineRealm.class)
@@ -702,6 +774,7 @@ public class RealmManager {
     }
 
     void updateOrderItemQty(String orderId, String itemId, Float value) {
+        if (orderId == null || orderId.isEmpty() || itemId == null || itemId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderLineRealm line = curInstance
                 .where(OrderLineRealm.class)
@@ -716,6 +789,7 @@ public class RealmManager {
 
 
     void removeOrderItem(String orderId, String itemId) {
+        if (orderId == null || orderId.isEmpty() || itemId == null || itemId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderLineRealm line = curInstance
                 .where(OrderLineRealm.class)
@@ -732,6 +806,7 @@ public class RealmManager {
     }
 
     Observable<List<OrderLineRealm>> getOrderLinesList(String orderId) {
+        if (orderId == null || orderId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<OrderLineRealm> qAll = curInstance
                 .where(OrderLineRealm.class)
@@ -741,6 +816,7 @@ public class RealmManager {
     }
 
     List<OrderLineRealm> getOrderLines(String orderId) {
+        if (orderId == null || orderId.isEmpty()) return new ArrayList<>();
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<OrderLineRealm> qAll = curInstance
                 .where(OrderLineRealm.class)
@@ -752,6 +828,7 @@ public class RealmManager {
     }
 
     void updateOrderStatus(String orderId, int orderStatus) {
+        if (orderId == null || orderId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderRealm order = getOrderById(orderId);
         curInstance.executeTransaction(db -> {
@@ -762,6 +839,7 @@ public class RealmManager {
     }
 
     void clearOrderLines(String orderId) {
+        if (orderId == null || orderId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         RealmResults<OrderLineRealm> orderLines = curInstance
                 .where(OrderLineRealm.class)
@@ -777,6 +855,7 @@ public class RealmManager {
     }
 
     OrderRealm getCartForCustomer(String customerId) {
+        if (customerId == null || customerId.isEmpty()) return null;
         Realm curInstance = getQueryRealmInstance();
         OrderRealm result = curInstance.where(OrderRealm.class)
                 .equalTo("customer.customerId", customerId)
@@ -788,7 +867,8 @@ public class RealmManager {
                     .equalTo("customerId", customerId)
                     .findFirst();
             if (customer != null && customer.isValid()) {
-                OrderRealm tmp = new OrderRealm(customer);
+                CurrencyRealm defCurrency = getCurrencyById(ConstantManager.MAIN_CURRENCY_CODE);
+                OrderRealm tmp = new OrderRealm(customer, defCurrency);
                 curInstance.executeTransaction(db -> db.insertOrUpdate(tmp));
                 result = getCartForCustomer(customerId);
             }
@@ -798,6 +878,7 @@ public class RealmManager {
     }
 
     void updateOrderComment(String orderId, String comment) {
+        if (orderId == null || orderId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderRealm order = curInstance
                 .where(OrderRealm.class)
@@ -810,6 +891,7 @@ public class RealmManager {
     }
 
     void updateOrderPayment(String orderId, int payment) {
+        if (orderId == null || orderId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderRealm order = curInstance
                 .where(OrderRealm.class)
@@ -823,6 +905,7 @@ public class RealmManager {
     }
 
     void addItemToCart(String orderId, String itemId, float newQty, float newPrice) {
+        if (orderId == null || orderId.isEmpty() || itemId == null || itemId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderLineRealm line = curInstance
                 .where(OrderLineRealm.class)
@@ -852,6 +935,7 @@ public class RealmManager {
     }
 
     OrderRealm getOrderById(String orderId) {
+        if (orderId == null || orderId.isEmpty()) return null;
         Realm curInstance = getQueryRealmInstance();
 
         OrderRealm res = curInstance
@@ -915,7 +999,9 @@ public class RealmManager {
                 deliveryDate,
                 (Boolean.parseBoolean(orderRes.getDelivered()) ? ConstantManager.ORDER_STATUS_DELIVERED : ConstantManager.ORDER_STATUS_SENT),
                 (orderRes.getPayment().equalsIgnoreCase("cash") ? ConstantManager.ORDER_PAYMENT_CASH : ConstantManager.ORDER_PAYMENT_OFFICIAL),
-                orderRes.getCurrency(),
+                getCurrencyById(orderRes.getCurrency()),
+                getTradeById(orderRes.getTradeId()),
+                getPriceListById(orderRes.getPriceId()),
                 orderRes.getComments()
         );
 
@@ -930,7 +1016,7 @@ public class RealmManager {
 
         RealmList<OrderLineRealm> lines = new RealmList<>();
         if (orderRes.getLines() != null) {
-            for (OrderLineRes line : orderRes.getLines()){
+            for (OrderRes.OrderLineRes line : orderRes.getLines()){
                 ItemRealm mItem = curInstance
                         .where(ItemRealm.class)
                         .equalTo("itemId", line.getItemId())
@@ -957,6 +1043,7 @@ public class RealmManager {
 
 
     void deleteOrderFromRealm(String orderId) {
+        if (orderId == null || orderId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
         OrderRealm tmpOrder = curInstance
                 .where(OrderRealm.class)
@@ -1001,6 +1088,58 @@ public class RealmManager {
         List<OrderRealm> res = curInst.copyFromRealm(query.findAll());
         closeQueryInstance(curInst);
         return Observable.fromIterable(res);
+    }
+
+
+    void updateOrderCurrency(String orderId, String currencyId) {
+        if (orderId == null || orderId.isEmpty() || currencyId == null || currencyId.isEmpty()) return;
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = curInstance
+                .where(OrderRealm.class)
+                .equalTo("id", orderId)
+                .findFirst();
+        CurrencyRealm cur = curInstance
+                .where(CurrencyRealm.class)
+                .equalTo("currencyId", currencyId)
+                .findFirst();
+        if (order != null && order.isValid() && cur != null && cur.isValid()) {
+            curInstance.executeTransaction(db -> order.setCurrency(cur));
+        }
+
+        closeQueryInstance(curInstance);
+    }
+
+    void updateOrderTrade(String orderId, String tradeId) {
+        if (orderId == null || orderId.isEmpty()) return;
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = curInstance
+                .where(OrderRealm.class)
+                .equalTo("id", orderId)
+                .findFirst();
+        TradeRealm trd = (tradeId == null || tradeId.isEmpty())?null:
+                curInstance
+                .where(TradeRealm.class)
+                .equalTo("tradeId", tradeId)
+                .findFirst();
+        if (order != null && order.isValid()) {
+            curInstance.executeTransaction(db -> order.setTrade(trd));
+        }
+
+        closeQueryInstance(curInstance);
+    }
+
+    void updateOrderFactFlag(String orderId, boolean fact) {
+        if (orderId == null || orderId.isEmpty()) return;
+        Realm curInstance = getQueryRealmInstance();
+        OrderRealm order = curInstance
+                .where(OrderRealm.class)
+                .equalTo("id", orderId)
+                .findFirst();
+        if (order != null && order.isValid()) {
+            curInstance.executeTransaction(db -> order.setPayOnFact(fact));
+        }
+
+        closeQueryInstance(curInstance);
     }
 
     //endregion ====================  Orders  =========================
@@ -1090,6 +1229,8 @@ public class RealmManager {
     }
 
     void deleteGoodsGroupFromRealm(String id) {
+        if (id == null || id.isEmpty()) return;
+
         Realm curInstance = getQueryRealmInstance();
 
         List<GoodsGroupRealm> subs = curInstance.copyFromRealm(curInstance.where(GoodsGroupRealm.class).equalTo("parent.groupId", id).findAll());
@@ -1218,8 +1359,6 @@ public class RealmManager {
                 goodItemRes.getId(),
                 goodItemRes.getName(),
                 goodItemRes.getArticle(),
-                goodItemRes.getPrice() != null ? goodItemRes.getPrice().getBase() : 0f,
-                goodItemRes.getPrice() != null ? goodItemRes.getPrice().getMin() : 0f,
                 goodItemRes.getRest() != null ? goodItemRes.getRest().getStore() : 0f,
                 goodItemRes.getRest() != null ? goodItemRes.getRest().getDistribution() : 0f,
                 goodItemRes.getRest() != null ? goodItemRes.getRest().getOfficial() : 0f,
@@ -1227,13 +1366,33 @@ public class RealmManager {
                 mParent,
                 mBrand
         );
-        curInstance.executeTransaction(db -> db.insertOrUpdate(newItem));
+
+        Map<String, PriceListRealm> prices = new ArrayMap<>();
+        List<PriceListItemRealm> itemPrices= new ArrayList<>();
+        for (GoodItemRes.ItemPrice itemPrice: goodItemRes.getPriceList()) {
+            PriceListRealm curPrice = prices.get(itemPrice.getPriceId());
+            if (curPrice == null){
+                curPrice = new PriceListRealm(itemPrice.getPriceId(), itemPrice.getPriceName());
+                prices.put(itemPrice.getPriceId(), curPrice);
+            }
+
+            itemPrices.add(new PriceListItemRealm(newItem, curPrice, getCurrencyById(itemPrice.getCurrency()), itemPrice.getPrice()));
+        }
+
+
+        curInstance.executeTransaction(db -> {
+            db.insertOrUpdate(prices.values());
+            db.insertOrUpdate(itemPrices);
+            db.insertOrUpdate(newItem);
+        });
         closeQueryInstance(curInstance);
 
     }
 
 
     ItemRealm getItemById(String itemId) {
+        if (itemId == null || itemId.isEmpty()) return null;
+
         Realm curInstance = getQueryRealmInstance();
         ItemRealm result = curInstance.where(ItemRealm.class).equalTo("itemId", itemId).findFirst();
         if (result != null && isUIThread()) {
@@ -1251,10 +1410,13 @@ public class RealmManager {
 
 
     void deleteGoodItemFromRealm(String id) {
+        if (id == null || id.isEmpty()) return;
+
         Realm curInstance = getQueryRealmInstance();
 
         boolean safeDelete = (curInstance.where(CustomerDiscountRealm.class).equalTo("item.itemId", id).findFirst() == null)
-                           && (curInstance.where(OrderLineRealm.class).equalTo("item.itemId", id).findFirst() == null);
+                           && (curInstance.where(OrderLineRealm.class).equalTo("item.itemId", id).findFirst() == null)
+                           && (curInstance.where(PriceListItemRealm.class).equalTo("item.itemId", id).findFirst() == null);
 
         ItemRealm item = curInstance.where(ItemRealm.class).equalTo("itemId", id).findFirst();
         if (item!=null && item.isValid()) {
@@ -1272,12 +1434,245 @@ public class RealmManager {
         closeQueryInstance(curInstance);
     }
 
+
+    GoodsCategoryRealm getGoodsCategoryById(String categoryId) {
+        if (categoryId == null || categoryId.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        GoodsCategoryRealm result = curInstance.where(GoodsCategoryRealm.class).equalTo("categoryId", categoryId).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
     //endregion ====================  Items  =========================
 
 
+    //region =======================  Prices  =========================
+
+    void saveCurrencyToRealm(CurrencyRes currencyRes) {
+        Realm curInstance = getQueryRealmInstance();
+        curInstance.refresh();
+
+        CurrencyRealm newItem = new CurrencyRealm(
+                currencyRes.getId(),
+                currencyRes.getCurrency(),
+                currencyRes.getRate()
+        );
+        curInstance.executeTransaction(db -> db.insertOrUpdate(newItem));
+        closeQueryInstance(curInstance);
+    }
+
+    CurrencyRealm getCurrencyById(String currencyId) {
+        if (currencyId == null || currencyId.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        CurrencyRealm result = curInstance.where(CurrencyRealm.class).equalTo("currencyId", currencyId).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    CurrencyRealm getCurrencyByName(String name) {
+        if (name == null || name.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        CurrencyRealm result = curInstance.where(CurrencyRealm.class).equalTo("name", name).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    void saveTradeToRealm(TradesRes tradeRes) {
+        Realm curInstance = getQueryRealmInstance();
+        curInstance.refresh();
+
+        TradeRealm newItem = new TradeRealm(
+                tradeRes.getId(),
+                tradeRes.getName(),
+                tradeRes.isCash(),
+                tradeRes.isFact(),
+                tradeRes.isRemote()
+
+        );
+
+        RealmResults<TradeCategoryRealm> oldCategories = curInstance.where(TradeCategoryRealm.class).equalTo("trade.tradeId", tradeRes.getId()).findAll();
+
+        List<TradeCategoryRealm> newCategories = new ArrayList<>();
+
+        for (TradesRes.CategoryPercent tradeCat : tradeRes.getPercents()){
+            GoodsCategoryRealm cat = tradeCat.getCategoryId()==null?null:getGoodsCategoryById(tradeCat.getCategoryId());
+            newCategories.add(new TradeCategoryRealm(newItem, cat, tradeCat.getPercent()));
+        }
+
+        curInstance.executeTransaction(db -> {
+            oldCategories.deleteAllFromRealm();
+            db.insertOrUpdate(newItem);
+            db.insertOrUpdate(newCategories);
+        });
+        closeQueryInstance(curInstance);
+    }
+
+    TradeRealm getTradeById(String tradeId) {
+        if (tradeId == null || tradeId.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        TradeRealm result = curInstance.where(TradeRealm.class).equalTo("tradeId", tradeId).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    float getTradePercent(String tradeId, String categoryId){
+
+        if (tradeId == null || tradeId.isEmpty()) return 0;
+
+        Realm curInstance = getQueryRealmInstance();
+
+        RealmQuery<TradeCategoryRealm> tradeCategoryQuery = curInstance.where(TradeCategoryRealm.class).equalTo("trade.tradeId", tradeId);
+        TradeCategoryRealm tradeCategory;
+        if (categoryId == null || categoryId.isEmpty()) {
+            tradeCategory = tradeCategoryQuery.isNull("category").findFirst();
+        }else{
+            tradeCategory = tradeCategoryQuery.equalTo("category.categoryId", categoryId).findFirst();
+        }
+        float result;
+        if (tradeCategory == null){
+            if (categoryId == null || categoryId.isEmpty()){
+                result = 0f;
+            }else{
+                result = getTradePercent(tradeId, null);
+            }
+        }else{
+            result = tradeCategory.getPercent();
+        }
+
+        closeQueryInstance(curInstance);
+
+        return result;
+    }
+
+    PriceListRealm getPriceListById(String priceId){
+        if (priceId == null || priceId.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        PriceListRealm result = curInstance.where(PriceListRealm.class).equalTo("priceId", priceId).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    Observable<List<PriceListRealm>> getAllPriceLists(){
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<PriceListRealm> qAll = curInstance.where(PriceListRealm.class).sort("name", Sort.ASCENDING);
+        return getListObservable(curInstance, qAll);
+    }
+
+    Observable<List<TradeRealm>> getAllTrades(@Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote){
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<TradeRealm> qAll = curInstance.where(TradeRealm.class).sort("name", Sort.ASCENDING);
+        if (cash != null){
+            qAll.equalTo("cash", cash);
+        }
+        if (fact != null){
+            qAll.equalTo("fact", fact);
+        }
+        if (remote!= null){
+            qAll.equalTo("remote", remote);
+        }
+        return getListObservable(curInstance, qAll);
+    }
+
+    Observable<List<CurrencyRealm>> getAllCurrencies() {
+        Realm curInstance = getQueryRealmInstance();
+        RealmQuery<CurrencyRealm> qAll = curInstance.where(CurrencyRealm.class).sort("currencyId", Sort.ASCENDING);
+        return getListObservable(curInstance, qAll);
+    }
+
+    TradeRealm getTradeByName(String tradeName) {
+        if (tradeName == null || tradeName.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        TradeRealm result = curInstance.where(TradeRealm.class).equalTo("name", tradeName).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    PriceListRealm getPriceByName(String priceName) {
+        if (priceName == null || priceName.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        PriceListRealm result = curInstance.where(PriceListRealm.class).equalTo("name", priceName).findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    PriceListItemRealm getPriceListItem(String itemId, String priceId) {
+        if (itemId == null || itemId.isEmpty() || priceId == null || priceId.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        PriceListItemRealm result = curInstance
+                .where(PriceListItemRealm.class)
+                .equalTo("item.itemId", itemId)
+                .equalTo("priceList.priceId", priceId)
+                .findFirst();
+        if (result != null && isUIThread()) {
+            result = curInstance.copyFromRealm(result);
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
+
+    TradeRealm getFactTradeForTrade(String tradeId) {
+        if (tradeId == null || tradeId.isEmpty()) return null;
+
+        Realm curInstance = getQueryRealmInstance();
+        TradeRealm curTrade = curInstance
+                .where(TradeRealm.class)
+                .equalTo("tradeId", tradeId)
+                .findFirst();
+        TradeRealm result;
+        if (curTrade != null){
+            if (curTrade.isFact()) {
+                result = curTrade;
+            } else {
+                result = curInstance
+                        .where(TradeRealm.class)
+                        .equalTo("cash", curTrade.isCash())
+                        .equalTo("fact", true)
+                        .equalTo("remote", curTrade.isRemote())
+                        .findFirst();
+            }
+            if (result != null && isUIThread()) {
+                result = curInstance.copyFromRealm(result);
+            }
+
+        }else{
+            result = null;
+        }
+        closeQueryInstance(curInstance);
+        return result;
+    }
 
 
 
+    //endregion ====================  Prices  =========================
 
 
 

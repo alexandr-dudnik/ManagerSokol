@@ -1,9 +1,10 @@
 package com.sokolua.manager.ui.screens.settings;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -22,6 +23,8 @@ import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -138,14 +141,18 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     return true;
                 }
 
+                final Boolean currentAuto = mModel.getAutoSynchronize();
+
                 ArrayList<Observable<Integer>> obs = new ArrayList<>();
                 obs.add(Observable.just("Send orders...").doOnNext(it->mModel.sendAllOrders()).map(it->0));
                 obs.add(Observable.just("Send notes...").doOnNext(it->mModel.sendAllNotes()).map(it->1));
-                //obs.add(Observable.just("Clear DataBase...").doOnNext(it->mModel.clearDatabase()).map(it->2));
-                obs.add(mModel.updateAllGroupsFromRemote().map(it->2));
-                obs.add(mModel.updateAllGoodItemsFromRemote().map(it->3));
-                obs.add(mModel.updateAllCustomersFromRemote().map(it->4));
-                obs.add(mModel.updateAllOrdersFromRemote().map(it->5));
+                obs.add(Observable.just("Send tasks...").doOnNext(it->mModel.sendAllTasks()).map(it->2));
+                obs.add(mModel.updateCurrencyFromRemote().map(it->3));
+                obs.add(mModel.updateTradesFromRemote().map(it->4));
+                obs.add(mModel.updateAllGroupsFromRemote().map(it->5));
+                obs.add(mModel.updateAllGoodItemsFromRemote().map(it->6));
+                obs.add(mModel.updateAllCustomersFromRemote().map(it->7));
+                obs.add(mModel.updateAllOrdersFromRemote().map(it->8));
 
                 Observable.concat(obs)
                     .subscribeOn(Schedulers.io())
@@ -153,6 +160,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        mModel.updateAutoSynchronize(false);
                         if (getRootView() != null) {
                             ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().showLoad(obs.size()));
                         }
@@ -171,6 +179,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
                             getRootView().showError(e);
                         }
+                        mModel.updateAutoSynchronize(currentAuto);
                     }
 
                     @Override
@@ -178,8 +187,9 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         if (getRootView() != null) {
                             ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().updateProgress(obs.size()));
                             ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
-                            getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
+                            Objects.requireNonNull(getRootView()).showMessage(App.getStringRes(R.string.message_sync_complete));
                         }
+                        mModel.updateAutoSynchronize(currentAuto);
                     }
                 });
                 return true;
@@ -193,20 +203,23 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .setMessage(App.getStringRes(R.string.question_logout))
                         .setCancelable(false)
                         .setPositiveButton(R.string.button_positive_text, ((dialog, which) -> {
-                            Observable.just(true)
-                                .doOnNext(aBool -> mAuthModel.clearUserData())
-                                .subscribeOn(Schedulers.io())
+                            Observable.interval(1000, TimeUnit.MILLISECONDS)
+                                .filter(aBool-> mModel.checkAllJobsFinished())
+                                .take(1)
+                                .subscribeOn(Schedulers.newThread())
                                 .observeOn(Schedulers.single())
-                                .subscribe(new Observer<Boolean>() {
+                                .subscribe(new Observer<Object>() {
                                     @Override
                                     public void onSubscribe(Disposable d) {
                                         if (getRootView() != null) {
                                             ((RootActivity) getRootView()).runOnUiThread(() -> getRootView().showLoad());
                                         }
+                                        mModel.updateAutoSynchronize(false);
+                                        mModel.cancelAllJobs();
                                     }
 
                                     @Override
-                                    public void onNext(Boolean param) {
+                                    public void onNext(Object param) {
                                     }
 
                                     @Override
@@ -221,6 +234,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                                     public void onComplete() {
                                         if (getRootView() != null) {
                                             ((RootActivity) getRootView()).runOnUiThread(() -> {
+                                                mAuthModel.clearUserData();
                                                 getRootView().hideLoad();
                                                 Flow.get(getView()).replaceHistory(new AuthScreen(), Direction.REPLACE);
                                                 getRootView().showMessage(App.getStringRes(R.string.message_logout));
