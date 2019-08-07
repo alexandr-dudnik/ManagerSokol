@@ -81,6 +81,7 @@ public class SendOrderReq {
 
     //region =======================  OrderLine  =========================
 
+    @Keep
     static class OrderLineReq{
         private String item_id;
         private Float quantity;
