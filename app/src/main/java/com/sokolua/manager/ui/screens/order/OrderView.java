@@ -38,7 +38,6 @@ import java.util.Map;
 
 import butterknife.BindDrawable;
 import butterknife.BindView;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnItemSelected;
@@ -69,7 +68,6 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindDrawable(R.drawable.ic_done)       Drawable deliveredDrawable;
     @BindDrawable(R.drawable.ic_backup)     Drawable sentDrawable;
 
-    private int mStatus;
     private ItemTouchHelper itemTouchHelper;
 
     private Map<String, Integer> orderTypes = new HashMap<>();
@@ -77,11 +75,17 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     private ArrayList<String> trades = new ArrayList<>();
 
     private SimpleDateFormat dateFormat;
+
+    private int mStatus;
     private int paymentType;
+    private boolean payOnFact;
+
 
     public OrderView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
+
+
 
     @Override
     protected void initDagger(Context context) {
@@ -156,23 +160,27 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     }
 
     public void setCurrencyList(ArrayList<String> mList) {
-        final Object selectedItem = mOrderCurrency.getSelectedItem();
-        String curItem = selectedItem==null?"":selectedItem.toString();
-        mOrderCurrencyText.setText(curItem);
-        currencies = mList;
-        mOrderCurrency.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.simple_item, mList));
-        int idx = Math.max(currencies.indexOf(curItem),0);
-        mOrderCurrency.setSelection(idx);
+        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+            final Object selectedItem = mOrderCurrency.getSelectedItem();
+            String curItem = selectedItem == null ? "" : selectedItem.toString();
+            mOrderCurrencyText.setText(curItem);
+            currencies = mList;
+            mOrderCurrency.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.simple_item, mList));
+            int idx = Math.max(currencies.indexOf(curItem), 0);
+            mOrderCurrency.setSelection(idx);
+        }
     }
 
     public void setTradeList(ArrayList<String> mList) {
-        final Object selectedItem = mOrderTrade.getSelectedItem();
-        String curItem = selectedItem==null?"":selectedItem.toString();
-        mOrderTradeText.setText(curItem);
-        trades = mList;
-        mOrderTrade.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.simple_item, mList));
-        int idx = Math.max(trades.indexOf(curItem),0);
-        mOrderTrade.setSelection(idx);
+        if (mStatus == ConstantManager.ORDER_STATUS_CART){
+            final Object selectedItem = mOrderTrade.getSelectedItem();
+            String curItem = selectedItem==null?"":selectedItem.toString();
+            mOrderTradeText.setText(curItem);
+            trades = mList;
+            mOrderTrade.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.simple_item, mList));
+            int idx = Math.max(trades.indexOf(curItem),0);
+            mOrderTrade.setSelection(idx);
+        }
     }
 
 
@@ -212,25 +220,30 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     }
 
     public void setCurrency(String currency) {
-        int idx = currencies.indexOf(currency);
-        if (idx == -1) {
-            currencies.add(currency);
-            idx = currencies.size()-1;
-            setCurrencyList(currencies);
-        }
         mOrderCurrencyText.setText(currency);
-        mOrderCurrency.setSelection(idx);
+        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+            int idx = currencies.indexOf(currency);
+
+            if (idx == -1) {
+                currencies.add(currency);
+                idx = currencies.size() - 1;
+                setCurrencyList(currencies);
+            }
+            mOrderCurrency.setSelection(idx);
+        }
     }
 
     public void setTrade(String trade) {
-        int idx = trades.indexOf(trade);
-        if (idx == -1) {
-            trades.add(trade);
-            idx = trades.size()-1;
-            setTradeList(trades);
-        }
         mOrderTradeText.setText(trade);
-        mOrderTrade.setSelection(idx);
+        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+            int idx = trades.indexOf(trade);
+            if (idx == -1) {
+                trades.add(trade);
+                idx = trades.size() - 1;
+                setTradeList(trades);
+            }
+            mOrderTrade.setSelection(idx);
+        }
     }
 
     public void setOrderType(int orderType) {
@@ -243,7 +256,9 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
             }
             index++;
         }
-        mOrderType.setSelection(index);
+        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+            mOrderType.setSelection(index);
+        }
         updateVisibility();
     }
 
@@ -261,6 +276,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     }
 
     public void setFact(boolean payByFact){
+        payOnFact = payByFact;
         mOrderFact.setChecked(payByFact);
         updateVisibility();
 
@@ -321,9 +337,10 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         }
     }
 
-    @OnCheckedChanged(R.id.order_fact_chb)
-    void changeFact(CompoundButton view, boolean checked){
-        if (mStatus == ConstantManager.ORDER_STATUS_CART) {
+    @OnClick(R.id.order_fact_chb)
+    void changeFact(CompoundButton view){
+        if (mStatus == ConstantManager.ORDER_STATUS_CART && mOrderFact.isChecked() != payOnFact) {
+            payOnFact = mOrderFact.isChecked();
             mPresenter.updateFactFlag(mOrderFact.isChecked());
             updateVisibility();
         }

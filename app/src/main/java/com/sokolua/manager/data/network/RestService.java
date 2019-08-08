@@ -52,7 +52,7 @@ public interface RestService {
     @PUT("customers/{customer_id}/notes")
     Observable<Response<SendNewObjectRes>> sendNote(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendNoteReq noteReq);
 
-    @PUT("/customers/{customer_id}/tasks")
+    @PUT("customers/{customer_id}/tasks")
     Observable<Response<SendNewObjectRes>> sendTask(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendTaskReq noteReq);
 
 
