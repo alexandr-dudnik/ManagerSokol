@@ -269,8 +269,13 @@ public class RealmManager {
 
         RealmList<TaskRealm> mTasks = new RealmList<>();
         if (customerRes.getTasks() != null) {
+            Calendar cal = Calendar.getInstance();
             for (CustomerRes.TaskRes task : customerRes.getTasks()){
-                mTasks.add(new TaskRealm(newCust, task.getId(), task.getText(), task.getType()));
+                Date mTaskDate= cal.getTime();
+                try{
+                    mTaskDate = sdf.parse(task.getDate());
+                }catch (Exception ignore){}
+                mTasks.add(new TaskRealm(newCust, task.getId(), task.getText(), task.getType(), mTaskDate, task.isDone(), task.getResult()));
             }
         }
 
@@ -869,6 +874,9 @@ public class RealmManager {
             if (customer != null && customer.isValid()) {
                 CurrencyRealm defCurrency = getCurrencyById(ConstantManager.MAIN_CURRENCY_CODE);
                 OrderRealm tmp = new OrderRealm(customer, defCurrency);
+                if (tmp.getPriceList()==null) {
+                    tmp.setPriceList(getPriceListById(ConstantManager.PRICE_BASE_PRICE_ID));
+                }
                 curInstance.executeTransaction(db -> db.insertOrUpdate(tmp));
                 result = getCartForCustomer(customerId);
             }

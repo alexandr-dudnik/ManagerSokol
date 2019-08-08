@@ -166,6 +166,10 @@ public class DataManager {
     }
 
     private void updateAllAsync() {
+        sendAllNotes("");
+        sendAllTasks("");
+        sendAllOrders("");
+
         Job jCurrency = new FetchRemoteCurrencyJob();
         Job jTrades = new FetchRemoteTradesJob();
         Job jGroups = new FetchRemoteGoodGroupsJob();
@@ -306,7 +310,8 @@ public class DataManager {
 
     public void updateCustomerTask(String taskId, boolean checked, String result) {
         mRealmManager.updateCustomerTask(taskId, checked, result);
-        sendSingleTask(taskId);
+        Job sendJob = new SendCustomerTaskJob(taskId);
+        mJobManager.addJobInBackground(sendJob);
     }
 
     public Observable<List<CustomerRealm>> getCustomersByVisitDate(Date day) {
@@ -438,9 +443,9 @@ public class DataManager {
 
         return mRestService.sendTask(mPreferencesManager.getUserAuthToken(), task.getCustomer().getCustomerId(), new SendTaskReq(task))
                 .compose(new RestCallTransformer<>())
-                .doOnNext(ids ->{
-                    mRealmManager.setCustomerTaskSynced(taskId);
-                })
+                .doOnNext(ids ->
+                    mRealmManager.setCustomerTaskSynced(taskId)
+                )
                 .onExceptionResumeNext(Observable.empty())
                 .onErrorResumeNext(throwable -> {
                     Log.e("SYNC","task send", throwable);

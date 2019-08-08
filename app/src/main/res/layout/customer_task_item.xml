@@ -5,6 +5,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/customer_debt_margin"
                 android:layout_marginRight="@dimen/customer_debt_margin"
+                android:layout_marginBottom="@dimen/customer_task_spacing"
                 android:clickable="true"
                 android:focusable="true"
                 android:focusableInTouchMode="true"

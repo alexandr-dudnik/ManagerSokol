@@ -29,8 +29,7 @@ android {
         applicationId "com.sokolua.manager"
         minSdkVersion 16
         targetSdkVersion 29
-        versionName '2.0.11'
-        versionNameSuffix ' beta'
+        versionName '2.0.12'
         vectorDrawables.useSupportLibrary = true
         signingConfig signingConfigs.Main
         versionCode 2011
@@ -47,23 +46,20 @@ android {
     }
     buildTypes {
         release {
+            versionNameSuffix ''
             minifyEnabled = true
             shrinkResources = true
             debuggable = false
             signingConfig = signingConfigs.Main
 
-            //useProguard false
+            useProguard false
 
             proguardFiles   getDefaultProguardFile('proguard-android.txt')
             proguardFiles   fileTree('proguard').asList().toArray()
 
-//            buildConfigField "String[]", "RSA_SERVER", "{" +
-//                    "\"sha256/MDU6MUY6M0U6MzU6M0I6NDI6RUE6MzU6QkQ6QTc6OTk6RTE6NzI6Njg6MDQ6NTU6NzU6RTY6NTY6MjI6N0Y6RDk6RDc6MzU6QUI6RUY6N0E6QjQ6M0Y6MjY6OTA6RTE=\","+
-//                    "\"sha256/RTY6REI6MTc6MjQ6Mjg6QzA6NDc6MTI6RjQ6QjY6QkU6M0Y6RUU6NUI6RDk6NEY6NzM6NDI6NkY6M0Q6QkY6QTI6N0U6NzI6QjE6MUM6OTc6RTQ6QTM6MkE6RDk6QUY=\","+
-//                    "\"sha256/MzY6MjE6QTY6QzQ6QUQ6NTc6RDQ6OUQ6QzU6ODc6MDY6RkU6NjE6MDI6MkI6Qjg6MzQ6Rjg6NzE6Mzc6M0E6MjY6MjQ6NjI6QTM6ODY6MjM6MjY6Qzg6MEE6NzI6NkU=\""+
-//                    "}"
         }
         beta {
+            versionNameSuffix ' beta'
             minifyEnabled false
             shrinkResources false
             useProguard false
@@ -74,21 +70,17 @@ android {
             debuggable = false
         }
         debug {
+            versionNameSuffix ' debug'
             minifyEnabled = false
             debuggable = true
             jniDebuggable = true
             renderscriptDebuggable = true
 
-            //useProguard false
+            useProguard false
 
             proguardFiles   getDefaultProguardFile('proguard-android.txt')
             proguardFiles   fileTree('proguard').asList().toArray()
 
-//            buildConfigField "String[]", "RSA_SERVER", "{" +
-//                    "\"sha256/MDU6MUY6M0U6MzU6M0I6NDI6RUE6MzU6QkQ6QTc6OTk6RTE6NzI6Njg6MDQ6NTU6NzU6RTY6NTY6MjI6N0Y6RDk6RDc6MzU6QUI6RUY6N0E6QjQ6M0Y6MjY6OTA6RTE=\","+
-//                    "\"sha256/RTY6REI6MTc6MjQ6Mjg6QzA6NDc6MTI6RjQ6QjY6QkU6M0Y6RUU6NUI6RDk6NEY6NzM6NDI6NkY6M0Q6QkY6QTI6N0U6NzI6QjE6MUM6OTc6RTQ6QTM6MkE6RDk6QUY=\","+
-//                    "\"sha256/MzY6MjE6QTY6QzQ6QUQ6NTc6RDQ6OUQ6QzU6ODc6MDY6RkU6NjE6MDI6MkI6Qjg6MzQ6Rjg6NzE6Mzc6M0E6MjY6MjQ6NjI6QTM6ODY6MjM6MjY6Qzg6MEE6NzI6NkU=\""+
-//                     "}"
         }
     }
 }
@@ -115,8 +107,8 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.24'
     implementation 'com.squareup.flow:flow:1.0.0-alpha3'
     implementation 'com.squareup.mortar:mortar:0.20'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.6.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.6.1'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.1'
     //noinspection GradleDependency
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     //noinspection GradleDependency

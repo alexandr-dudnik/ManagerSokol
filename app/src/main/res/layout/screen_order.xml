@@ -102,6 +102,7 @@
                         android:id="@+id/order_trade_spin"
                         tools:listitem="@layout/simple_item"
                         style="@style/order_header_value"
+                        
                         />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -130,7 +131,7 @@
                     android:translationY="-5dp"
                     android:focusableInTouchMode="false"
                     android:focusable="false"
-                    android:saveEnabled="false"
+                    
                     />
             </androidx.appcompat.widget.LinearLayoutCompat>
             <!--Currency -->
@@ -151,7 +152,9 @@
                     <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/order_currency_spin"
                         style="@style/order_header_value"
-                        tools:listitem="@layout/simple_item" />
+                        tools:listitem="@layout/simple_item"
+                        
+                        />
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/order_currency_text"
                         android:visibility="gone"
@@ -175,7 +178,8 @@
                     <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/order_type_spin"
                         tools:listitem="@layout/simple_item"
-                        style="@style/order_header_value" />
+                        style="@style/order_header_value"
+                        />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/order_type_text"
