@@ -32,7 +32,7 @@ android {
         versionName '2.0.12'
         vectorDrawables.useSupportLibrary = true
         signingConfig signingConfigs.Main
-        versionCode 2011
+        versionCode 2012
 
         multiDexEnabled true
 
