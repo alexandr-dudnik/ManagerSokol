@@ -1,9 +1,12 @@
 package com.sokolua.manager.data.network;
 
+import androidx.annotation.Keep;
+
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.network.req.SendNoteReq;
 import com.sokolua.manager.data.network.req.SendOrderReq;
 import com.sokolua.manager.data.network.req.SendTaskReq;
+import com.sokolua.manager.data.network.req.SendVisitReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CurrencyRes;
 import com.sokolua.manager.data.network.res.CustomerRes;
@@ -25,6 +28,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
+@Keep
 public interface RestService {
     @POST("auth")
     Observable<Response<UserRes>> loginUser(@Body UserLoginReq userLoginReq);
@@ -53,8 +57,10 @@ public interface RestService {
     Observable<Response<SendNewObjectRes>> sendNote(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendNoteReq noteReq);
 
     @PUT("customers/{customer_id}/tasks")
-    Observable<Response<SendNewObjectRes>> sendTask(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendTaskReq noteReq);
+    Observable<Response<SendNewObjectRes>> sendTask(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendTaskReq taskReq);
 
+    @PUT("customers/{customer_id}/visits")
+    Observable<Response<SendNewObjectRes>> sendVisit(@Header(ConstantManager.HEADER_TOKEN)String token, @Path("customer_id")String customerId, @Body SendVisitReq visitReq);
 
 
     @GET("orders")

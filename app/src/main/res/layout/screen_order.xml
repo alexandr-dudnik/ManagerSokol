@@ -64,7 +64,7 @@
                 style="@style/order_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_below="@id/order_status_image"/>
+                android:layout_below="@id/order_title_text"/>
 
             <!-- region Header -->
             <!--Price List -->

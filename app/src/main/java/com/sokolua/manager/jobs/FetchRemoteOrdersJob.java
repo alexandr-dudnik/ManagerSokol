@@ -1,48 +1,18 @@
 package com.sokolua.manager.jobs;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.birbit.android.jobqueue.Job;
-import com.birbit.android.jobqueue.Params;
-import com.birbit.android.jobqueue.RetryConstraint;
-import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
-import com.sokolua.manager.utils.AppConfig;
 
-import io.reactivex.schedulers.Schedulers;
-
-public class FetchRemoteOrdersJob extends Job {
+public class FetchRemoteOrdersJob extends AbstractJob {
 
     public FetchRemoteOrdersJob() {
-        super(new Params(JobPriority.HIGH)
-            .requireNetwork()
-            .persist()
-            .singleInstanceBy("FetchOrders")
-            .groupBy("FetchRemoteLists")
-                .addTags(ConstantManager.UPDATE_JOB_TAG)
-        );
-    }
-
-    @Override
-    public void onAdded() {
+        super( "FetchOrders"
+                , "FetchRemoteLists"
+                , JobPriority.HIGH);
     }
 
     @Override
     public void onRun() throws Throwable {
-        DataManager.getInstance()
-                .updateOrdersFromRemote()
-                .observeOn(Schedulers.single())
-                .blockingSubscribe()
-        ;
+        runJob(DataManager.getInstance().updateOrdersFromRemote());
     }
 
-    @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-    }
-
-    @Override
-    protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        return RetryConstraint.createExponentialBackoff(runCount, AppConfig.INITIAL_BACK_OFF_IN_MS);
-    }
 }

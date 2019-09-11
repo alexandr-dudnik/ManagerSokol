@@ -1,7 +1,12 @@
 package com.sokolua.manager.ui.screens.settings;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -23,7 +28,6 @@ import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -116,10 +120,40 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .setVisible(true)
                     .setBackArrow(true)
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, syncClickCallback(), ConstantManager.MENU_ITEM_TYPE_ACTION))
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_update_application), R.drawable.ic_update, updateApplication(), ConstantManager.MENU_ITEM_TYPE_ACTION))
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_google_play), R.drawable.ic_google_play, checkGooglePlayUpdates(), ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_logout), R.drawable.ic_logout, logoutClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .setTitle(App.getStringRes(R.string.menu_settings))
                     .build();
 
+        }
+
+        private MenuItem.OnMenuItemClickListener updateApplication() {
+            return item ->{
+                if (getRootView() != null) {
+                    final String gPlayPackageName = App.getContext().getPackageName(); // getPackageName() from Context or Activity object
+                    try {
+                        ((Activity) getRootView()).startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + gPlayPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        ((Activity) getRootView()).startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + gPlayPackageName)));
+                    }
+                }
+                return true;
+            };
+        }
+
+        private MenuItem.OnMenuItemClickListener checkGooglePlayUpdates() {
+            return item ->{
+                if (getRootView() != null) {
+                    final String gPlayPackageName = "com.google.android.gms"; // getPackageName() from Context or Activity object
+                    try {
+                        ((Activity) getRootView()).startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + gPlayPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        ((Activity) getRootView()).startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + gPlayPackageName)));
+                    }
+                }
+                return true;
+            };
         }
 
         @NonNull
@@ -142,17 +176,20 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 }
 
                 final Boolean currentAuto = mModel.getAutoSynchronize();
+                mModel.updateAutoSynchronize(false);
 
                 ArrayList<Observable<Integer>> obs = new ArrayList<>();
-                obs.add(Observable.just("Send orders...").doOnNext(it->mModel.sendAllOrders()).map(it->0));
-                obs.add(Observable.just("Send notes...").doOnNext(it->mModel.sendAllNotes()).map(it->1));
-                obs.add(Observable.just("Send tasks...").doOnNext(it->mModel.sendAllTasks()).map(it->2));
-                obs.add(mModel.updateCurrencyFromRemote().map(it->3));
-                obs.add(mModel.updateTradesFromRemote().map(it->4));
-                obs.add(mModel.updateAllGroupsFromRemote().map(it->5));
-                obs.add(mModel.updateAllGoodItemsFromRemote().map(it->6));
-                obs.add(mModel.updateAllCustomersFromRemote().map(it->7));
-                obs.add(mModel.updateAllOrdersFromRemote().map(it->8));
+                obs.add(mModel.authenticate().map(it->0));
+                obs.add(Observable.just("Send orders...").doOnNext(it->mModel.sendAllOrders()).map(it->1));
+                obs.add(Observable.just("Send notes...").doOnNext(it->mModel.sendAllNotes()).map(it->2));
+                obs.add(Observable.just("Send tasks...").doOnNext(it->mModel.sendAllTasks()).map(it->3));
+                obs.add(Observable.just("Send visits...").doOnNext(it->mModel.sendAllVisits()).map(it->4));
+                obs.add(mModel.updateCurrencyFromRemote().map(it->5));
+                obs.add(mModel.updateTradesFromRemote().map(it->6));
+                obs.add(mModel.updateAllGroupsFromRemote().map(it->7));
+                obs.add(mModel.updateAllGoodItemsFromRemote().map(it->8));
+                obs.add(mModel.updateAllCustomersFromRemote().map(it->9));
+                obs.add(mModel.updateAllOrdersFromRemote().map(it->10));
 
                 Observable.concat(obs)
                     .subscribeOn(Schedulers.io())
@@ -160,9 +197,12 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        mModel.updateAutoSynchronize(false);
                         if (getRootView() != null) {
-                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().showLoad(obs.size()));
+                            ((RootActivity)getRootView()).runOnUiThread(() -> {
+                                getRootView().showLoad(obs.size());
+                                Window win = ((Activity) getRootView()).getWindow();
+                                win.setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                            });
                         }
                     }
 
@@ -176,8 +216,13 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     @Override
                     public void onError(Throwable e) {
                         if (getRootView() != null) {
-                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
-                            getRootView().showError(e);
+                            ((RootActivity)getRootView()).runOnUiThread(() -> {
+                                Window win = ((Activity) getRootView()).getWindow();
+                                win.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+                                getRootView().hideLoad();
+                                getRootView().showError(e);
+                            });
                         }
                         mModel.updateAutoSynchronize(currentAuto);
                     }
@@ -185,9 +230,15 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     @Override
                     public void onComplete() {
                         if (getRootView() != null) {
-                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().updateProgress(obs.size()));
-                            ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
-                            Objects.requireNonNull(getRootView()).showMessage(App.getStringRes(R.string.message_sync_complete));
+                            ((RootActivity)getRootView()).runOnUiThread(() -> {
+                                getRootView().updateProgress(obs.size());
+                                getRootView().hideLoad();
+
+                                Window win = ((Activity) getRootView()).getWindow();
+                                win.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+                                getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
+                            });
                         }
                         mModel.updateAutoSynchronize(currentAuto);
                     }

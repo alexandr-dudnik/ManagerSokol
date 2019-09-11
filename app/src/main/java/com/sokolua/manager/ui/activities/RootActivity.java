@@ -22,6 +22,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -186,20 +187,24 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
         }
-        mProgressDialog.show();
-        mProgressDialog.setContentView(R.layout.progress_root);
-        ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
-        mProgressBar.setVisibility(View.GONE);
+        if (this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            mProgressDialog.show();
+            mProgressDialog.setContentView(R.layout.progress_root);
+            ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
 
     @Override
     public void showLoad(int progressBarMax) {
-        showLoad();
-        ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
-        mProgressBar.setMax(progressBarMax);
-        mProgressBar.setProgress(0);
-        mProgressBar.setVisibility(View.VISIBLE);
+        if (this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            showLoad();
+            ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
+            mProgressBar.setMax(progressBarMax);
+            mProgressBar.setProgress(0);
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -214,7 +219,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void hideLoad() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+        if (this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) && mProgressDialog != null && mProgressDialog.isShowing()) {
             ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
             if (mProgressBar.getVisibility() == View.VISIBLE){
                 mProgressBar.setVisibility(View.GONE);

@@ -2,6 +2,7 @@ package com.sokolua.manager.utils;
 
 import android.app.Application;
 import android.content.Context;
+import android.hardware.Camera;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
@@ -30,6 +31,27 @@ public class App extends Application {
     private MortarScope mRootScope;
     private MortarScope mRootActivityScope;
     private static RootActivity.RootComponent mRootActivityRootComponent;
+    private static Camera cam;
+
+    public static Camera getCameraInstance() {
+        if (cam != null) return cam;
+        try {
+            cam = Camera.open(); // attempt to get a Camera instance
+            cam.setDisplayOrientation(90);
+        }
+        catch (Throwable ignore){}
+        return cam; // returns null if camera is unavailable
+    }
+
+    public static void releaseCamera(){
+        if (cam != null) {
+            try{
+               cam.release();
+               cam = null;
+            }catch (Throwable ignore){}
+        }
+
+    }
 
     @Override
     public void onCreate() {

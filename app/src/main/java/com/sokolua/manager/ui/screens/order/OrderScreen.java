@@ -27,6 +27,7 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.goods.GoodsScreen;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.MiscUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -323,15 +324,21 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                 final EditText input = new EditText(getView().getContext());
                 alert.setView(input);
                 input.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), line.getPrice()));
-
                 input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 input.setRawInputType(Configuration.KEYBOARD_12KEY);
+                input.setEnabled(line.getPrice() < 0.01f);
 
                 alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                     float newValue = 0f;
                     try{
                         newValue = Float.parseFloat(input.getText().toString().replace(",","."));
                     }catch (Throwable ignore){}
+
+                    if (currentOrder.getTrade()!=null && !currentOrder.getTrade().isCash()){
+                        newValue = MiscUtils.roundPrice(newValue);
+                    }
+
+
                     //check price
                     final double itemLowPrice = mModel.getItemLowPrice(line.getItem().getItemId());
                     if (newValue < itemLowPrice) {
@@ -384,7 +391,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         public void updatePayment(int payment) {
-            mModel.updateOrderPayment(currentOrderId, payment);
+            int mPayment = currentOrder != null && currentOrder.isValid() ? currentOrder.getPayment() : -1;
+            if (mPayment != payment) {
+                mModel.updateOrderPayment(currentOrderId, payment);
+            }
         }
 
 
@@ -399,15 +409,24 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         public void updateCurrency(String currency) {
-            mModel.updateOrderCurrency(currentOrderId, mModel.getCurrencyByName(currency).getCurrencyId());
+            CurrencyRealm mCurrency = currentOrder!=null && currentOrder.isValid()? currentOrder.getCurrency() : null;
+            if (mCurrency!=null && mCurrency.isValid() && (!mCurrency.getName().equals(currency))) {
+                mModel.updateOrderCurrency(currentOrderId, mModel.getCurrencyByName(currency).getCurrencyId());
+            }
         }
 
         public void updateTrade(String tradeName) {
-            mModel.updateOrderTrade(currentOrderId, mModel.getTradeByName(tradeName).getTradeId());
+            TradeRealm mTrade = currentOrder!=null && currentOrder.isValid()? currentOrder.getTrade() : null;
+            if (mTrade!=null && mTrade.isValid() && (!mTrade.getName().equals(tradeName))) {
+                mModel.updateOrderTrade(currentOrderId, mModel.getTradeByName(tradeName).getTradeId());
+            }
         }
 
         public void updateFactFlag(boolean checked) {
-            mModel.updateOrderFactFlag(currentOrderId, checked);
+            TradeRealm mTrade = currentOrder!=null && currentOrder.isValid()? currentOrder.getTrade() : null;
+            if (mTrade!=null && mTrade.isValid() && (mTrade.isFact() != checked)) {
+                mModel.updateOrderFactFlag(currentOrderId, checked);
+            }
         }
 
         public void openCommentDialog() {

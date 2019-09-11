@@ -34,6 +34,7 @@ import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.MiscUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -254,9 +255,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 orderLinesChangeListener = orderLineRealms -> {
                             if (!orderLineRealms.isLoaded() || !orderLineRealms.isValid()){
                                 orderLineRealms.removeAllChangeListeners();
-                            }else{
-                                getView().setCartAmount(currentCart.getTotal());
-                                getView().setCartItemsCount(currentCart.getLines().size());
+                            }else {
+                                if (currentCart != null && getView() != null){
+                                    getView().setCartAmount(currentCart.getTotal());
+                                    getView().setCartItemsCount(currentCart.getLines().size());
+                                }
                             }
                         };
                 currentCart.getLines().addChangeListener(orderLinesChangeListener);
@@ -574,6 +577,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     View view = layoutInflater.inflate(R.layout.add_item_to_cart, null);
                     EditText inputPrice = view.findViewById(R.id.item_price);
                     inputPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemPrice));
+                    inputPrice.setEnabled(itemPrice < 0.01f);
                     EditText inputQty  = view.findViewById(R.id.item_quantity);
                     inputQty.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),1f));
                     TextView textDiscount  = view.findViewById(R.id.item_discount);
@@ -593,6 +597,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                         float newPrice = 0;
                         try{newPrice = Float.parseFloat(inputPrice.getText().toString().replace(",","."));}catch (Throwable ignore){}
+                        if (trade!=null && !trade.isCash()){
+                            newPrice = MiscUtils.roundPrice(newPrice);
+                        }
                         float newQty = 0 ;
                         try{newQty = Float.parseFloat(inputQty.getText().toString());}catch (Throwable ignore){}
                         //check price

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="splash_logo_margin">48dp</dimen>
-    <dimen name="bottom_bar_height">40dp</dimen>
+    <dimen name="bottom_bar_height">48dp</dimen>
     <!-- Login  -->
     <dimen name="login_form_margin">48dp</dimen>
     <dimen name="login_form_corners">15dp</dimen>
@@ -47,5 +47,13 @@
     <dimen name="order_header_text_size">15sp</dimen>
     <dimen name="customer_task_spacing">8dp</dimen>
 
+    <!-- Routes list  -->
+    <dimen name="route_list_item_margin">16dp</dimen>
+    <dimen name="route_list_item_height">54dp</dimen>
+    <dimen name="route_list_item_fontSize">16sp</dimen>
+    <dimen name="route_list_header_fontSize">20sp</dimen>
+    <dimen name="route_list_item_icon">32dp</dimen>
+    <dimen name="route_list_icon_margin">16dp</dimen>
+    <dimen name="check_in_map_size">150dp</dimen>
 
 </resources>

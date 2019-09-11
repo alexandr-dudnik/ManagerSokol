@@ -1,13 +1,12 @@
 package com.sokolua.manager.data.storage.realm;
 
-import androidx.annotation.Keep;
-
 import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
+import io.realm.internal.Keep;
 
 @Keep
 public class VisitRealm extends RealmObject {
@@ -84,14 +83,18 @@ public class VisitRealm extends RealmObject {
         this.toSync = toSync;
     }
 
-    public void setVisited(Date visited, float longitude, float latitude, String imageURI) {
+    public void setVisited(Date visited, float longitude, float latitude) {
         this.visited = visited;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.imageURI = imageURI;
+        this.done = true;
         this.toSync = true;
     }
 
+    public void setImageURI(String imageURI) {
+        this.imageURI = imageURI;
+        this.toSync = true;
+    }
 
     //endregion ================== Setters =========================
 

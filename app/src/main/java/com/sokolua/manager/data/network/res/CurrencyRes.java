@@ -1,6 +1,7 @@
 package com.sokolua.manager.data.network.res;
 
-import io.realm.internal.Keep;
+
+import androidx.annotation.Keep;
 
 @Keep
 public class CurrencyRes {

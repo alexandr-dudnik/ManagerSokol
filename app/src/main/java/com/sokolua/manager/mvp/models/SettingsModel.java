@@ -1,5 +1,6 @@
 package com.sokolua.manager.mvp.models;
 
+import com.sokolua.manager.data.network.res.UserRes;
 import com.sokolua.manager.data.storage.realm.CurrencyRealm;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
@@ -74,5 +75,13 @@ public class SettingsModel extends AbstractModel {
 
     public Boolean checkAllJobsFinished() {
         return mDataManager.jobQueueIsEmpty();
+    }
+
+    public void sendAllVisits() {
+        mDataManager.sendAllVisits("");
+    }
+
+    public Observable<UserRes> authenticate() {
+        return mDataManager.loginUser(mDataManager.getUserName(), mDataManager.getUserPassword());
     }
 }

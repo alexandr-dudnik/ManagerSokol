@@ -1,8 +1,9 @@
 package com.sokolua.manager.data.network.res;
 
+import androidx.annotation.Keep;
+
 import java.util.List;
 
-import io.realm.internal.Keep;
 
 @Keep
 public class GoodItemRes {

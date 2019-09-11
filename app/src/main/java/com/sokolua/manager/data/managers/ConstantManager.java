@@ -1,11 +1,18 @@
 package com.sokolua.manager.data.managers;
 
+import androidx.annotation.Keep;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.utils.App;
 
+@Keep
 public class ConstantManager {
     public static final int UPDATE_REQUEST_CODE = 556677;
+
     public static final int REQUEST_PERMISSION_READ_EXTERNAL_MEMORY = 3001;
+    public static final int REQUEST_PERMISSION_USE_CAMERA = 3002;
+    public static final int REQUEST_CHECK_SETTINGS = 3003;
+
     public static final String FILE_PROVIDER_AUTHORITY = "com.sokolua.manager.fileprovider";
     public static final String HEADER_LAST_MODIFIED = "Last-Modified";
     public static final String HEADER_IF_MODIFIED_SINCE = "Is-Modified-Since";
@@ -51,4 +58,7 @@ public class ConstantManager {
     public static final String STATE_GOODS_CURRENCY_KEY = "CART_CURRENCY";
 
     public static final String UPDATE_JOB_TAG = App.getContext().getPackageName() + ".update_job";
+
+    public static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
+    public static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
 }

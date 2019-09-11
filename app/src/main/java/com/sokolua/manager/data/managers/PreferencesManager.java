@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import androidx.annotation.Keep;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
+@Keep
 public class PreferencesManager {
     private static final String LAST_UPDATE_KEY = "pref_last_update";
     private static final String SERVER_ADDRESS_STRING = "pref_server_address";

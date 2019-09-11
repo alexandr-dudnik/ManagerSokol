@@ -8,12 +8,12 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0-rc02'
-        classpath 'io.realm:realm-gradle-plugin:5.13.0'
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'io.realm:realm-gradle-plugin:5.15.1'
 
 
         // Check for v3.1.2 or higher
-        classpath 'com.google.gms:google-services:4.3.0'
+        classpath 'com.google.gms:google-services:4.3.1'
         // Add dependency
         classpath 'io.fabric.tools:gradle:1.26.1'
 
