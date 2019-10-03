@@ -14,9 +14,9 @@ public class MiscUtils {
 
 
     public static float roundPrice(float price){
-        final float mPrice= Math.round(price*100 + .499999999);
+        final float mPrice= Math.round(price*100*100/(100+AppConfig.VAT_VALUE) + .499999999);
         final int mcd = AppConfig.VAT_VALUE == 0 ? 100 : findMaxCommonDivider(AppConfig.VAT_VALUE, 100);
         final float divider = 100/mcd;
-        return divider * Math.round(mPrice/divider+.4999999999)/100;
+        return divider * (Math.round(mPrice/divider + .4999999999)/100f) *(100+AppConfig.VAT_VALUE)/100f;
     }
 }

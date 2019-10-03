@@ -171,8 +171,8 @@ public class RootPresenter extends Presenter<IRootView> {
     }
 
 
-    public void onRequstPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResult){
-        // TODO: 19.02.2017 implement request result
+    public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResult){
+
     }
 
     public class ActionBarBuilder{

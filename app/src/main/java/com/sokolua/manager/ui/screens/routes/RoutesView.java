@@ -45,11 +45,13 @@ public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Calendar cal = Calendar.getInstance();
-        cal.setFirstDayOfWeek(Calendar.MONDAY);
-        int dw = cal.get(Calendar.DAY_OF_WEEK)-cal.getFirstDayOfWeek();
-        dw = dw<0?(7+dw):dw;
-        dayClick(mButtons.get(dw));
+        if (!isInEditMode()){
+            Calendar cal = Calendar.getInstance();
+            cal.setFirstDayOfWeek(Calendar.MONDAY);
+            int dw = cal.get(Calendar.DAY_OF_WEEK)-cal.getFirstDayOfWeek();
+            dw = dw<0?(7+dw):dw;
+            dayClick(mButtons.get(dw));
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.sokolua.manager.data.storage.realm;
 
-import androidx.annotation.Keep;
 
 import com.sokolua.manager.data.managers.ConstantManager;
 
@@ -14,6 +13,7 @@ import io.realm.RealmResults;
 import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
+import io.realm.internal.Keep;
 
 @Keep
 public class OrderRealm extends RealmObject implements Serializable{

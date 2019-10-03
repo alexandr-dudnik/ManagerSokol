@@ -122,7 +122,12 @@ public class CustomerModel extends AbstractModel {
         Observable.just(customerId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.io())
-                .flatMap(id -> mDataManager.updateCustomerFromRemote(id))
+                .doOnNext(id -> {
+                    mDataManager.sendAllNotes(id);
+                    mDataManager.sendAllTasks(id);
+                    mDataManager.sendAllVisits(id);
+                    mDataManager.updateCustomerFromRemote(id);
+                })
                 .subscribe();
     }
 }

@@ -54,6 +54,11 @@
     <string name="menu_logout">Вийти</string>
     <string name="menu_synchronize">Синхронізація</string>
     <string name="menu_brands">Бренди</string>
+    <string name="menu_prices">Прайс</string>
+    <string name="menu_trades">Умови</string>
+    <string name="menu_currency">Валюта</string>
+    <string name="menu_google_play">Оновити Google Service</string>
+    <string name="menu_update_application">Перевірити оновлення</string>
 
     <!-- Customer screen -->
     <string name="customer_tab_info">Інфо</string>
@@ -105,6 +110,10 @@
     <string name="action_clear_order">Очистити</string>
     <string name="order_items_counter_title">Товарів</string>
     <string name="order_no_orders">Замовлення відсутні</string>
+    <string name="no_trades">Без умов</string>
+    <string name="order_price_title">Прайс</string>
+    <string name="order_trade_title">Умови</string>
+    <string name="order_fact_title">Оплата по факту</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">СФ</string>
@@ -126,23 +135,26 @@
     <string name="routes_no_route" >На цей день маршрут не визначено</string>
 
 
+    <!-- CheckIn screen -->
+    <string name="check_in">Вiдмiтка</string>
+    <string name="permission_need_camera">Для вiдмiтки потрiбна камера</string>
+    <string name="map_latitude_header">Шир:</string>
+    <string name="map_address_label">Мапа:</string>
+    <string name="permission_title">Потрiбнi дозволи</string>
+    <string name="message_unable_checkin">Вiмкнiть геолокацiю, щоб вiдмiтитись</string>
+    <string name="map_longitude_header">Довг:</string>
+
     <!-- Sync screen -->
     <string name="settings_auto_sync">Авто. синхронізація</string>
     <string name="settings_server_address">Адрес серверу</string>
-    <string name="message_sync_complete">Сихронізацію завершено! Розпочато оновлення фоном...</string>
+    <string name="message_sync_complete">Сихронізацію завершено! Розпочато оновлення фоном…</string>
     <string name="api_error_text">Помилка API</string>
     <string name="error_text">Помилка</string>
     <string name="illegal_database_update">Неможливо оновити дані з варсії v%d на версію v%d</string>
     <string name="connection_timeout">Неможливо з\'єднатися з сервером</string>
-    <string name="menu_prices">Прайс</string>
-    <string name="menu_trades">Умови</string>
-    <string name="no_trades">Без умов</string>
-    <string name="menu_currency">Валюта</string>
-    <string name="order_price_title">Прайс</string>
-    <string name="order_trade_title">Умови</string>
-    <string name="order_fact_title">Оплата по факту</string>
 
 
     <!-- newly added -->
+    <string name="dummy">--</string>
 
 </resources>

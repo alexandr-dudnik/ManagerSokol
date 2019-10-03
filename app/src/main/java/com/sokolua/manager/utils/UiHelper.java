@@ -1,6 +1,7 @@
 package com.sokolua.manager.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -16,7 +17,9 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
@@ -76,6 +79,52 @@ public class UiHelper {
                 //fos = App.getContext().openFileOutput(result, Context.MODE_PRIVATE);
                 byte[] decodedString = android.util.Base64.decode(imageSource, android.util.Base64.DEFAULT);
                 fos.write(decodedString);
+                fos.flush();
+                fos.close();
+            }
+
+        } catch (Exception e) {
+            return "";
+        } finally {
+            if (fos != null) {
+                fos = null;
+            }
+        }
+        return result;
+    }
+
+    public static String getBase64FromImage(String name){
+        FileInputStream fis = null;
+        String result = "";
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            fis = new FileInputStream(new File(name));
+
+            byte[] buf = new byte[1024];
+            int n;
+            while (-1 != (n = fis.read(buf)))
+                baos.write(buf, 0, n);
+            byte[] bytes = baos.toByteArray();
+            result = android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
+        } catch (Throwable ignore) {
+        } finally {
+            if (fis != null) {
+                fis = null;
+            }
+        }
+        return result;
+    }
+
+
+
+    public static String saveImageBitmap(final Bitmap imageSource, String name){
+        File cacheDir = App.getContext().getFilesDir();
+        String result = cacheDir.getPath() + "/" + name+".png";
+        FileOutputStream fos = null;
+        try {
+            if (imageSource != null) {
+                fos = new FileOutputStream(result);
+                imageSource.compress(Bitmap.CompressFormat.JPEG, 75, fos);
                 fos.flush();
                 fos.close();
             }

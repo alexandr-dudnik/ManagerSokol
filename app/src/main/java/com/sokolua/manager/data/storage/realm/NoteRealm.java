@@ -1,7 +1,6 @@
 package com.sokolua.manager.data.storage.realm;
 
 
-import androidx.annotation.Keep;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -11,6 +10,7 @@ import java.util.UUID;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
+import io.realm.internal.Keep;
 
 @Keep
 public class NoteRealm extends RealmObject implements Serializable {

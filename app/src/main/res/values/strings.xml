@@ -1,7 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Manager Sokol</string>
 
-
     <!-- Fabric -->
     <string name="com.crashlytics.CrashSubmissionPromptTitle" tools:ignore="ExtraTranslation">Send Crash Report?</string>
     <string name="com.crashlytics.CrashSubmissionPromptMessage" tools:ignore="ExtraTranslation">Looks like we crashed! Please help us fix the problem by sending a crash report.</string>
@@ -61,6 +60,11 @@
     <string name="menu_logout">Logout</string>
     <string name="menu_synchronize">Synchronization</string>
     <string name="menu_brands">Brands</string>
+    <string name="menu_prices">Price</string>
+    <string name="menu_trades">TC</string>
+    <string name="menu_currency">Currency</string>
+    <string name="menu_google_play">Update Google Service</string>
+    <string name="menu_update_application">Check for updates</string>
 
     <!-- Customer screen -->
     <string name="customer_tab_info">Info</string>
@@ -112,6 +116,10 @@
     <string name="action_clear_order">Clear order</string>
     <string name="order_items_counter_title">Number of items</string>
     <string name="order_no_orders">No orders</string>
+    <string name="no_trades">No conditions</string>
+    <string name="order_price_title">Price list</string>
+    <string name="order_trade_title">Trade cond.</string>
+    <string name="order_fact_title">Pay by fact</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">Str</string>
@@ -133,23 +141,26 @@
     <string name="routes_no_route" >No route assigned for this day</string>
 
 
+    <!-- CheckIn screen -->
+    <string name="check_in">Check in</string>
+    <string name="permission_need_camera">We need camera access to check in</string>
+    <string name="map_latitude_header">Lat:</string>
+    <string name="map_longitude_header">Long:</string>
+    <string name="map_address_label">Map:</string>
+    <string name="permission_title">Need a permission</string>
+    <string name="message_unable_checkin">The geolocation is needed to check in</string>
+
     <!-- Sync screen -->
     <string name="settings_auto_sync">Auto synchronization</string>
     <string name="settings_server_address">Server address</string>
-    <string name="message_sync_complete">Synchronization complete! Start background update..</string>
+    <string name="message_sync_complete">Synchronization complete! Start background update…</string>
     <string name="api_error_text">API error</string>
     <string name="error_text">Error</string>
     <string name="illegal_database_update">Migration missing from v%d to v%d</string>
     <string name="connection_timeout">Can\'t connect to server</string>
-    <string name="menu_prices">Price</string>
-    <string name="menu_trades">TC</string>
-    <string name="no_trades">No conditions</string>
-    <string name="menu_currency">Currency</string>
-    <string name="order_price_title">Price list</string>
-    <string name="order_trade_title">Trade cond.</string>
-    <string name="order_fact_title">Pay by fact</string>
 
 
     <!-- newly added -->
+    <string name="dummy">--</string>
 
 </resources>

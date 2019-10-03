@@ -2,17 +2,21 @@ package com.sokolua.manager.data.managers;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.TagConstraint;
+import com.birbit.android.jobqueue.callback.JobManagerCallback;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.sokolua.manager.data.network.RestCallTransformer;
 import com.sokolua.manager.data.network.RestService;
 import com.sokolua.manager.data.network.req.SendNoteReq;
 import com.sokolua.manager.data.network.req.SendOrderReq;
 import com.sokolua.manager.data.network.req.SendTaskReq;
+import com.sokolua.manager.data.network.req.SendVisitReq;
 import com.sokolua.manager.data.network.req.UserLoginReq;
 import com.sokolua.manager.data.network.res.CustomerRes;
 import com.sokolua.manager.data.network.res.GoodGroupRes;
@@ -33,6 +37,7 @@ import com.sokolua.manager.data.storage.realm.PriceListItemRealm;
 import com.sokolua.manager.data.storage.realm.PriceListRealm;
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 import com.sokolua.manager.data.storage.realm.TradeRealm;
+import com.sokolua.manager.data.storage.realm.VisitRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.DaggerDataManagerComponent;
 import com.sokolua.manager.di.components.DataManagerComponent;
@@ -47,6 +52,7 @@ import com.sokolua.manager.jobs.FetchRemoteTradesJob;
 import com.sokolua.manager.jobs.SendCustomerNoteJob;
 import com.sokolua.manager.jobs.SendCustomerTaskJob;
 import com.sokolua.manager.jobs.SendOrderJob;
+import com.sokolua.manager.jobs.SendVisitJob;
 import com.sokolua.manager.jobs.UpdateCustomerJob;
 import com.sokolua.manager.jobs.UpdateGoodGroupJob;
 import com.sokolua.manager.jobs.UpdateGoodItemJob;
@@ -102,14 +108,52 @@ public class DataManager {
 
         updateRetrofitBaseUrl();
 
-
         Configuration config = new Configuration.Builder(App.getContext())
                 .minConsumerCount(AppConfig.MIN_CONSUMER_COUNT) //minimum 1 consumer alive
                 .maxConsumerCount(AppConfig.MAX_CONSUMER_COUNT) //maximum 3 consumers
                 .loadFactor(AppConfig.LOAD_FACTOR) // maximum 3 jobs per consumer
                 .consumerKeepAlive(AppConfig.KEEP_ALIVE) //wait 2 minutes
+                .resetDelaysOnRestart()
                 .build();
         mJobManager = new JobManager(config);
+        mJobManager.addCallback(new JobManagerCallback() {
+            @Override
+            public void onJobAdded(@NonNull Job job) {}
+
+            @Override
+            public void onJobRun(@NonNull Job job, int resultCode) {}
+
+            @Override
+            public void onJobCancelled(@NonNull Job job, boolean byCancelRequest, @Nullable Throwable throwable) {
+                if (!byCancelRequest && job.isCancelled() && job.isPersistent() ){
+                    if (job instanceof FetchRemoteCurrencyJob) mJobManager.addJobInBackground(new FetchRemoteCurrencyJob());
+                    if (job instanceof FetchRemoteCustomersJob) mJobManager.addJobInBackground(new FetchRemoteCustomersJob());
+                    if (job instanceof FetchRemoteGoodGroupsJob) mJobManager.addJobInBackground(new FetchRemoteGoodGroupsJob());
+                    if (job instanceof FetchRemoteGoodItemsJob) mJobManager.addJobInBackground(new FetchRemoteGoodItemsJob());
+                    if (job instanceof FetchRemoteOrdersJob) mJobManager.addJobInBackground(new FetchRemoteOrdersJob());
+                    if (job instanceof FetchRemoteTradesJob) mJobManager.addJobInBackground(new FetchRemoteTradesJob());
+                    if (job instanceof SendCustomerNoteJob) mJobManager.addJobInBackground(new SendCustomerNoteJob(((SendCustomerNoteJob) job).getJobId()));
+                    if (job instanceof SendCustomerTaskJob) mJobManager.addJobInBackground(new SendCustomerTaskJob(((SendCustomerTaskJob) job).getJobId()));
+                    if (job instanceof SendOrderJob) mJobManager.addJobInBackground(new SendOrderJob(((SendOrderJob) job).getJobId()));
+                    if (job instanceof SendVisitJob) mJobManager.addJobInBackground(new SendVisitJob(((SendVisitJob) job).getJobId()));
+                    if (job instanceof UpdateGoodGroupJob) mJobManager.addJobInBackground(new UpdateGoodGroupJob(((UpdateGoodGroupJob) job).getJobId()));
+                    if (job instanceof UpdateGoodItemJob) mJobManager.addJobInBackground(new UpdateGoodItemJob(((UpdateGoodItemJob) job).getJobId()));
+                    if (job instanceof UpdateOrderJob) mJobManager.addJobInBackground(new UpdateOrderJob(((UpdateOrderJob) job).getJobId()));
+
+                    Log.d(App.getContext().getPackageName(), "Job "+job.getClass().getSimpleName()+" id = " + job.getSingleInstanceId() + " restarted!");
+                    if (throwable!=null) {
+                        Log.e(App.getContext().getPackageName(), throwable.getMessage(), throwable);
+                    }
+                }
+            }
+
+            @Override
+            public void onDone(@NonNull Job job) {}
+
+            @Override
+            public void onAfterJobRun(@NonNull Job job, int resultCode) {}
+        });
+
         if (!getAutoSynchronize()) {
             mJobManager.stop();
         }
@@ -166,9 +210,12 @@ public class DataManager {
     }
 
     private void updateAllAsync() {
+        mRealmManager.compactDatabase();
+
         sendAllNotes("");
         sendAllTasks("");
         sendAllOrders("");
+        sendAllVisits("");
 
         Job jCurrency = new FetchRemoteCurrencyJob();
         Job jTrades = new FetchRemoteTradesJob();
@@ -245,16 +292,15 @@ public class DataManager {
 
         return mRestService.loginUser(new UserLoginReq(userName, password))
                 .compose(new RestCallTransformer<>())
+//                .onErrorResumeNext(throwable -> {
+//                    Log.e("SYNC","login", throwable);
+//                    return Observable.empty();
+//                })
                 .flatMap(res -> {
                     updateUserName(userName);
                     updateUserPassword(password);
                     return Observable.just(res);
                 })
-                .onExceptionResumeNext(Observable.empty())
-//                .onErrorResumeNext(throwable -> {
-//                    Log.e("SYNC","login", throwable);
-//                    return Observable.empty();
-//                })
                 ;
     }
 
@@ -318,6 +364,14 @@ public class DataManager {
         return mRealmManager.getCustomersByVisitDate(day);
     }
 
+    public VisitRealm getVisitById(String visitId) {
+        return mRealmManager.getVisitById(visitId);
+    }
+
+    public Observable<List<VisitRealm>> getVisitsByDate(Date day) {
+        return mRealmManager.getVisitsByDate(day);
+    }
+
     public void addNewNote(String customerId, String note) {
         mRealmManager.addNewNote(customerId, note);
 
@@ -375,13 +429,12 @@ public class DataManager {
         if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
             return Observable.empty();
         }
-        
-        sendAllNotes(customerId);
-
-        sendAllTasks(customerId);
-
         return mRestService.getCustomer(mPreferencesManager.getUserAuthToken(), customerId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(custRes -> {
                     if (!custRes.isActive()) {
                         mRealmManager.deleteCustomerFromRealm(custRes.getId()); //удалить запись из локальной БД
@@ -406,6 +459,10 @@ public class DataManager {
 
         return mRestService.sendNote(mPreferencesManager.getUserAuthToken(), note.getCustomer().getCustomerId(), new SendNoteReq(note))
                 .compose(new RestCallTransformer<>())
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(ids -> {
                     mRealmManager.updateNoteExternalId(ids.getOldId(),ids.getNewId() );
                 })
@@ -443,6 +500,10 @@ public class DataManager {
 
         return mRestService.sendTask(mPreferencesManager.getUserAuthToken(), task.getCustomer().getCustomerId(), new SendTaskReq(task))
                 .compose(new RestCallTransformer<>())
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(ids ->
                     mRealmManager.setCustomerTaskSynced(taskId)
                 )
@@ -467,6 +528,63 @@ public class DataManager {
                 .filter(TaskRealm::isToSync)
                 .doOnNext(task ->{
                             Job job = new SendCustomerTaskJob(task.getTaskId());
+                            try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+                        }
+                )
+                .subscribe();
+
+    }
+
+    public void updateVisitGeolocation(String visitId, float mLat, float mLong) {
+        mRealmManager.updateVisitGeolocation(visitId, mLat, mLong);
+        Job job = new SendVisitJob(visitId);
+        try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+    }
+
+    public void updateVisitScreenshot(String visitId, String imageURI) {
+        mRealmManager.updateVisitScreenshot(visitId, imageURI);
+        Job job = new SendVisitJob(visitId);
+        try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+    }
+
+    public Observable<VisitRealm> sendSingleVisit(String visitId) {
+        VisitRealm visit = mRealmManager.getVisitById(visitId);
+        if (!isUserAuth() || visit==null || !visit.isValid() || visit.getCustomer()==null || !visit.getCustomer().isValid()){
+            return Observable.empty();
+        }
+
+        return mRestService.sendVisit(mPreferencesManager.getUserAuthToken(), visit.getCustomer().getCustomerId(), new SendVisitReq(visit))
+                .compose(new RestCallTransformer<>())
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                .doOnNext(ids ->
+                        mRealmManager.setVisitSynced(visitId)
+                )
+                .onExceptionResumeNext(Observable.empty())
+                .onErrorResumeNext(throwable -> {
+                    Log.e("SYNC","visit send", throwable);
+                    return Observable.empty();
+                })
+                .flatMap(ids -> Observable.empty())
+                ;
+    }
+
+
+
+    public void sendAllVisits(String filter) {
+        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+            return;
+        }
+
+        mRealmManager.getCustomerVisits(filter)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(Schedulers.io())
+                .flatMapIterable(task -> task)
+                .filter(VisitRealm::isToSync)
+                .doOnNext(visit ->{
+                            Job job = new SendVisitJob(visit.getId());
                             try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                         }
                 )
@@ -591,6 +709,10 @@ public class DataManager {
         
         return mRestService.getOrder(mPreferencesManager.getUserAuthToken(), orderId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(order -> {
                     if (!order.isActive()) {
                         mRealmManager.deleteOrderFromRealm(order.getId()); //удалить запись из локальной БД
@@ -618,6 +740,10 @@ public class DataManager {
         }
         return mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), new SendOrderReq(order, lines))
                 .compose(new RestCallTransformer<>())
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(ids -> {
                     try {
                         //noinspection ResultOfMethodCallIgnored
@@ -728,6 +854,10 @@ public class DataManager {
 
         return mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(group -> {
                     if (!group.isActive()) {
                         mRealmManager.deleteGoodsGroupFromRealm(group.getId()); //удалить запись из локальной БД
@@ -798,6 +928,10 @@ public class DataManager {
 
         return mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
                 .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                .retryWhen(errorObservable -> errorObservable
+                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                 .doOnNext(item -> {
                     if (!item.isActive()) {
                         mRealmManager.deleteGoodItemFromRealm(item.getId()); //удалить запись из локальной БД
@@ -916,15 +1050,32 @@ public class DataManager {
         final ItemRealm mItem = mRealmManager.getItemById(itemId);
         final PriceListItemRealm mItemPrice = mRealmManager.getPriceListItem(itemId, (priceId == null || priceId.isEmpty())?ConstantManager.PRICE_BASE_PRICE_ID:priceId);
         final CurrencyRealm mCurrency = mRealmManager.getCurrencyById((currencyId==null || currencyId.isEmpty()? ConstantManager.MAIN_CURRENCY_CODE:currencyId));
-        final CurrencyRealm priceCurrency = mItemPrice==null ? null : mItemPrice.getCurrency();
+        final CurrencyRealm priceCurrency;
 
-        if (mItem == null || mItemPrice == null || mCurrency == null || priceCurrency == null || mCurrency.getRate() == 0 || priceCurrency.getRate() == 0) return 0;
+        if (mItem == null || mItemPrice == null || mCurrency == null ||mCurrency.getRate() == 0 ) return 0;
 
-        final float discount = getCustomerDiscount(customerId, itemId);
-        final float tradePercent = mRealmManager.getTradePercent(tradeId, (mItem.getCategory()==null)?"":mItem.getCategory().getCategoryId());
-        final float rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate()/mCurrency.getRate();
+        final Pair<CurrencyRealm, Float> personalPrice = mRealmManager.getCustomerPrice(customerId, itemId);
 
-        final float itemPrice = Math.round(mItemPrice.getPrice()*rate*(100+tradePercent-discount))/100f;
+        final float discount;
+        final float tradePercent;
+        final float rate;
+        final float price;
+        if (personalPrice != null && personalPrice.first !=null && personalPrice.second !=null && personalPrice.second > 0){
+            priceCurrency = personalPrice.first;
+            discount = 0;
+            tradePercent = 0;
+            rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate()/mCurrency.getRate();
+            price = personalPrice.second;
+        }else{
+            priceCurrency = mItemPrice.getCurrency();
+            if (priceCurrency == null || priceCurrency.getRate() == 0) return 0;
+            discount = getCustomerDiscount(customerId, itemId);
+            tradePercent = mRealmManager.getTradePercent(tradeId, (mItem.getCategory()==null)?"":mItem.getCategory().getCategoryId());
+            rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate()/mCurrency.getRate();
+            price = mItemPrice.getPrice();
+        }
+
+        final float itemPrice = Math.round(price*rate*(100+tradePercent-discount))/100f;
 
         return roundVAT ? MiscUtils.roundPrice(itemPrice) : itemPrice;
     }
@@ -974,6 +1125,7 @@ public class DataManager {
     public void setLastUpdate(String module, String lastModified){
         mPreferencesManager.saveLastUpdate(module, lastModified);
     }
+
 
 
     //endregion ================== Preferences =========================

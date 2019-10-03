@@ -2,7 +2,8 @@ package com.sokolua.manager.data.network.req;
 
 import android.util.Base64;
 
-import io.realm.internal.Keep;
+import androidx.annotation.Keep;
+
 
 @Keep
 public class UserLoginReq {

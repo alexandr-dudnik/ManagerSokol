@@ -1,6 +1,5 @@
 package com.sokolua.manager.data.storage.realm;
 
-import androidx.annotation.Keep;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -10,6 +9,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
+import io.realm.internal.Keep;
 
 @Keep
 public class TaskRealm extends RealmObject implements Serializable {

@@ -1,8 +1,9 @@
 package com.sokolua.manager.data.network.req;
 
+import androidx.annotation.Keep;
+
 import com.sokolua.manager.data.storage.realm.TaskRealm;
 
-import io.realm.internal.Keep;
 
 @Keep
 public class SendTaskReq {
