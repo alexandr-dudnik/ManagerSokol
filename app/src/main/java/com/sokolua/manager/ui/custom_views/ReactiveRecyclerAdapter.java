@@ -1,5 +1,6 @@
 package com.sokolua.manager.ui.custom_views;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,6 +45,7 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
                     this.currentList = items;
                     this.notifyDataSetChanged();
                 })
+                .doOnError(throwable -> Log.e("ERROR","Refresh list", throwable) )
                 .subscribe();
     }
 

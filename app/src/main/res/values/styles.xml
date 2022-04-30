@@ -66,6 +66,7 @@
     <style name="customer_list_header">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/color_gray</item>
         <item name="android:background">@color/main_background</item>
     </style>>
     <style name="customer_list_header_text">

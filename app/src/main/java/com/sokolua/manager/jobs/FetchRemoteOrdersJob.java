@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 
-public class FetchRemoteOrdersJob extends AbstractJob {
+public class FetchRemoteOrdersJob extends AbstractJob<OrderRealm> {
 
     public FetchRemoteOrdersJob() {
         super( "FetchOrders"

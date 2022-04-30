@@ -9,14 +9,16 @@ import java.util.List;
 public class TradesRes {
     private String id;
     private String name;
+    private boolean fop;
     private boolean cash;
     private boolean fact;
     private boolean remote;
     private List<CategoryPercent> percents;
 
-    public TradesRes(String id, String name, List<CategoryPercent> percents, boolean cash, boolean fact, boolean remote) {
+    public TradesRes(String id, String name, List<CategoryPercent> percents, boolean fop, boolean cash, boolean fact, boolean remote) {
         this.id = id;
         this.name = name;
+        this.fop = fop;
         this.cash = cash;
         this.fact= fact;
         this.remote= remote;
@@ -31,6 +33,10 @@ public class TradesRes {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isFop() {
+        return fop;
     }
 
     public boolean isCash() {

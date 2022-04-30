@@ -148,7 +148,7 @@ public class DebugManager {
         ItemRealm item22 = new ItemRealm("it00022", "Світлодіодна LED панель 36.0W 220В 3000lm 300х1200х8,5 IP 20", "83632",  25f, 150f, 300f, cat9, grp9, brand3);
 
 
-        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "averianov@ukr.net", "A",null,null,null);
+        CustomerRealm temp = new CustomerRealm("cust0001","Аверьянов ЧП", "Аверьянов Василий Петрович", "Днепр, пр. Кирова, 119", "averianov@ukr.net", "A",null,null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"USD",1250,1250,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",3500,150,false));
@@ -208,7 +208,7 @@ public class DebugManager {
         managedOrders.add(tmpOrder);
 
         //--------------------------
-        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "orders@ua.fm", "C",null,null,null);
+        temp = new CustomerRealm("cust0002","Автозапчасти магазин", "Денис Олегович", "Каменское, пр. Аношкина, 21", "orders@ua.fm", "C",null,null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"UAH",500,18,false));
         mCal.setTime(curTime);
         managedVisitRealms.add(new VisitRealm(temp, "visit00010", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
@@ -230,13 +230,13 @@ public class DebugManager {
         managedOrders.add(tmpOrder);
 
         //--------------------------
-        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "info@aviator.ua", "A",null,null,null);
+        temp = new CustomerRealm("cust0003","Авиатор охранное агенство", "Семен", "Днепр, пр. Слобожанский, 77", "info@aviator.ua", "A",null,null,null,null);
         managedNoteRealms.add(new NoteRealm(temp, "note0301",dateFormat.parse("2018-06-03"),"Провел демонстрацию выключателей, попросили оставить образцы для тестов"));
         managedNoteRealms.add(new NoteRealm(temp, "note0302",dateFormat.parse("2018-07-01"),"Обсудили условия поставки провода на объекты"));
         managedCustomers.add(temp);
 
         //--------------------------
-        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "", "D",null,null,null);
+        temp = new CustomerRealm("cust0004","Белый ЧП", "директор", "", "", "D",null,null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"UAH",2700,100,true));
         managedDebtRealms.add(new DebtRealm(temp,"USD",150,150,false));
         managedCustomers.add(temp);
@@ -244,7 +244,7 @@ public class DebugManager {
 
 
         //--------------------------
-        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "golova@boroda.com", "X",null,null,null);
+        temp = new CustomerRealm("cust0005","Борода ООО", "", "Кривой Рог, ул.Ленина, 10", "golova@boroda.com", "X",null,null,null,null);
         mCal.setTime(curTime);
         managedVisitRealms.add(new VisitRealm(temp, "visit00015", dateFormat.parse(dateFormat.format(mCal.getTime())), true));
         mCal.add(Calendar.DATE, -1);
@@ -258,7 +258,7 @@ public class DebugManager {
         managedCustomers.add(temp);
 
         //--------------------------
-        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "", "",null,null,null);
+        temp = new CustomerRealm("cust0006","Владислав ЧП", "Владислав", "Днепр, пр. Богдана Хмельницкого, 150", "", "",null,null,null,null);
         managedDebtRealms.add(new DebtRealm(temp,"USD",130,130,true));
         managedDebtRealms.add(new DebtRealm(temp,"UAH",250,9.50f,false));
         mCal.setTime(curTime);

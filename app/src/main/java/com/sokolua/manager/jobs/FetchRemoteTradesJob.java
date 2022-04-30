@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.TradeRealm;
 
-public class FetchRemoteTradesJob extends AbstractJob {
+public class FetchRemoteTradesJob extends AbstractJob<TradeRealm> {
 
     public FetchRemoteTradesJob() {
         super( "FetchTrades"

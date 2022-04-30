@@ -240,7 +240,7 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                                 getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
                             });
                         }
-                        mModel.updateAutoSynchronize(currentAuto);
+                        mModel.updateAutoSynchronize(true);
                     }
                 });
                 return true;

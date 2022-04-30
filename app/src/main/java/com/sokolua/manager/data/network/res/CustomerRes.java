@@ -113,11 +113,13 @@ public class CustomerRes {
         private String price;
         private String cash;
         private String official;
+        private String fop;
 
-        public CustomerConditionRes(String price, String cash, String official) {
+        public CustomerConditionRes(String price, String cash, String official, String fop) {
             this.price = price;
             this.cash = cash;
             this.official = official;
+            this.fop = fop;
         }
 
         //region ============================== Getters =================
@@ -128,6 +130,10 @@ public class CustomerRes {
 
         public String getCash() {
             return cash;
+        }
+
+        public String getFop() {
+            return fop;
         }
 
         public String getOfficial() {

@@ -89,7 +89,7 @@
     <string name="customer_info_notes_no_notes">Заметок пока нет</string>
 
     <!-- Orders screen -->
-    <string name="payment_type_cash">ЧП</string>
+    <string name="payment_type_cash">ВХР</string>
     <string name="payment_type_official">ООО</string>
     <string name="delivery_date_prefix">на:</string>
     <string name="order_title">Заказ</string>
@@ -154,5 +154,9 @@
 
     <!-- newly added -->
     <string name="dummy">--</string>
+    <string name="payment_type_fop">ФОП</string>
+    <string name="version">Версия</string>
+    <string name="running_service">service is running</string>
+    <string name="service_stop_update">Stop update</string>
 
 </resources>

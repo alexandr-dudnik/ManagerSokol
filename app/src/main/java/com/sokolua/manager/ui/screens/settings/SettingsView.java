@@ -10,11 +10,13 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.SwitchCompat;
 
+import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
@@ -30,11 +32,12 @@ import butterknife.OnItemSelected;
 
 public class SettingsView extends AbstractView<SettingsScreen.Presenter> implements IAuthView{
 
-    @BindView(R.id.auto_sync_switch)        Switch mAutoSyncSwitch;
+    @BindView(R.id.auto_sync_switch)        SwitchCompat mAutoSyncSwitch;
     @BindView(R.id.user_name)               EditText mUserName;
     @BindView(R.id.user_password)           EditText mUserPassword;
     @BindView(R.id.login_btn)               Button mLoginBtn;
     @BindView(R.id.server_name)             Spinner mServerName;
+    @BindView(R.id.tv_app_version)          AppCompatTextView mAppVersion;
 
 
     public SettingsView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -53,6 +56,8 @@ public class SettingsView extends AbstractView<SettingsScreen.Presenter> impleme
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        String ver = getResources().getString(R.string.version)+": "+BuildConfig.VERSION_NAME;
+        mAppVersion.setText(ver);
     }
 
     @Override
@@ -64,7 +69,7 @@ public class SettingsView extends AbstractView<SettingsScreen.Presenter> impleme
         mServerName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
         List<String> list = Arrays.asList(servers);
         int idx = list.indexOf(currentServer);
-        mServerName.setSelection(idx<0?0:idx);
+        mServerName.setSelection(Math.max(idx, 0));
     }
 
 

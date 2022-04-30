@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.CurrencyRealm;
 
-public class FetchRemoteCurrencyJob extends AbstractJob {
+public class FetchRemoteCurrencyJob extends AbstractJob<CurrencyRealm> {
 
     public FetchRemoteCurrencyJob() {
         super( "FetchCurrency"

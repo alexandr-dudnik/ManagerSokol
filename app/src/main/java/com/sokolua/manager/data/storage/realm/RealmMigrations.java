@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import io.realm.DynamicRealm;
 import io.realm.RealmMigration;
+import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 
 public class RealmMigrations implements RealmMigration {
@@ -17,6 +18,19 @@ public class RealmMigrations implements RealmMigration {
         final RealmSchema schema = realm.getSchema();
 
         //update from 1 to 2
+        if (oldVersion == 1 && newVersion > 1) {
+            final RealmObjectSchema tradeRealm = schema.get("TradeRealm");
+            if (tradeRealm != null) {
+                tradeRealm
+                        .addField("fop", boolean.class)
+                        .transform(obj -> obj.setBoolean("fop", false));
+            }
+            final RealmObjectSchema customerRealm = schema.get("CustomerRealm");
+            if (customerRealm != null && tradeRealm != null){
+                customerRealm.addRealmObjectField("tradeFop", tradeRealm);
+            }
+            oldVersion++;
+        }
 //        if (oldVersion == 1 && newVersion > 1) {
 //            final RealmObjectSchema customerRealm = schema.get("CustomerRealm");
 //            final RealmObjectSchema itemRealm = schema.get("ItemRealm");

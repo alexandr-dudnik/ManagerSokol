@@ -20,19 +20,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 
     private void setupCamera(){
-        try {
-            Camera.open();
-        }catch (Throwable ignore){}
-        Camera.Parameters parameters = mCamera.getParameters();
-        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        parameters.setPictureFormat(ImageFormat.RGB_565);
-        mCamera.setParameters(parameters);
-        mCamera.setDisplayOrientation(90);
+        if (mCamera != null ) {
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            parameters.setPictureFormat(ImageFormat.JPEG);
+            mCamera.setParameters(parameters);
+            mCamera.setDisplayOrientation(90);
+        }
 
         mHolder = getHolder();
         mHolder.addCallback(this);
-        //mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
 
     public CameraPreview(Context context, AttributeSet attrs, int defStyleAttr) {

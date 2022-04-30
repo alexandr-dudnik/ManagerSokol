@@ -35,7 +35,6 @@ import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
-import com.sokolua.manager.di.modules.PicassoCacheModule;
 import com.sokolua.manager.di.modules.RootModule;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.TreeKeyDispatcher;
@@ -51,7 +50,6 @@ import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.ui.screens.order_list.OrderListScreen;
 import com.sokolua.manager.ui.screens.routes.RoutesScreen;
 import com.sokolua.manager.utils.App;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -136,7 +134,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState);
     }
@@ -187,7 +185,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
         }
-        if (this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
             mProgressDialog.show();
             mProgressDialog.setContentView(R.layout.progress_root);
             ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
@@ -422,18 +420,15 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     //region ======================== DI =======================================
 
-    @dagger.Component(dependencies = AppComponent.class, modules = {RootModule.class, PicassoCacheModule.class})
+    @dagger.Component(dependencies = AppComponent.class, modules = {RootModule.class})
     @DaggerScope(RootActivity.class)
     public interface RootComponent {
         void inject(RootActivity activity);
-
         void inject(SplashActivity activity);
-
         void inject(RootPresenter presenter);
 
         RootPresenter getRootPresenter();
 
-        Picasso getPicasso();
     }
     //endregion ======================== DI =======================================
 

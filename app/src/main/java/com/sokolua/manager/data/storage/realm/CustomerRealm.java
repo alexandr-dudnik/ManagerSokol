@@ -25,6 +25,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
     private String category = "";
     private PriceListRealm price = null;
     private TradeRealm tradeCash = null;
+    private TradeRealm tradeFop = null;
     private TradeRealm tradeOfficial = null;
     @Index
     private String index = "";
@@ -48,7 +49,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
     public CustomerRealm() {
     }
 
-    public CustomerRealm(String customerId, @NonNull String name, String contactName, String address, String email, String category, PriceListRealm price, TradeRealm tradeCash, TradeRealm tradeOfficial) {
+    public CustomerRealm(String customerId, @NonNull String name, String contactName, String address, String email, String category, PriceListRealm price, TradeRealm tradeCash, TradeRealm tradeFop, TradeRealm tradeOfficial) {
         this.customerId = customerId;
         this.name = name;
         this.contactName = contactName;
@@ -58,6 +59,7 @@ public class CustomerRealm extends RealmObject implements Serializable{
         this.index = name.toLowerCase();
         this.price = price;
         this.tradeCash = tradeCash;
+        this.tradeFop = tradeFop;
         this.tradeOfficial = tradeOfficial;
     }
 
@@ -137,6 +139,10 @@ public class CustomerRealm extends RealmObject implements Serializable{
 
     public TradeRealm getTradeOfficial() {
         return tradeOfficial;
+    }
+
+    public TradeRealm getTradeFop() {
+        return tradeFop;
     }
 
 //endregion ================== Getters =========================

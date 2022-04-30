@@ -1,5 +1,7 @@
 package com.sokolua.manager.mvp.models;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -52,20 +54,27 @@ public class OrderModel extends AbstractModel {
     public void updateOrderPayment(String orderId, int payment) {
         OrderRealm mOrder = mDataManager.getOrderById(orderId);
         if (mOrder == null) return;
+        mDataManager.updateOrderPayment(orderId, payment);
         TradeRealm custTrade;
-        if (payment == ConstantManager.ORDER_PAYMENT_OFFICIAL){
-            custTrade = mOrder.getCustomer().getTradeOfficial();
-            updateOrderCurrency(orderId, ConstantManager.MAIN_CURRENCY_CODE);
-        }else{
-            custTrade = mOrder.getCustomer().getTradeCash();
+        switch (payment){
+            case ConstantManager.ORDER_PAYMENT_OFFICIAL:
+                custTrade = mOrder.getCustomer().getTradeOfficial();
+                updateOrderCurrency(orderId, ConstantManager.MAIN_CURRENCY_CODE);
+                break;
+            case ConstantManager.ORDER_PAYMENT_FOP:
+                custTrade = mOrder.getCustomer().getTradeFop();
+                updateOrderCurrency(orderId, ConstantManager.MAIN_CURRENCY_CODE);
+                break;
+            default:
+                custTrade = mOrder.getCustomer().getTradeCash();
         }
         if (custTrade != null) {
             if (mOrder.isPayOnFact()){
                 custTrade = mDataManager.getFactTradeForTrade(custTrade.getTradeId());
             }
             updateOrderTrade(orderId, custTrade.getTradeId());
+            mDataManager.updateOrderTrade(orderId, custTrade.getTradeId());
         }
-        mDataManager.updateOrderPayment(orderId, payment);
     }
 
     public void updateOrderTrade(String orderId, String tradeId) {
@@ -73,7 +82,7 @@ public class OrderModel extends AbstractModel {
         Observable.fromIterable(mDataManager.getCopyOfOrderLines(orderId))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(line -> {
+                .doOnNext(line -> {
                     OrderRealm mOrder = mDataManager.getOrderById(orderId);
                     TradeRealm trade = mDataManager.getTradeById(tradeId);
                     float price = mDataManager.getItemPrice(
@@ -82,12 +91,12 @@ public class OrderModel extends AbstractModel {
                                         tradeId,
                                         mOrder.getCurrency().getCurrencyId(),
                                         mOrder.getCustomer().getCustomerId(),
-                                        trade != null && !trade.isCash()
+                                        trade != null && trade.isLTD()
                                 );
                     updateOrderItemPrice(orderId, line.getItem().getItemId(), price);
-                    return Observable.empty();
                 })
                 .doOnComplete(() -> mDataManager.updateOrderTrade(orderId, tradeId))
+                .doOnError(throwable -> Log.e("ERROR","Update order trade", throwable) )
                 .subscribe();
 
     }
@@ -117,11 +126,15 @@ public class OrderModel extends AbstractModel {
         Observable.fromIterable(mDataManager.getCopyOfOrderLines(orderId))
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(line -> {
-                    updateOrderItemPrice(orderId, line.getItem().getItemId(), line.getPrice() * oldRate / newRate);
-                    return Observable.empty();
+                .doOnNext(line -> {
+                    updateOrderItemPrice(
+                            orderId,
+                            line.getItem().getItemId(),
+                            line.getPrice() * oldRate / newRate
+                    );
                 })
                 .doOnComplete(() -> mDataManager.updateOrderCurrency(orderId, currencyCode))
+                .doOnError(throwable -> Log.e("ERROR","Order lines", throwable) )
                 .subscribe();
 
 
@@ -136,6 +149,7 @@ public class OrderModel extends AbstractModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .doOnNext(id -> mDataManager.updateOrderFromRemote(orderId))
+                .doOnError(throwable -> Log.e("ERROR","Load order", throwable) )
                 .subscribe();
     }
 
@@ -152,8 +166,8 @@ public class OrderModel extends AbstractModel {
         return mDataManager.getCurrencyList();
     }
 
-    public Observable<List<TradeRealm>> getTrades(@Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote) {
-        return mDataManager.getTrades(cash, fact, remote);
+    public Observable<List<TradeRealm>> getTrades(@Nullable Boolean fop, @Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote) {
+        return mDataManager.getTrades(fop, cash, fact, remote);
     }
 
     public TradeRealm getTradeByName(String tradeName) {

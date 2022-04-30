@@ -61,7 +61,7 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
         mServerName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
         List<String> list = Arrays.asList(servers);
         int idx = list.indexOf(currentServer);
-        mServerName.setSelection(idx<0?0:idx);
+        mServerName.setSelection(Math.max(idx, 0));
     }
 
     //region ===================== Events =========================

@@ -6,23 +6,30 @@
     android:background="@android:color/transparent">
 
 
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="?android:attr/progressBarStyleLarge"
-        android:indeterminate="true"
-        android:indeterminateDrawable="@drawable/progress_bar"
-        />
-
-    <ProgressBar
-        android:id="@+id/progress_horizontal"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/progress"
-        android:layout_margin="48dp"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        />
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        >
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="?android:attr/progressBarStyleLarge"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar"
+            />
+
+        <ProgressBar
+            android:id="@+id/progress_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="48dp"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

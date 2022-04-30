@@ -1,5 +1,7 @@
 package com.sokolua.manager.mvp.models;
 
+import android.util.Log;
+
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.DebtRealm;
@@ -128,6 +130,7 @@ public class CustomerModel extends AbstractModel {
                     mDataManager.sendAllVisits(id);
                     mDataManager.updateCustomerFromRemote(id);
                 })
+                .doOnError(throwable -> Log.e("ERROR","Load customer", throwable) )
                 .subscribe();
     }
 }

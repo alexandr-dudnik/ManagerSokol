@@ -21,6 +21,8 @@
         android:minLines="2"
         android:maxLines="2"
         android:textAlignment="center"
+        android:textColor="@color/color_gray"
+        android:textSize="14sp"
         android:background="@color/color_white"
         tools:text="Kaбельный канал"
         />

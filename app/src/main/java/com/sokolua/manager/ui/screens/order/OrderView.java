@@ -1,5 +1,6 @@
 package com.sokolua.manager.ui.screens.order;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,8 @@ import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.SwipeToDeleteCallback;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,13 +46,14 @@ import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnItemSelected;
 
+@SuppressLint("NonConstantResourceId")
 public class OrderView extends AbstractView<OrderScreen.Presenter> {
     @BindView(R.id.order_status_image)      ImageView mStatusImage;
     @BindView(R.id.order_date_text)         TextView mOrderDate;
     @BindView(R.id.order_title_text)        TextView mOrderTitle;
-    @BindView(R.id.order_type_spin)         Spinner mOrderType;
-    @BindView(R.id.order_trade_spin)        Spinner mOrderTrade;
-    @BindView(R.id.order_currency_spin)     Spinner mOrderCurrency;
+    @BindView(R.id.order_type_spin)         AppCompatSpinner mOrderType;
+    @BindView(R.id.order_trade_spin)        AppCompatSpinner mOrderTrade;
+    @BindView(R.id.order_currency_spin)     AppCompatSpinner mOrderCurrency;
     @BindView(R.id.order_type_text)         TextView mOrderTypeText;
     @BindView(R.id.order_trade_text)        TextView mOrderTradeText;
     @BindView(R.id.order_currency_text)     TextView mOrderCurrencyText;
@@ -70,7 +75,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
 
     private ItemTouchHelper itemTouchHelper;
 
-    private Map<String, Integer> orderTypes = new HashMap<>();
+    private final Map<String, Integer> orderTypes = new HashMap<>();
     private ArrayList<String> currencies = new ArrayList<>();
     private ArrayList<String> trades = new ArrayList<>();
 
@@ -108,6 +113,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         if (!isInEditMode()) {
             orderTypes.put(App.getStringRes(R.string.payment_type_cash), ConstantManager.ORDER_PAYMENT_CASH);
             orderTypes.put(App.getStringRes(R.string.payment_type_official), ConstantManager.ORDER_PAYMENT_OFFICIAL);
+            orderTypes.put(App.getStringRes(R.string.payment_type_fop), ConstantManager.ORDER_PAYMENT_FOP);
             mOrderType.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.simple_item, orderTypes.keySet().toArray()));
             mOrderType.setSelection(0);
 
@@ -119,7 +125,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
             if (mStatus == ConstantManager.ORDER_STATUS_CART) {
                 itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(getContext()) {
                     @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                    public void onSwiped(@NotNull RecyclerView.ViewHolder viewHolder, int direction) {
                         mPresenter.removeLine(((OrderLineViewHolder) viewHolder).getCurrentItem());
                     }
 
@@ -250,7 +256,8 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
         paymentType = orderType;
         int index=0;
         for (String key : orderTypes.keySet()) {
-            if (orderTypes.get(key).equals(orderType)) {
+            //noinspection ConstantConditions
+            if (orderTypes.get(key) == orderType) {
                 mOrderTypeText.setText(key);
                 break;
             }
@@ -311,7 +318,6 @@ public class OrderView extends AbstractView<OrderScreen.Presenter> {
     void paymentChange(View view){
         final Object selectedItem = mOrderType.getSelectedItem();
         if (mStatus == ConstantManager.ORDER_STATUS_CART && selectedItem != null && !mOrderTypeText.getText().toString().equals(selectedItem.toString())) {
-            //noinspection ConstantConditions
             paymentType = orderTypes.get(selectedItem.toString());
             mOrderTypeText.setText(selectedItem.toString());
             mPresenter.updatePayment(paymentType);

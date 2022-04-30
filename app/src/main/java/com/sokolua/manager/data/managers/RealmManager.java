@@ -1,5 +1,6 @@
 package com.sokolua.manager.data.managers;
 
+import android.annotation.SuppressLint;
 import android.os.Looper;
 import android.util.Log;
 
@@ -56,7 +57,7 @@ import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import io.realm.internal.ManagableObject;
+import io.realm.internal.ManageableObject;
 
 @Keep
 public class RealmManager {
@@ -150,7 +151,7 @@ public class RealmManager {
         }else{
             obs = Observable.fromIterable(realmInstance.copyFromRealm(realmQuery.findAll()))
                     .filter(item -> item.isLoaded()) //получаем только загруженные
-                    .filter(ManagableObject::isValid)
+                    .filter(ManageableObject::isValid)
                     .toList()
                     .toObservable();
             closeQueryInstance(realmInstance);
@@ -243,6 +244,10 @@ public class RealmManager {
             if (tradeCondition != null && tradeCondition.getOfficial() != null && !tradeCondition.getOfficial().isEmpty()) {
                 cond_off = getTradeById(tradeCondition.getOfficial());
             }
+            TradeRealm cond_fop = null;
+            if (tradeCondition != null && tradeCondition.getFop() != null && !tradeCondition.getFop().isEmpty()) {
+                cond_fop = getTradeById(tradeCondition.getFop());
+            }
 
 
             CustomerRealm newCust = new CustomerRealm(
@@ -254,6 +259,7 @@ public class RealmManager {
                     customerRes.getCategory(),
                     price,
                     cond_cash,
+                    cond_fop,
                     cond_off
             );
 
@@ -487,6 +493,7 @@ public class RealmManager {
 
 
 
+    @SuppressLint("CheckResult")
     Observable<List<DebtRealm>> getCustomerDebtByType(String customerId, int debtType) {
         if (customerId == null || customerId.isEmpty()) return Observable.empty();
         Realm curInstance = getQueryRealmInstance();
@@ -516,7 +523,7 @@ public class RealmManager {
                             return res;
                         })
                         .filter(item -> item.isLoaded()) //получаем только загруженные
-                        .filter(ManagableObject::isValid)
+                        .filter(ManageableObject::isValid)
                         .toList()
                         .toObservable()
                         ;
@@ -1109,13 +1116,21 @@ public class RealmManager {
             deliveryDate = orderDate;
         }
 
+        int payment;
+        switch(orderRes.getPayment().toLowerCase(Locale.ROOT)){
+            case "official": payment = ConstantManager.ORDER_PAYMENT_OFFICIAL;
+            break;
+            case "fop": payment = ConstantManager.ORDER_PAYMENT_FOP;
+            break;
+            default: payment = ConstantManager.ORDER_PAYMENT_CASH;
+        }
         OrderRealm newOrder = new OrderRealm(
                 orderRes.getId(),
                 mCustomer,
                 orderDate,
                 deliveryDate,
                 (Boolean.parseBoolean(orderRes.getDelivered()) ? ConstantManager.ORDER_STATUS_DELIVERED : ConstantManager.ORDER_STATUS_SENT),
-                (orderRes.getPayment().equalsIgnoreCase("cash") ? ConstantManager.ORDER_PAYMENT_CASH : ConstantManager.ORDER_PAYMENT_OFFICIAL),
+                payment,
                 getCurrencyById(orderRes.getCurrency()),
                 getTradeById(orderRes.getTradeId()),
                 getPriceListById(orderRes.getPriceId()),
@@ -1613,6 +1628,7 @@ public class RealmManager {
         TradeRealm newItem = new TradeRealm(
                 tradeRes.getId(),
                 tradeRes.getName(),
+                tradeRes.isFop(),
                 tradeRes.isCash(),
                 tradeRes.isFact(),
                 tradeRes.isRemote()
@@ -1695,11 +1711,16 @@ public class RealmManager {
         return getListObservable(curInstance, qAll);
     }
 
-    Observable<List<TradeRealm>> getAllTrades(@Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote){
+    Observable<List<TradeRealm>> getAllTrades(@Nullable Boolean fop, @Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote){
         Realm curInstance = getQueryRealmInstance();
         RealmQuery<TradeRealm> qAll = curInstance.where(TradeRealm.class).sort("name", Sort.ASCENDING);
         if (cash != null){
             qAll.equalTo("cash", cash);
+        }
+        if (cash == null || !cash){
+            if (fop != null){
+                qAll.equalTo("fop", fop);
+            }
         }
         if (fact != null){
             qAll.equalTo("fact", fact);
@@ -1771,6 +1792,7 @@ public class RealmManager {
             } else {
                 result = curInstance
                         .where(TradeRealm.class)
+                        .equalTo("fop", curTrade.isFop())
                         .equalTo("cash", curTrade.isCash())
                         .equalTo("fact", true)
                         .equalTo("remote", curTrade.isRemote())

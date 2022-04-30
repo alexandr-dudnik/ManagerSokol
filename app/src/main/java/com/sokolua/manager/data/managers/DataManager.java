@@ -90,7 +90,7 @@ public class DataManager {
     @Inject
     RealmManager mRealmManager;
 
-    private JobManager mJobManager;
+    private final JobManager mJobManager;
     private Disposable autoUpdateDisposable;
 
 
@@ -173,9 +173,11 @@ public class DataManager {
         autoUpdateDisposable = Observable.interval(AppConfig.JOB_UPDATE_DATA_INTERVAL, TimeUnit.SECONDS) //генерируем последовательность из элдементов каждые 30 сек
                 .filter(aLong -> mPreferencesManager.getAutoSynchronize()) //идем дальше только если есть настройка
                 .filter(aLong -> mJobManager.count() == 0)
-                .flatMap(aLong -> NetworkStatusChecker.isInternetAvailiableObs()) //проверяем состяние интернета
+                .flatMap(aLong -> NetworkStatusChecker.isInternetAvailableObs()) //проверяем состяние интернета
                 .filter(aBoolean -> aBoolean) //идем дальше только если интернет есть
                 .doOnNext(aBoolean -> updateAllAsync()) //получаем новые товары из сети
+                .doOnError(throwable -> Log.e("ERROR","Update all", throwable) )
+                .doOnComplete(() -> autoUpdateDisposable.dispose())
                 .subscribe(aBoolean -> {
 
                 }, throwable -> {
@@ -209,7 +211,7 @@ public class DataManager {
         return mJobManager.count() == 0;
     }
 
-    private void updateAllAsync() {
+    public void updateAllAsync() {
         mRealmManager.compactDatabase();
 
         sendAllNotes("");
@@ -239,6 +241,8 @@ public class DataManager {
     public Retrofit getRetrofit() {
         return mRetrofit;
     }
+
+    public JobManager getJobManager() { return mJobManager; }
 
 
     //endregion ================== Getters =========================
@@ -442,7 +446,6 @@ public class DataManager {
                 })
                 .filter(CustomerRes::isActive) //только активные Клиенты
                 .doOnNext(custRes ->  mRealmManager.saveCustomerToRealm(custRes, false)) //Save data on disk
-//                .onExceptionResumeNext(Observable.error(new ApiError(500, "unknown")))
                 .onErrorResumeNext(throwable -> {
                     Log.e("SYNC","customer", throwable);
                     return Observable.empty();
@@ -483,12 +486,18 @@ public class DataManager {
         mRealmManager.getNotesToSend(filter)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.io())
-                .doOnNext(note ->{
-                            Job job= new SendCustomerNoteJob(note.getNoteId());
-                            try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+                .doOnNext(note -> {
+                            Job job = new SendCustomerNoteJob(note.getNoteId());
+                            try {
+                                mJobManager.addJobInBackground(job);
+                            } catch (Throwable ignore) {
+                            }
                         }
                 )
-                .subscribe();
+                .doOnError(throwable -> Log.e("ERROR", "Send notes", throwable))
+                .subscribe(
+
+                );
 
     }
 
@@ -531,6 +540,7 @@ public class DataManager {
                             try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                         }
                 )
+                .doOnError(throwable -> Log.e("ERROR","Send tasks", throwable) )
                 .subscribe();
 
     }
@@ -588,6 +598,7 @@ public class DataManager {
                             try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                         }
                 )
+                .doOnError(throwable -> Log.e("ERROR","Send visits", throwable) )
                 .subscribe();
 
     }
@@ -702,7 +713,7 @@ public class DataManager {
     }
 
 
-    public Observable<OrderRes> updateOrderFromRemote(String orderId){
+    public Observable<OrderRealm> updateOrderFromRemote(String orderId){
         if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
             return Observable.empty();
         }
@@ -725,6 +736,7 @@ public class DataManager {
                     Log.e("SYNC","order", throwable);
                     return Observable.empty();
                 })
+                .flatMap(item -> Observable.empty())
                 ;
     }
 
@@ -774,6 +786,7 @@ public class DataManager {
                         try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
                     }
                 )
+                .doOnError(throwable -> Log.e("ERROR","Send orders", throwable) )
                 .subscribe();
 
     }
@@ -1008,8 +1021,8 @@ public class DataManager {
         return mRealmManager.getAllPriceLists();
     }
 
-    public Observable<List<TradeRealm>> getTrades(@Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote) {
-        return mRealmManager.getAllTrades(cash, fact, remote);
+    public Observable<List<TradeRealm>> getTrades(@Nullable Boolean fop, @Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote) {
+        return mRealmManager.getAllTrades(fop, cash, fact, remote);
     }
 
     public PriceListRealm getPriceById(String priceId) {

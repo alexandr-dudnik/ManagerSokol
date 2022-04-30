@@ -2,20 +2,13 @@ package com.sokolua.manager.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 import androidx.annotation.IdRes;
-
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,49 +18,49 @@ import java.util.ArrayList;
 
 public class UiHelper {
 
-    public static void getCachedImagePicasso(final Picasso picasso, final String uri, final ImageView view, final Drawable dummy, final boolean fited) {
-        RequestCreator rc = picasso.load(uri)
-                .placeholder(dummy)
-                .error(dummy)
-                .networkPolicy(NetworkPolicy.OFFLINE);
-        if (fited) {
-            rc.fit()
-                    .centerCrop();
-        }
-
-        rc.into(view, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        RequestCreator rc = picasso
-                                .load(uri)
-                                .placeholder(dummy)
-                                .error(dummy);
-
-                        if (fited) {
-                            rc.fit()
-                                    .centerCrop();
-                        }
-
-                        rc.into(view, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                            }
-
-                            @Override
-                            public void onError(Exception e) {
-
-                            }
-
-                        });
-                    }
-                }
-        );
-
-    }
+//    public static void getCachedImagePicasso(final Picasso picasso, final String uri, final ImageView view, final Drawable dummy, final boolean fited) {
+//        RequestCreator rc = picasso.load(uri)
+//                .placeholder(dummy)
+//                .error(dummy)
+//                .networkPolicy(NetworkPolicy.OFFLINE);
+//        if (fited) {
+//            rc.fit()
+//                    .centerCrop();
+//        }
+//
+//        rc.into(view, new Callback() {
+//                    @Override
+//                    public void onSuccess() {
+//                    }
+//
+//                    @Override
+//                    public void onError(Exception e) {
+//                        RequestCreator rc = picasso
+//                                .load(uri)
+//                                .placeholder(dummy)
+//                                .error(dummy);
+//
+//                        if (fited) {
+//                            rc.fit()
+//                                    .centerCrop();
+//                        }
+//
+//                        rc.into(view, new Callback() {
+//                            @Override
+//                            public void onSuccess() {
+//                            }
+//
+//                            @Override
+//                            public void onError(Exception e) {
+//
+//                            }
+//
+//                        });
+//                    }
+//                }
+//        );
+//
+//    }
 
     public static String saveImageFromBase64(final String imageSource, String name){
         File cacheDir = App.getContext().getFilesDir();

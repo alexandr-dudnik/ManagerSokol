@@ -97,6 +97,7 @@
     <!-- Orders screen -->
     <string name="payment_type_cash">Cash</string>
     <string name="payment_type_official">LTD</string>
+    <string name="payment_type_fop">FOP</string>
     <string name="delivery_date_prefix">for:</string>
     <string name="order_title">Order</string>
     <string name="cart_title">Cart</string>
@@ -162,5 +163,9 @@
 
     <!-- newly added -->
     <string name="dummy">--</string>
+    <string name="version">Version</string>
+    <string name="running_service">service is running</string>
+    <string name="service_touch_to_launch">Touch here to launch</string>
+    <string name="service_stop_update">Stop update</string>
 
 </resources>

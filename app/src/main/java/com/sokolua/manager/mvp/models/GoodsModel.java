@@ -64,8 +64,8 @@ public class GoodsModel extends AbstractModel {
         return mDataManager.getPriceById(priceId);
     }
 
-    public Observable<List<TradeRealm>> getTrades(@Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote) {
-        return mDataManager.getTrades(cash, fact, remote);
+    public Observable<List<TradeRealm>> getTrades(@Nullable Boolean fop, @Nullable Boolean cash, @Nullable Boolean fact, @Nullable Boolean remote) {
+        return mDataManager.getTrades(fop, cash, fact, remote);
     }
 
     public Observable<List<CurrencyRealm>> getCurrencies() {

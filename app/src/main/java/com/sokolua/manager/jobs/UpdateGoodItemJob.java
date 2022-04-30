@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.ItemRealm;
 
-public class UpdateGoodItemJob extends AbstractJob {
+public class UpdateGoodItemJob extends AbstractJob<ItemRealm> {
 
     public UpdateGoodItemJob(String goodItemId) {
         super(goodItemId

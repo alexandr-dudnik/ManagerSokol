@@ -16,7 +16,7 @@ public class NetworkStatusChecker {
         return false;
     }
 
-    public static Observable<Boolean> isInternetAvailiableObs() {
+    public static Observable<Boolean> isInternetAvailableObs() {
         return Observable.just(isNetworkAvailable());
     }
 }

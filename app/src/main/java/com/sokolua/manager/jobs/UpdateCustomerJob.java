@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 
-public class UpdateCustomerJob extends AbstractJob {
+public class UpdateCustomerJob extends AbstractJob<CustomerRealm> {
 
     public UpdateCustomerJob(String customerId) {
         super(customerId

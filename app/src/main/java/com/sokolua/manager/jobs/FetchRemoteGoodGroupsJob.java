@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.GoodsGroupRealm;
 
-public class FetchRemoteGoodGroupsJob extends AbstractJob {
+public class FetchRemoteGoodGroupsJob extends AbstractJob<GoodsGroupRealm> {
 
 
     public FetchRemoteGoodGroupsJob() {

@@ -2,6 +2,7 @@ package com.sokolua.manager.ui.screens.goods;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,7 +36,6 @@ import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.ui.screens.order.OrderScreen;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.MiscUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -103,8 +103,6 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         void inject(ItemViewHolder viewHolder);
 
-        Picasso getPicasso();
-//        OrderRealm  getCustomerCart();
     }
 
     public GoodsScreen() {
@@ -140,8 +138,8 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<GoodsGroupRealm> groupViewHolder;
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<ItemRealm> itemViewHolder;
-        ReactiveRecyclerAdapter groupsAdapter;
-        ReactiveRecyclerAdapter itemsAdapter;
+        ReactiveRecyclerAdapter<GoodsGroupRealm> groupsAdapter;
+        ReactiveRecyclerAdapter<ItemRealm> itemsAdapter;
         private RealmObjectChangeListener<OrderRealm> orderChangeListener;
         private RealmChangeListener<RealmResults<OrderLineRealm>> orderLinesChangeListener;
 
@@ -180,7 +178,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new GroupViewHolder(view)
                 );
             };
-            groupsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), groupViewHolder, false);
+            groupsAdapter = new ReactiveRecyclerAdapter<>(Observable.empty(), groupViewHolder, false);
 
             getView().setGroupsAdapter(groupsAdapter);
 
@@ -191,7 +189,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new ItemViewHolder(view)
                 );
             };
-            itemsAdapter = new ReactiveRecyclerAdapter(Observable.empty(), itemViewHolder, false);
+            itemsAdapter = new ReactiveRecyclerAdapter<>(Observable.empty(), itemViewHolder, false);
 
             getView().setItemsAdapter(itemsAdapter);
 
@@ -420,11 +418,15 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(brands -> {
+                            brandsSubMenu.clearSubMenu();
+                            brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
                             for (BrandsRealm brand : brands) {
                                 brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
                             }
                             rebuildActionBar();
-                        }).subscribe()
+                        })
+                    .doOnError(throwable -> Log.e("ERROR","Menu brands", throwable) )
+                    .subscribe()
             ;
 
             if (currentCart == null) {
@@ -451,27 +453,32 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(prices -> {
+                            pricesSubMenu.clearSubMenu();
                             for (PriceListRealm price : prices) {
                                 pricesSubMenu.addSubMenuItem(new MenuItemHolder(price.getName(), priceListener, 1, (currentPrice.equals(price.getName()))));
                             }
                             rebuildActionBar();
                         })
+                        .doOnError(throwable -> Log.e("ERROR","Menu prices", throwable) )
                         .subscribe()
                 ;
 
                 tradesSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_trades), (currentTrade.isEmpty()?App.getStringRes(R.string.no_trades):currentTrade)), R.drawable.ic_trade, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
                 tradesSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.no_trades), tradeListener, 1, (currentTrade.isEmpty())));
 
-                mModel.getTrades(null, null, null)
+                mModel.getTrades(null, null, null, null)
                         //.take(1)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(trades -> {
+                            tradesSubMenu.clearSubMenu();
+                            tradesSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.no_trades), tradeListener, 1, (currentTrade.isEmpty())));
                             for (TradeRealm trade : trades) {
                                 tradesSubMenu.addSubMenuItem(new MenuItemHolder(trade.getName(), tradeListener, 1, (currentPrice.equals(trade.getName()))));
                             }
                             rebuildActionBar();
                         })
+                        .doOnError(throwable -> Log.e("ERROR","Menu trades", throwable) )
                         .subscribe()
                 ;
 
@@ -482,11 +489,14 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(currencies -> {
+                            currencySubMenu.clearSubMenu();
                             for (CurrencyRealm currency : currencies) {
                                 currencySubMenu.addSubMenuItem(new MenuItemHolder(currency.getName(), currencyListener, 1, (currentCurrency.equals(currency.getName()))));
                             }
                             rebuildActionBar();
-                        }).subscribe()
+                        })
+                        .doOnError(throwable -> Log.e("ERROR","Menu currencies", throwable) )
+                        .subscribe()
                 ;
             }else{
                 pricesSubMenu = null;
@@ -569,7 +579,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     PriceListRealm basePrice = mModel.getPriceById(ConstantManager.PRICE_BASE_PRICE_ID);
 
 
-                    Float itemBasePrice = mModel.getItemPrice(selectedItemId, priceId, null, currencyId, null, trade != null && !trade.isCash());
+                    Float itemBasePrice = mModel.getItemPrice(selectedItemId, priceId, null, currencyId, null, trade != null && trade.isLTD());
                     Float itemDiscount = getCustomerDiscount(selectedItemId, tradeId);
                     Float itemPrice = getItemPrice(selectedItemId);
 
@@ -635,7 +645,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         Float getItemPrice(String itemId){
             TradeRealm trade = mModel.getTradeById(tradeId);
-            return mModel.getItemPrice(itemId, priceId, tradeId, currencyId, mCustomer==null?null:mCustomer.getCustomerId(), trade != null && !trade.isCash());
+            return mModel.getItemPrice(itemId, priceId, tradeId, currencyId, mCustomer==null?null:mCustomer.getCustomerId(), trade != null && trade.isLTD());
         }
 
         Float getLowPrice(String itemId){

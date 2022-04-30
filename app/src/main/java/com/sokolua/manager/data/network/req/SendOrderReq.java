@@ -30,7 +30,16 @@ public class SendOrderReq {
         this.date = sdf.format(order.getDate())+"T00:00:00";
         this.delivery = sdf.format(order.getDelivery())+"T00:00:00";
         this.customer_id = order.getCustomer().getCustomerId();
-        this.payment = order.getPayment() == ConstantManager.ORDER_PAYMENT_CASH?"cash":"official";
+        switch (order.getPayment()){
+            case ConstantManager.ORDER_PAYMENT_OFFICIAL:
+                this.payment = "official";
+                break;
+            case ConstantManager.ORDER_PAYMENT_FOP:
+                this.payment = "fop";
+                break;
+            default:
+                this.payment = "cash";
+        }
         this.currency_id = order.getCurrency().getCurrencyId();
         this.comments = order.getComments();
         this.trade_id = order.getTrade()==null?null:order.getTrade().getTradeId();

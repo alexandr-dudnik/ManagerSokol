@@ -20,7 +20,7 @@ public class RestCallTransformer<T> implements ObservableTransformer<Response<T>
 
     @Override
     public ObservableSource<T> apply(Observable<Response<T>> responseObservable) {
-        return NetworkStatusChecker.isInternetAvailiableObs()
+        return NetworkStatusChecker.isInternetAvailableObs()
                 .flatMap(aBoolean -> aBoolean ? responseObservable : Observable.error(new NetworkAvailableError()))
                 .flatMap(rResponse ->{
                     switch (rResponse.code()){

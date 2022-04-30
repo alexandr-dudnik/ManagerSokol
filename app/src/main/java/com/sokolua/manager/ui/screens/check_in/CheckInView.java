@@ -74,8 +74,6 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
 
 
     private GoogleMap mMap;
-    private LocationManager locationManager;
-    private LocationListener locationListener;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
 
@@ -119,6 +117,7 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
                     .map(sdf::format)
                     .doOnNext(it -> dateTime.setText(it))
                     .doOnSubscribe(it -> dateTime.setText(sdf.format(new Date())))
+                    .doOnError(throwable -> Log.e("ERROR","Check in", throwable) )
                     .subscribe();
 
             customerName.setText(mPresenter.getCustomerName());
@@ -127,7 +126,6 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
             mapView.onCreate(new Bundle());
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                //locationManager = (LocationManager) App.getContext().getSystemService(LOCATION_SERVICE);
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
 
                 fusedLocationClient.getLastLocation().addOnSuccessListener(this::updateMap);
@@ -157,11 +155,12 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (locationManager != null){
-            locationManager.removeUpdates(locationListener);
+        if (fusedLocationClient!=null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
         }
-        fusedLocationClient.removeLocationUpdates(locationCallback);
-        currentTimeObs.dispose();
+        if (currentTimeObs!=null && !currentTimeObs.isDisposed()) {
+            currentTimeObs.dispose();
+        }
     }
 
     private void updateMap(Location location) {
@@ -230,8 +229,6 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
 
         Camera.PictureCallback takePictureCallBack = (bytes, camera) -> {
 
-            Log.d("SOKOL", "picture taken");
-
             Bitmap photo = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
             camera.stopPreview();
@@ -245,9 +242,6 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
             matrix.postRotate(90);
             matrix.postScale(min(sx,sy), min(sx,sy));
             Bitmap picture = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true);
-//            Canvas previewCanvas = mCameraPreview.getHolder().lockCanvas();
-//            previewCanvas.drawBitmap(picture,0,0, null);
-//            mCameraPreview.getHolder().unlockCanvasAndPost(previewCanvas);
             mPhotoPlaceholder.setImageBitmap(picture);
 
 
@@ -257,15 +251,11 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
             mContainer.draw(canvas);
 
             mPresenter.setScreenshot(bitmap);
-
-            //mCameraPreview.releaseCamera();
         };
 
 
         if (!mCameraPreview.takePicture(takePictureCallBack)){
             mCameraPreview.setTop(mPhotoPlaceholder.getTop());
-
-            Log.d("SOKOL", "picture bot taken");
 
             Bitmap bitmap = Bitmap.createBitmap(mContainer.getMeasuredWidth(), mContainer.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);

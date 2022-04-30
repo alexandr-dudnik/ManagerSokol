@@ -3,6 +3,7 @@ package com.sokolua.manager.ui.screens.order;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CurrencyRealm;
+import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.OrderLineRealm;
 import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.data.storage.realm.TradeRealm;
@@ -45,7 +47,7 @@ import io.realm.RealmResults;
 import mortar.MortarScope;
 
 @Screen(R.layout.screen_order)
-public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
+public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     private String currentOrderId;
 
@@ -58,14 +60,13 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
     }
 
 
-
     public OrderScreen(String currentOrderId) {
         this.currentOrderId = currentOrderId;
     }
 
     @Override
     public String getScopeName() {
-        return super.getScopeName()+"_"+this.currentOrderId;
+        return super.getScopeName() + "_" + this.currentOrderId;
     }
 
     //region ===================== DI =========================
@@ -138,9 +139,9 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             updateLines();
             getView().setLinesAdapter(linesAdapter);
             lineChangeListener = orderLineRealms -> {
-                if (!orderLineRealms.isValid() || !orderLineRealms.isLoaded()){
+                if (!orderLineRealms.isValid() || !orderLineRealms.isLoaded()) {
                     orderLineRealms.removeAllChangeListeners();
-                }else{
+                } else {
                     updateLines();
                 }
             };
@@ -148,7 +149,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             orderChangeListener = (realmModel, changeSet) -> {
                 OrderView mView = getView();
-                if (!realmModel.isLoaded() || !realmModel.isValid()){
+                if (!realmModel.isLoaded() || !realmModel.isValid()) {
                     realmModel.removeAllChangeListeners();
                     mView.viewOnBackPressed();
                 }
@@ -180,13 +181,13 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     refreshTrades();
                 }
                 if (changeSet.isFieldChanged("trade")) {
-                    mView.setTrade(currentOrder.getTrade()==null?null:currentOrder.getTrade().getName());
+                    mView.setTrade(currentOrder.getTrade() == null ? null : currentOrder.getTrade().getName());
                 }
                 if (changeSet.isFieldChanged("currency")) {
                     mView.setCurrency(currentOrder.getCurrency().getName());
                 }
                 if (changeSet.isFieldChanged("priceList")) {
-                    mView.setPriceList(currentOrder.getPriceList()==null?null:currentOrder.getPriceList().getName());
+                    mView.setPriceList(currentOrder.getPriceList() == null ? null : currentOrder.getPriceList().getName());
                 }
                 if (changeSet.isFieldChanged("status")) {
                     mView.setStatus(currentOrder.getStatus());
@@ -199,26 +200,35 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext(currencies -> {
-                        if (getView()!= null){
+                        if (getView() != null) {
                             ArrayList<String> arrCurrencies = new ArrayList<>();
-                            for(CurrencyRealm cur : currencies){
+                            for (CurrencyRealm cur : currencies) {
                                 arrCurrencies.add(cur.getName());
                             }
                             getView().setCurrencyList(arrCurrencies);
                         }
-                    }).subscribe()
+                    })
+                    .doOnError(throwable -> Log.e("ERROR","Currencies list", throwable) )
+                    .subscribe()
             ;
 
             refreshTrades();
         }
 
         private void refreshTrades() {
-            if (tradesSub!=null && !tradesSub.isDisposed()){
+            if (tradesSub != null && !tradesSub.isDisposed()) {
                 tradesSub.dispose();
             }
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
-                boolean isRemote = currentOrder.getCustomer().getTradeCash()==null? currentOrder.getCustomer().getTradeOfficial() != null && currentOrder.getCustomer().getTradeOfficial().isRemote() :currentOrder.getCustomer().getTradeCash().isRemote();
-                tradesSub = mModel.getTrades(currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_CASH, currentOrder.isPayOnFact(), isRemote)
+                CustomerRealm cust = currentOrder.getCustomer();
+                TradeRealm custTrade = cust.getTradeCash() == null? (cust.getTradeFop() == null? cust.getTradeFop() : cust.getTradeOfficial()) : cust.getTradeCash();
+                boolean isRemote = custTrade != null && custTrade.isRemote();
+                tradesSub = mModel.getTrades(
+                        currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_FOP,
+                        currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_CASH,
+                        currentOrder.isPayOnFact(),
+                        isRemote
+                        )
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(trades -> {
@@ -229,11 +239,13 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                                 }
                                 getView().setTradeList(arrTrades);
                             }
-                        }).subscribe();
+                        })
+                        .doOnError(throwable -> Log.e("ERROR","Trades list", throwable) )
+                        .subscribe();
             }
         }
 
-        private void updateLines(){
+        private void updateLines() {
             linesAdapter.refreshList(mModel.getLinesList(currentOrderId));
             getView().setOrderAmount(currentOrder.getTotal());
         }
@@ -252,26 +264,25 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .setVisible(true)
                     .setBackArrow(true)
                     .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName())
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
-                        if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS){
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item -> {
+                        if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS) {
                             currentOrder.removeChangeListener(orderChangeListener);
                             mModel.sendOrder(currentOrder.getId());
                             Flow.get(getView()).goBack();
-                        }else{
+                        } else {
                             mModel.updateOrderFromRemote(currentOrder.getId());
                         }
                         return false;
-                    } , ConstantManager.MENU_ITEM_TYPE_ITEM))
-                    ;
+                    }, ConstantManager.MENU_ITEM_TYPE_ITEM));
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
-                    if (currentOrder.getLines().isEmpty()){
+                    if (currentOrder.getLines().isEmpty()) {
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.error_empty_order));
                             return false;
                         }
                     }
-                    if (currentOrder.getDate().after(currentOrder.getDelivery())){
+                    if (currentOrder.getDate().after(currentOrder.getDelivery())) {
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.error_wrong_delivery));
                             return false;
@@ -282,10 +293,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     Flow.get(getView()).goBack();
                     return false;
                 }, ConstantManager.MENU_ITEM_TYPE_ACTION))
-                .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
-                    mModel.clearOrderLines(currentOrderId);
-                    return false;
-                }, ConstantManager.MENU_ITEM_TYPE_ITEM))
+                        .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
+                            mModel.clearOrderLines(currentOrderId);
+                            return false;
+                        }, ConstantManager.MENU_ITEM_TYPE_ITEM))
                 ;
 
             }
@@ -305,8 +316,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             mView.setStatus(currentOrder.getStatus());
             mView.setFact(currentOrder.isPayOnFact());
             mView.setCurrency(currentOrder.getCurrency().getName());
-            mView.setTrade(currentOrder.getTrade()==null?"":currentOrder.getTrade().getName());
-            mView.setPriceList(currentOrder.getPriceList()==null?"":currentOrder.getPriceList().getName());
+            mView.setTrade(currentOrder.getTrade() == null ? "" : currentOrder.getTrade().getName());
+            mView.setPriceList(currentOrder.getPriceList() == null ? "" : currentOrder.getPriceList().getName());
 
         }
 
@@ -330,11 +341,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
                 alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                     float newValue = 0f;
-                    try{
-                        newValue = Float.parseFloat(input.getText().toString().replace(",","."));
-                    }catch (Throwable ignore){}
+                    try {
+                        newValue = Float.parseFloat(input.getText().toString().replace(",", "."));
+                    } catch (Throwable ignore) {
+                    }
 
-                    if (currentOrder.getTrade()!=null && !currentOrder.getTrade().isCash()){
+                    if (currentOrder.getTrade() != null && !currentOrder.getTrade().isCash()) {
                         newValue = MiscUtils.roundPrice(newValue);
                     }
 
@@ -371,7 +383,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
                     float newValue = 0f;
                     try {
                         newValue = Float.parseFloat(input.getText().toString());
-                    }catch (Throwable ignore){}
+                    } catch (Throwable ignore) {
+                    }
                     if (newValue == 0f) {
                         mModel.removeOrderItem(currentOrderId, line.getItem().getItemId());
                     } else {
@@ -386,7 +399,9 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void removeLine(OrderLineRealm currentItem) {
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
-                mModel.removeOrderItem(currentOrderId, currentItem.getItem().getItemId());
+                if (currentItem.getItem().isValid()) {
+                    mModel.removeOrderItem(currentOrderId, currentItem.getItem().getItemId());
+                }
             }
         }
 
@@ -404,27 +419,27 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         public void addNewItemToOrder() {
             if (getRootView() != null) {
-                Flow.get((RootActivity)getRootView()).set(new GoodsScreen(currentOrderId));
+                Flow.get((RootActivity) getRootView()).set(new GoodsScreen(currentOrderId));
             }
         }
 
         public void updateCurrency(String currency) {
-            CurrencyRealm mCurrency = currentOrder!=null && currentOrder.isValid()? currentOrder.getCurrency() : null;
-            if (mCurrency!=null && mCurrency.isValid() && (!mCurrency.getName().equals(currency))) {
+            CurrencyRealm mCurrency = currentOrder != null && currentOrder.isValid() ? currentOrder.getCurrency() : null;
+            if (mCurrency != null && mCurrency.isValid() && (!mCurrency.getName().equals(currency))) {
                 mModel.updateOrderCurrency(currentOrderId, mModel.getCurrencyByName(currency).getCurrencyId());
             }
         }
 
         public void updateTrade(String tradeName) {
-            TradeRealm mTrade = currentOrder!=null && currentOrder.isValid()? currentOrder.getTrade() : null;
-            if (mTrade!=null && mTrade.isValid() && (!mTrade.getName().equals(tradeName))) {
+            TradeRealm mTrade = currentOrder != null && currentOrder.isValid() ? currentOrder.getTrade() : null;
+            if (mTrade != null && mTrade.isValid() && (!mTrade.getName().equals(tradeName))) {
                 mModel.updateOrderTrade(currentOrderId, mModel.getTradeByName(tradeName).getTradeId());
             }
         }
 
         public void updateFactFlag(boolean checked) {
-            TradeRealm mTrade = currentOrder!=null && currentOrder.isValid()? currentOrder.getTrade() : null;
-            if (mTrade!=null && mTrade.isValid() && (mTrade.isFact() != checked)) {
+            TradeRealm mTrade = currentOrder != null && currentOrder.isValid() ? currentOrder.getTrade() : null;
+            if (mTrade != null && mTrade.isValid() && (mTrade.isFact() != checked)) {
                 mModel.updateOrderFactFlag(currentOrderId, checked);
             }
         }
@@ -441,7 +456,8 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent>{
             builder.setView(input);
 
             builder.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> mModel.updateOrderComment(currentOrderId, input.getText().toString()));
-            builder.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {});
+            builder.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
+            });
 
             builder.show();
         }

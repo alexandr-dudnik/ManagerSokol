@@ -41,6 +41,7 @@ public class ConstantManager {
 
     public static final int ORDER_PAYMENT_CASH = 0;
     public static final int ORDER_PAYMENT_OFFICIAL = 1;
+    public static final int ORDER_PAYMENT_FOP = 2;
 
     public static final int DISCOUNT_TYPE_ITEM = 0;
     public static final int DISCOUNT_TYPE_CATEGORY = 1;

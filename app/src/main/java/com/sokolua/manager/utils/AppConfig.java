@@ -21,5 +21,7 @@ public class AppConfig {
 
     public static final String TEST_USERNAME = "test";
     public static final String TEST_USERPASSWORD = "test1234";
+
+    public static final String SERVICE_ACTION_STOP = "ServiceStop";
 }
 

@@ -1,32 +1,42 @@
 package com.sokolua.manager.utils;
 
-import android.app.Application;
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.hardware.Camera;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
+import androidx.work.Configuration;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
-import com.crashlytics.android.Crashlytics;
+import com.sokolua.manager.data.storage.realm.RealmMigrations;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.components.DaggerAppComponent;
 import com.sokolua.manager.di.modules.AppModule;
-import com.sokolua.manager.di.modules.PicassoCacheModule;
 import com.sokolua.manager.di.modules.RootModule;
 import com.sokolua.manager.mortar.ScreenScoper;
+import com.sokolua.manager.services.UpdateService;
+import com.sokolua.manager.services.UpdateWorker;
 import com.sokolua.manager.ui.activities.DaggerRootActivity_RootComponent;
 import com.sokolua.manager.ui.activities.RootActivity;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
     public static AppComponent sAppComponent;
+    @SuppressLint("StaticFieldLeak")
     private static Context sContext;
     private MortarScope mRootScope;
     private MortarScope mRootActivityScope;
@@ -38,17 +48,18 @@ public class App extends Application {
         try {
             cam = Camera.open(); // attempt to get a Camera instance
             cam.setDisplayOrientation(90);
+        } catch (Throwable ignore) {
         }
-        catch (Throwable ignore){}
         return cam; // returns null if camera is unavailable
     }
 
-    public static void releaseCamera(){
+    public static void releaseCamera() {
         if (cam != null) {
-            try{
-               cam.release();
-               cam = null;
-            }catch (Throwable ignore){}
+            try {
+                cam.release();
+                cam = null;
+            } catch (Throwable ignore) {
+            }
         }
 
     }
@@ -57,9 +68,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        MultiDex.install(this);
+        //MultiDex.install(this);
 
-        Fabric.with(this, new Crashlytics());
+        //Fabric.with(this, new Crashlytics());
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
@@ -76,13 +87,12 @@ public class App extends Application {
                 .build(RootActivity.class.getName());
 
 
-
         Realm.init(sContext);
         final RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .name("sokol.manager.realm")
                 .compactOnLaunch()
-                .schemaVersion(1)
-                //.migration(new RealmMigrations())
+                .schemaVersion(2)
+                .migration(new RealmMigrations())
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(configuration);
@@ -90,6 +100,7 @@ public class App extends Application {
         ScreenScoper.registerScope(mRootScope);
         ScreenScoper.registerScope(mRootActivityScope);
 
+        startUpdateService();
     }
 
     @Override
@@ -109,7 +120,6 @@ public class App extends Application {
     }
 
 
-
     public static AppComponent getAppComponent() {
         return sAppComponent;
     }
@@ -124,7 +134,6 @@ public class App extends Application {
         mRootActivityRootComponent = DaggerRootActivity_RootComponent.builder()
                 .appComponent(sAppComponent)
                 .rootModule(new RootModule())
-                .picassoCacheModule(new PicassoCacheModule())
                 .build();
 
     }
@@ -137,12 +146,12 @@ public class App extends Application {
         return sContext;
     }
 
-    public static String getStringRes(int res_id){
-       return sContext.getResources().getString(res_id);
+    public static String getStringRes(int res_id) {
+        return sContext.getResources().getString(res_id);
     }
-    
 
-    public static int getColorRes(int res_id){
+
+    public static int getColorRes(int res_id) {
         return ResourcesCompat.getColor(sContext.getResources(), res_id, sContext.getTheme());
     }
 
@@ -153,5 +162,33 @@ public class App extends Application {
         MultiDex.install(this);
     }
 
+    public static boolean checkUpdateServiceRunning() {
+        if (sContext != null) {
+            final ActivityManager manager = (ActivityManager) sContext.getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (service.getClass().getName().equals(UpdateService.class.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
+    public void startUpdateService() {
+//        final PeriodicWorkRequest.Builder workBuilder = new PeriodicWorkRequest.Builder(UpdateWorker.class, 15, TimeUnit.MINUTES);
+//
+//        WorkManager.initialize(
+//                this,
+//                new Configuration.Builder()
+//                        .setMinimumLoggingLevel(android.util.Log.INFO)
+//                        .setExecutor(Executors.newFixedThreadPool(8))
+//                        .build());
+//
+//        WorkManager.getInstance(this)
+//                .enqueueUniquePeriodicWork(
+//                        "UpdateWork",
+//                        ExistingPeriodicWorkPolicy.KEEP,
+//                        workBuilder.build()
+//                );
+    }
 }

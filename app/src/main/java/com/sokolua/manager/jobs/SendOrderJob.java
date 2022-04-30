@@ -1,8 +1,9 @@
 package com.sokolua.manager.jobs;
 
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.data.storage.realm.OrderRealm;
 
-public class SendOrderJob extends AbstractJob {
+public class SendOrderJob extends AbstractJob<OrderRealm> {
 
     public SendOrderJob(String orderId) {
         super(orderId

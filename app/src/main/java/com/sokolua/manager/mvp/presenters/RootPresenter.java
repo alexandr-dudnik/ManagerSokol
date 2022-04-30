@@ -43,8 +43,8 @@ public class RootPresenter extends Presenter<IRootView> {
     @Inject
     AuthModel mAuthModel;
 
-    private static int DEFAULT_MODE = 0;
-    private static int TAB_MODE = 1;
+    private static final int DEFAULT_MODE = 0;
+    private static final int TAB_MODE = 1;
 
     public RootPresenter() {
         App.getRootActivityRootComponent().inject(this);
@@ -89,6 +89,8 @@ public class RootPresenter extends Presenter<IRootView> {
 
 
     public void doUserLogin(String userName, String password) {
+        if (getView() == null) return;
+
         AbstractView scr = (AbstractView) getView().getCurrentScreen();
         if (!mAuthModel.isUserNameValid(userName)) {
             if (scr instanceof IAuthView) {

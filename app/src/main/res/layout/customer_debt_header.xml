@@ -22,6 +22,7 @@
         android:layout_width="match_parent"
         tools:text="@string/customer_debt_outdated"
         android:textSize="16sp"
+        android:textColor="@color/color_gray"
         android:fontFamily="@string/roboto_medium"
         />
 </LinearLayout>
