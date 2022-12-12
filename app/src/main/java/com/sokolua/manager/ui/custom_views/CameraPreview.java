@@ -1,5 +1,7 @@
 package com.sokolua.manager.ui.custom_views;
 
+import static com.sokolua.manager.ui.activities.RootActivity.TAG;
+
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
@@ -11,19 +13,28 @@ import android.view.SurfaceView;
 import com.sokolua.manager.utils.App;
 
 import java.io.IOException;
-
-import static com.sokolua.manager.ui.activities.RootActivity.TAG;
+import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
-    private Camera mCamera;
+    private final Camera mCamera;
 
 
-    private void setupCamera(){
-        if (mCamera != null ) {
+    private void setupCamera() {
+        if (mCamera != null) {
             Camera.Parameters parameters = mCamera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            List<String> flashModes = parameters.getSupportedFlashModes();
+            if (flashModes != null && flashModes.size() > 0) {
+                if (flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+                }
+            }
+            List<String> focusModes = parameters.getSupportedFocusModes();
+            if (focusModes != null && focusModes.size() > 0) {
+                if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                }
+            }
             parameters.setPictureFormat(ImageFormat.JPEG);
             mCamera.setParameters(parameters);
             mCamera.setDisplayOrientation(90);
@@ -81,7 +92,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-        if (mHolder == null || mHolder.getSurface() == null){
+        if (mHolder == null || mHolder.getSurface() == null) {
             // preview surface does not exist
             return;
         }
@@ -91,7 +102,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (mCamera != null) {
                 mCamera.stopPreview();
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             // ignore: tried to stop a non-existent preview
         }
 
@@ -106,19 +117,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 mCamera.startPreview();
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
 
     }
 
 
-
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        if (mHolder ==null || mHolder.getSurface() == null){
+        if (mHolder == null || mHolder.getSurface() == null) {
             // preview surface does not exist
             return;
         }
@@ -128,7 +138,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (mCamera != null) {
                 mCamera.stopPreview();
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             // ignore: tried to stop a non-existent preview
         }
 
@@ -136,7 +146,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        if (mHolder == null || mHolder.getSurface() == null){
+        if (mHolder == null || mHolder.getSurface() == null) {
             // preview surface does not exist
             return;
         }
@@ -146,7 +156,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (mCamera != null) {
                 mCamera.stopPreview();
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             // ignore: tried to stop a non-existent preview
         }
 
@@ -154,7 +164,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 
     public boolean takePicture(Camera.PictureCallback takePictureCallBack) {
-        if (mCamera != null  ){
+        if (mCamera != null) {
             mCamera.startPreview();
             mCamera.takePicture(null, null, takePictureCallBack);
             return true;
