@@ -250,6 +250,10 @@ public class DataManager {
     
     //region ===================== UserInfo =========================
 
+    private boolean isTestUser() {
+        return getUserName().equals(AppConfig.TEST_USERNAME);
+    }
+
     public boolean isUserAuth() {
         if (mPreferencesManager.getUserAuthToken().isEmpty()){
             return false;
@@ -388,7 +392,7 @@ public class DataManager {
 
 
     public Observable<CustomerRealm> updateCustomersFromRemote(){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
         
@@ -430,7 +434,7 @@ public class DataManager {
 
 
     public Observable<CustomerRealm> updateCustomerFromRemote(String customerId){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
         return mRestService.getCustomer(mPreferencesManager.getUserAuthToken(), customerId)
@@ -479,7 +483,7 @@ public class DataManager {
     }
 
     public void sendAllNotes(String filter) {
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return;
         }
 
@@ -526,7 +530,7 @@ public class DataManager {
     }
 
     public void sendAllTasks(String filter) {
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return;
         }
 
@@ -584,7 +588,7 @@ public class DataManager {
 
 
     public void sendAllVisits(String filter) {
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return;
         }
 
@@ -670,7 +674,7 @@ public class DataManager {
 
 
     public Observable<OrderRealm> updateOrdersFromRemote(){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
         
@@ -714,7 +718,7 @@ public class DataManager {
 
 
     public Observable<OrderRealm> updateOrderFromRemote(String orderId){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
         
@@ -775,7 +779,7 @@ public class DataManager {
     }
 
     public void sendAllOrders(String filter) {
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return;
         }
         mRealmManager.getOrdersToSend(filter)
@@ -819,7 +823,7 @@ public class DataManager {
 
 
     public Observable<GoodsGroupRealm> updateGroupsFromRemote(){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
 
@@ -861,7 +865,7 @@ public class DataManager {
     }
 
     public Observable<GoodsGroupRealm> updateGroupFromRemote(String groupId){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
 
@@ -893,7 +897,7 @@ public class DataManager {
 
 
     public Observable<ItemRealm> updateItemsFromRemote(){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
 
@@ -935,7 +939,7 @@ public class DataManager {
 
 
     public Observable<ItemRealm> updateGoodItemFromRemote(String itemId){
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
 
@@ -976,7 +980,7 @@ public class DataManager {
     //region ======================= Prices =========================
 
     public Observable<CurrencyRealm> updateCurrencyFromRemote() {
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
 
@@ -997,7 +1001,7 @@ public class DataManager {
                 ;    }
 
     public Observable<TradeRealm> updateTradesFromRemote() {
-        if (!isUserAuth() || getUserName().equals(AppConfig.TEST_USERNAME)){
+        if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
 

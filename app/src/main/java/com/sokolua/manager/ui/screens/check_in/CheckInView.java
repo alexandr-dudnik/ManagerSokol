@@ -1,5 +1,7 @@
 package com.sokolua.manager.ui.screens.check_in;
 
+import static java.lang.Math.min;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -8,14 +10,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.hardware.Camera;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,14 +38,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
+import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.custom_views.CameraPreview;
 import com.sokolua.manager.utils.App;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -55,22 +54,31 @@ import flow.Flow;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-
-import static java.lang.Math.min;
+import io.reactivex.schedulers.Schedulers;
 
 public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
-    @BindView(R.id.map_location_view)   MapView mapView;
-    @BindView(R.id.customer_name_text)  TextView customerName;
-    @BindView(R.id.datetime_text)  TextView dateTime;
-    @BindView(R.id.customer_address)  TextView customerAddress;
-    @BindView(R.id.map_latitude_text)  TextView latitudeText;
-    @BindView(R.id.map_longitude_text)  TextView longitudeText;
-    @BindView(R.id.map_address_text)  TextView mapAddress;
-    @BindView(R.id.camera_image_button)    AppCompatImageView mCameraButton;
-    @BindView(R.id.placeholder_photo)    AppCompatImageView mPhotoPlaceholder;
-    @BindView(R.id.check_in_container)    RelativeLayout mContainer;
-    @BindView(R.id.camera_preview)        CameraPreview mCameraPreview;
-
+    @BindView(R.id.map_location_view)
+    MapView mapView;
+    @BindView(R.id.customer_name_text)
+    TextView customerName;
+    @BindView(R.id.datetime_text)
+    TextView dateTime;
+    @BindView(R.id.customer_address)
+    TextView customerAddress;
+    @BindView(R.id.map_latitude_text)
+    TextView latitudeText;
+    @BindView(R.id.map_longitude_text)
+    TextView longitudeText;
+    @BindView(R.id.map_address_text)
+    TextView mapAddress;
+    @BindView(R.id.camera_image_button)
+    AppCompatImageView mCameraButton;
+    @BindView(R.id.placeholder_photo)
+    AppCompatImageView mPhotoPlaceholder;
+    @BindView(R.id.check_in_container)
+    RelativeLayout mContainer;
+    @BindView(R.id.camera_preview)
+    CameraPreview mCameraPreview;
 
 
     private GoogleMap mMap;
@@ -103,21 +111,23 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
         super.onAttachedToWindow();
 
 
-
         if (!isInEditMode()) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
             Calendar cal = Calendar.getInstance();
 
-            currentTimeObs = Observable.interval(1, TimeUnit.SECONDS)
+            currentTimeObs = Observable.interval(1, TimeUnit.MINUTES)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .unsubscribeOn(AndroidSchedulers.mainThread())
                     .map(it -> new Date())
-                    .filter(it -> {cal.setTime(it); return cal.get(Calendar.SECOND)==0;})
+                    .filter(it -> {
+                        cal.setTime(it);
+                        return cal.get(Calendar.SECOND) == 0;
+                    })
                     .map(sdf::format)
                     .doOnNext(it -> dateTime.setText(it))
                     .doOnSubscribe(it -> dateTime.setText(sdf.format(new Date())))
-                    .doOnError(throwable -> Log.e("ERROR","Check in", throwable) )
+                    .doOnError(throwable -> Log.e("ERROR", "Check in", throwable))
                     .subscribe();
 
             customerName.setText(mPresenter.getCustomerName());
@@ -125,7 +135,6 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
 
             mapView.onCreate(new Bundle());
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
 
                 fusedLocationClient.getLastLocation().addOnSuccessListener(this::updateMap);
@@ -155,10 +164,10 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (fusedLocationClient!=null) {
+        if (fusedLocationClient != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
-        if (currentTimeObs!=null && !currentTimeObs.isDisposed()) {
+        if (currentTimeObs != null && !currentTimeObs.isDisposed()) {
             currentTimeObs.dispose();
         }
     }
@@ -167,9 +176,9 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
         mapView.getMapAsync(googleMap -> {
             mMap = googleMap;
             mMap.clear();
-            if (location!= null) {
-                latitude = (float)location.getLatitude();
-                longitude = (float)location.getLongitude();
+            if (location != null) {
+                latitude = (float) location.getLatitude();
+                longitude = (float) location.getLongitude();
                 LatLng curPos = new LatLng(latitude, longitude);
                 mMap.addMarker(new MarkerOptions().position(curPos));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curPos, 17f));
@@ -179,31 +188,32 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
                 longitudeText.setText(String.format(Locale.getDefault(), "%1$.5f", longitude).trim());
 
                 mapAddress.setText("");
-                List<Address> addresses;
-                try {
-                    addresses = gcd.getFromLocation(latitude, longitude, 1);
-                    if (addresses.size() > 0){
-                        Address adr = addresses.get(0);
-                        StringBuilder res = new StringBuilder();
-                        int ind = 0;
-                        while(adr.getAddressLine(ind) != null){
-                            res.append(adr.getAddressLine(ind));
-                            ind++;
-                        }
-                        mapAddress.setText(res);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
+                Observable.just(new Pair<Float, Float>(latitude, longitude))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(coords -> gcd.getFromLocation(coords.first, coords.second, 1))
+                        .flatMap(Observable::fromIterable)
+                        .take(1)
+                        .doOnError(thrw -> Log.d("ADDRESS_FETCH", thrw.getMessage(), thrw))
+                        .doOnNext(adr -> {
+                            StringBuilder res = new StringBuilder();
+                            int ind = 0;
+                            while (adr.getAddressLine(ind) != null) {
+                                res.append(adr.getAddressLine(ind));
+                                ind++;
+                            }
+                            mapAddress.setText(res);
+                        })
+                        .subscribe();
             }
         });
     }
 
     @OnClick(R.id.camera_image_button)
-    void doCheckIn(View view){
+    void doCheckIn(View view) {
         mCameraButton.animate()
-                .alpha(255)
+                .alpha(1)
                 .setDuration(2000)
                 .start();
         mPresenter.doCheckIn();
@@ -214,15 +224,15 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
         return Flow.get(this.getContext()).goBack();
     }
 
-    public float getLatitude(){
+    public float getLatitude() {
         return latitude;
     }
 
-    public float getLongitude(){
+    public float getLongitude() {
         return longitude;
     }
 
-    public void makeScreenshot(){
+    public void makeScreenshot() {
         mCameraButton.setVisibility(GONE);
         mCameraPreview.setTop(-mCameraPreview.getHeight());
         mPhotoPlaceholder.setVisibility(VISIBLE);
@@ -235,12 +245,12 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
             App.releaseCamera();
 
 
-            float sx = (photo.getHeight()==0)?1f:1f*mContainer.getMeasuredWidth()/photo.getHeight();
-            float sy = (photo.getWidth()==0)?1f:1f*mContainer.getMeasuredHeight()/photo.getWidth();
+            float sx = (photo.getHeight() == 0) ? 1f : 1f * mContainer.getMeasuredWidth() / photo.getHeight();
+            float sy = (photo.getWidth() == 0) ? 1f : 1f * mContainer.getMeasuredHeight() / photo.getWidth();
 
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
-            matrix.postScale(min(sx,sy), min(sx,sy));
+            matrix.postScale(min(sx, sy), min(sx, sy));
             Bitmap picture = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true);
             mPhotoPlaceholder.setImageBitmap(picture);
 
@@ -254,7 +264,7 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
         };
 
 
-        if (!mCameraPreview.takePicture(takePictureCallBack)){
+        if (!mCameraPreview.takePicture(takePictureCallBack)) {
             mCameraPreview.setTop(mPhotoPlaceholder.getTop());
 
             Bitmap bitmap = Bitmap.createBitmap(mContainer.getMeasuredWidth(), mContainer.getMeasuredHeight(), Bitmap.Config.ARGB_8888);

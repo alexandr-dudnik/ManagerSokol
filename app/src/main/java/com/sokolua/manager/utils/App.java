@@ -94,6 +94,8 @@ public class App extends MultiDexApplication {
                 .schemaVersion(2)
                 .migration(new RealmMigrations())
                 .deleteRealmIfMigrationNeeded()
+                .allowQueriesOnUiThread(true)
+                .allowWritesOnUiThread(true)
                 .build();
         Realm.setDefaultConfiguration(configuration);
 
