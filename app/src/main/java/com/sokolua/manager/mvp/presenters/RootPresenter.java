@@ -17,7 +17,7 @@ import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
-import com.sokolua.manager.ui.activities.SplashActivity;
+import com.sokolua.manager.ui.activities.StartActivity;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
 
@@ -54,7 +54,7 @@ public class RootPresenter extends Presenter<IRootView> {
     protected BundleService extractBundleService(IRootView view) {
         return (view instanceof RootActivity) ?
                 BundleService.getBundleService((RootActivity) view) : //Привязываем RootPresenter к RootActivity
-                BundleService.getBundleService((SplashActivity) view);
+                BundleService.getBundleService((StartActivity) view);
     }
 
 

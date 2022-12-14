@@ -424,7 +424,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     @DaggerScope(RootActivity.class)
     public interface RootComponent {
         void inject(RootActivity activity);
-        void inject(SplashActivity activity);
+        void inject(StartActivity activity);
         void inject(RootPresenter presenter);
 
         RootPresenter getRootPresenter();

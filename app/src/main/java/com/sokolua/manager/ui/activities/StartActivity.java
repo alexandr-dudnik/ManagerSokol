@@ -27,7 +27,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import mortar.MortarScope;
 
-public class SplashActivity extends AppCompatActivity implements IRootView {
+public class StartActivity extends AppCompatActivity implements IRootView {
 
     @BindView(R.id.root_frame)
     FrameLayout mRootFrame;

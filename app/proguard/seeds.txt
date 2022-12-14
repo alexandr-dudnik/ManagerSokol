@@ -10551,7 +10551,7 @@ io.realm.com_sokolua_manager_data_storage_realm_BrandsRealmRealmProxy: <clinit>(
 com.squareup.moshi.JsonWriter: void replaceTop(int)
 com.crashlytics.android.core.CrashlyticsCore: int DEFAULT_MAIN_HANDLER_TIMEOUT_SEC
 com.crashlytics.android.core.CodedOutputStream: int computeInt64Size(int,long)
-com.sokolua.manager.ui.activities.SplashActivity: SplashActivity()
+com.sokolua.manager.ui.activities.StartActivity: SplashActivity()
 io.realm.internal.ColumnInfo: long getColumnIndex(java.lang.String)
 com.google.android.material.R$styleable: int TextInputLayout_boxBackgroundMode
 io.realm.internal.TableQuery: java.lang.Double nativeMaximumDouble(long,long,long,long,long)
@@ -18435,7 +18435,7 @@ androidx.appcompat.R$styleable: int FontFamilyFont_android_fontStyle
 io.realm.rx.RealmObservableFactory$12$2: void run()
 androidx.appcompat.R$color: int abc_search_url_text_pressed
 com.crashlytics.android.core.DialogStringResolver: java.lang.String getAlwaysSendButtonTitle()
-com.sokolua.manager.ui.activities.SplashActivity
+com.sokolua.manager.ui.activities.StartActivity
 com.crashlytics.android.core.CrashlyticsController$8: com.crashlytics.android.core.CrashlyticsController this$0
 io.realm.internal.TableQuery: long getNativeFinalizerPtr()
 androidx.appcompat.R$id: int search_src_text
@@ -18608,7 +18608,7 @@ com.sokolua.manager.data.storage.realm.OrderRealm: com.sokolua.manager.data.stor
 com.squareup.picasso.Picasso: void invalidate(java.io.File)
 com.squareup.moshi.StandardJsonAdapters$8: StandardJsonAdapters$8()
 io.realm.internal.sync.OsSubscription: int nativeGetState(long)
-com.sokolua.manager.ui.activities.SplashActivity_ViewBinding: SplashActivity_ViewBinding(com.sokolua.manager.ui.activities.SplashActivity,android.view.View)
+com.sokolua.manager.ui.activities.SplashActivity_ViewBinding: SplashActivity_ViewBinding(com.sokolua.manager.ui.activities.StartActivity,android.view.View)
 io.realm.com_sokolua_manager_data_storage_realm_TradeRealmRealmProxy: void realmSet$cash(boolean)
 okhttp3.Response: long receivedResponseAtMillis
 com.crashlytics.android.answers.AnswersEventsHandler: android.content.Context context

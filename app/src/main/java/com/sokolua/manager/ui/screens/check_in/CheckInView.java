@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -43,8 +44,10 @@ import com.sokolua.manager.ui.custom_views.CameraPreview;
 import com.sokolua.manager.utils.App;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -193,9 +196,9 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .map(coords -> gcd.getFromLocation(coords.first, coords.second, 1))
+                        .onErrorReturn(throwable -> new ArrayList<Address>())
                         .flatMap(Observable::fromIterable)
                         .take(1)
-                        .doOnError(thrw -> Log.d("ADDRESS_FETCH", thrw.getMessage(), thrw))
                         .doOnNext(adr -> {
                             StringBuilder res = new StringBuilder();
                             int ind = 0;
@@ -204,6 +207,9 @@ public class CheckInView extends AbstractView<CheckInScreen.Presenter> {
                                 ind++;
                             }
                             mapAddress.setText(res);
+                        })
+                        .doOnError(thrw -> {
+                            Log.d("UPDATE LOCATION", "updateMap: ", thrw);
                         })
                         .subscribe();
             }
