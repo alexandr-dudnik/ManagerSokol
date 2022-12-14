@@ -6689,7 +6689,7 @@ io.reactivex.internal.operators.observable.ObservableSampleWithObservable$Sample
 io.reactivex.internal.operators.flowable.FlowableMergeWithCompletable
 androidx.media.MediaBrowserServiceCompat$MediaBrowserServiceImplApi21$4
 com.sokolua.manager.ui.activities.SplashActivity_ViewBinding
-    public void <init>(com.sokolua.manager.ui.activities.SplashActivity)
+    public void <init>(com.sokolua.manager.ui.activities.StartActivity)
     public void unbind()
 androidx.core.content.pm.ShortcutInfoCompat$Builder
 androidx.appcompat.R$dimen
@@ -7293,7 +7293,7 @@ androidx.recyclerview.widget.LayoutState
 com.sokolua.manager.ui.activities.SplashActivity_MembersInjector
     public void <init>(javax.inject.Provider)
     public static dagger.MembersInjector create(javax.inject.Provider)
-    public void injectMembers(com.sokolua.manager.ui.activities.SplashActivity)
+    public void injectMembers(com.sokolua.manager.ui.activities.StartActivity)
     public synthetic bridge void injectMembers(java.lang.Object)
     private final javax.inject.Provider mRootPresenterProvider
 androidx.swiperefreshlayout.widget.SwipeRefreshLayout$7
@@ -12371,7 +12371,7 @@ androidx.core.content.res.GrowingArrayUtils
 androidx.appcompat.widget.AppCompatSpinner$DropdownPopup$1
     final synthetic androidx.appcompat.widget.AppCompatSpinner val$this$0
 com.sokolua.manager.ui.activities.SplashActivity_ViewBinding
-    private com.sokolua.manager.ui.activities.SplashActivity target
+    private com.sokolua.manager.ui.activities.StartActivity target
 com.sokolua.manager.ui.screens.routes.RouteViewHolder_ViewBinding$3
     final synthetic com.sokolua.manager.ui.screens.routes.RouteViewHolder_ViewBinding this$0
 com.google.android.material.internal.TextScale$1
