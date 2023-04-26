@@ -68,7 +68,7 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        //MultiDex.install(this);
+        MultiDex.install(this);
 
         //Fabric.with(this, new Crashlytics());
 
@@ -94,6 +94,8 @@ public class App extends MultiDexApplication {
                 .schemaVersion(2)
                 .migration(new RealmMigrations())
                 .deleteRealmIfMigrationNeeded()
+                .allowQueriesOnUiThread(true)
+                .allowWritesOnUiThread(true)
                 .build();
         Realm.setDefaultConfiguration(configuration);
 

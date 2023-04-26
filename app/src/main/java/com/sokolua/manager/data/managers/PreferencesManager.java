@@ -52,7 +52,7 @@ public class PreferencesManager {
     
     
     public String getServerAddress() {
-        return mSharedPreferences.getString(SERVER_ADDRESS_STRING, AppConfig.API_SERVERS[0]);
+        return mSharedPreferences.getString(SERVER_ADDRESS_STRING, AppConfig.getDefaultServer());
     }
 
     public void updateServerAddress(String serverAddress){

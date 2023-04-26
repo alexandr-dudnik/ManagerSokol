@@ -37,14 +37,13 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         @Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
-
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
 
             if (getRootView() != null) {
                 getRootView().setBottomBarVisibility(false);
             }
-        }
 
+        }
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {

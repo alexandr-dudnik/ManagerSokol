@@ -1,9 +1,13 @@
 package com.sokolua.manager.utils;
 
+import com.sokolua.manager.data.managers.ConstantManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppConfig {
-    public static final String API_URL = "http://%s/upp_general_82/hs/api/";
-    public static final String[] API_SERVERS = {"post.sokolua.com:3854", "mail.220tm.com:3854", "10.10.20.103:8080", "176.9.44.131:3854"};
-    public static final String BASE_URL = String.format(API_URL, API_SERVERS[0]);
+    public static String API_URL = "";
+    public static List<String> API_SERVERS = new ArrayList<>();
     public static final int MAX_CONNECTION_TIMEOUT = 200;
     public static final int MAX_READ_TIMEOUT = 10000;
     public static final int MAX_WRITE_TIMEOUT = 10000;
@@ -23,5 +27,20 @@ public class AppConfig {
     public static final String TEST_USERPASSWORD = "test1234";
 
     public static final String SERVICE_ACTION_STOP = "ServiceStop";
+
+    private static String getApiUrl() {
+        return API_URL.isEmpty() ? "http://%s" : API_URL;
+    }
+    public static String getBaseURL() {
+        return String.format(getApiUrl(), getDefaultServer());
+    }
+
+    public static String getBaseURL(String server) {
+        return String.format(getApiUrl(), server);
+    }
+
+    public static String getDefaultServer() {
+        return API_SERVERS.size() == 0 ? ConstantManager.LOCAL_HOST : API_SERVERS.get(0);
+    }
 }
 
