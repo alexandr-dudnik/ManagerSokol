@@ -62,4 +62,8 @@ public class ConstantManager {
 
     public static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
     public static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
+
+    public static final String FIREBASE_API_SERVERS_LIST_KEY = "API_SERVERS_LIST";
+    public static final String FIREBASE_API_URL_TEMPLATE_KEY = "API_URL_TEMPLATE";
+    public static final String LOCAL_HOST = "127.0.0.1";
 }

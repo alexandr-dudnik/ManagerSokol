@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<defaults>
+  <entry>
+    <key>API_SERVERS_LIST</key>
+    <value>[
+   "post.sokolua.com:3854",
+   "mail.220tm.com:3854"
+]</value>
+  </entry>
+  <entry>
+    <key>API_URL_TEMPLATE</key>
+    <value>http://%s/upp_general_82/hs/api/</value>
+  </entry>
+</defaults>

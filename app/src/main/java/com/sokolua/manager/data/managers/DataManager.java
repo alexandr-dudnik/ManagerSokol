@@ -186,7 +186,7 @@ public class DataManager {
     }
     private void updateRetrofitBaseUrl(){
         String baseServer = mPreferencesManager.getServerAddress();
-        mRetrofit =  mRetrofit.newBuilder().baseUrl(String.format(AppConfig.API_URL, baseServer)).build();
+        mRetrofit =  mRetrofit.newBuilder().baseUrl(AppConfig.getBaseURL(baseServer)).build();
         mRestService = mRetrofit.create(RestService.class);
     }
 

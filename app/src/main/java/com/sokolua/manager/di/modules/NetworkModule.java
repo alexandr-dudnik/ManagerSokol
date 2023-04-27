@@ -43,7 +43,7 @@ public class NetworkModule {
 
     private Retrofit createRetrofit(OkHttpClient client) {
         return new Retrofit.Builder()
-                .baseUrl(AppConfig.BASE_URL)
+                .baseUrl(AppConfig.getBaseURL())
                 .addConverterFactory(createConvertFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(client)

@@ -12,12 +12,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.network.res.UserRes;
+import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.ui.activities.StartActivity;
+import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.ui.screens.main.MainScreen;
 import com.sokolua.manager.utils.App;
 
@@ -87,6 +89,9 @@ public class RootPresenter extends Presenter<IRootView> {
         return getView();
     }
 
+    public boolean isUserAuth() {
+        return mAuthModel.isUserAuth();
+    }
 
     public void doUserLogin(String userName, String password) {
         if (getView() == null) return;
@@ -175,6 +180,13 @@ public class RootPresenter extends Presenter<IRootView> {
 
     public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResult){
 
+    }
+
+    public void navigateToAuth() {
+        AbstractView scr = (AbstractView) getView().getCurrentScreen();
+        if (scr != null) {
+            Flow.get(scr).replaceHistory(new AuthScreen(), Direction.REPLACE);
+        }
     }
 
     public class ActionBarBuilder{

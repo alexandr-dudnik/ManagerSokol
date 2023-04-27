@@ -1,20 +1,41 @@
 package com.sokolua.manager.ui.activities;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.JsonReader;
+import android.util.Log;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
+import com.sokolua.manager.utils.AppConfig;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
+import java.io.Reader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -31,11 +52,16 @@ public class StartActivity extends AppCompatActivity implements IRootView {
 
     @BindView(R.id.root_frame)
     FrameLayout mRootFrame;
+    @BindView(R.id.logo_bird)
+    ImageView mLogo;
 
     @Inject
     RootPresenter mRootPresenter;
 
-    private Disposable mLoader;
+    @Inject
+    FirebaseRemoteConfig mFirebaseRemoteConfig;
+
+    private ValueAnimator logoAnimator;
 
 
     @Override
@@ -46,6 +72,28 @@ public class StartActivity extends AppCompatActivity implements IRootView {
 
 //region ==========   Life Cycle ==================
 
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        logoAnimator = ValueAnimator.ofFloat(1f, 0.8f);
+        logoAnimator.setDuration(1000L);
+        logoAnimator.setInterpolator(new LinearInterpolator());
+        logoAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        logoAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        logoAnimator.addUpdateListener(
+                animation -> {
+                    float scale;
+                    if (animation.isRunning()) {
+                        scale = (float)animation.getAnimatedValue();
+                    } else {
+                        scale = 1.0f;
+                    }
+                    mLogo.setScaleX(scale);
+                    mLogo.setScaleY(scale);
+                }
+        );
+    }
 
     @Override
     protected void onStop() {
@@ -64,17 +112,25 @@ public class StartActivity extends AppCompatActivity implements IRootView {
         mRootPresenter.takeView(this);
         super.onStart();
 
-
-        mLoader=Observable
-                .interval( 1000, TimeUnit.MILLISECONDS )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(o -> {
-                    startRootActivity();
-                    return true;
-                } )
-                .subscribe();
-
+        mFirebaseRemoteConfig
+                .fetchAndActivate()
+                .addOnCompleteListener(
+                        task -> {
+                            if (task.isSuccessful()) {
+                                try {
+                                    AppConfig.API_URL = mFirebaseRemoteConfig.getString(ConstantManager.FIREBASE_API_URL_TEMPLATE_KEY);
+                                    Moshi moshi = new Moshi.Builder().build();
+                                    Type arrayType = Types.newParameterizedType(List.class, String.class);
+                                    JsonAdapter<List<String>> adapter = moshi.adapter(arrayType);
+                                    AppConfig.API_SERVERS = adapter.fromJson(mFirebaseRemoteConfig.getString(ConstantManager.FIREBASE_API_SERVERS_LIST_KEY));
+                                    hideLoad();
+                                    startRootActivity();
+                                } catch (Exception ex) {
+                                    showError(ex);
+                                }
+                            }
+                        }
+                );
     }
 
     @Override
@@ -85,9 +141,10 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     @Override
     protected void onResume() {
         super.onResume();
+        showLoad();
     }
 
-    //endregion==========  Life Cycle ==================
+//endregion==========  Life Cycle ==================
 
 
 //region==========   IRootView    ==================
@@ -110,11 +167,12 @@ public class StartActivity extends AppCompatActivity implements IRootView {
 
     @Override
     public void showLoad() {
+        logoAnimator.start();
     }
 
     @Override
     public void showLoad(int progressBarMax) {
-
+        logoAnimator.end();
     }
 
     @Override
@@ -157,7 +215,6 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
     public void startRootActivity() {
-        mLoader.dispose();
         Intent intent = new Intent(this, RootActivity.class);
         startActivity(intent);
         finish();
