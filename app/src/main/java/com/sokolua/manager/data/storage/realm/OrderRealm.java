@@ -94,7 +94,7 @@ public class OrderRealm extends RealmObject implements Serializable{
 
     public Float getTotal() {
         float total = 0f;
-        if (lines!=null) {
+        if (isValid() && lines!=null && lines.isValid()) {
             for (OrderLineRealm line : lines) {
                 if (line.isValid()) {
                     total += line.getPrice() * line.getQuantity();
@@ -125,7 +125,7 @@ public class OrderRealm extends RealmObject implements Serializable{
     }
 
     public RealmResults<OrderLineRealm> getLines() {
-        return lines!=null && lines.isValid()?lines:null;
+        return isValid() && lines!=null && lines.isValid()?lines:null;
     }
 
     public PriceListRealm getPriceList() {

@@ -185,7 +185,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 mProgressDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
         }
-        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+        if (!this.isFinishing() && mProgressDialog.getWindow() != null) {
             mProgressDialog.show();
             mProgressDialog.setContentView(R.layout.progress_root);
             ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">post.sokolua.com</domain>
-        <domain includeSubdomains="true">mail.220tm.com</domain>
-        <domain includeSubdomains="true">10.10.20.103</domain>
-        <domain includeSubdomains="true">176.9.44.131</domain>
-    </domain-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
 </network-security-config>
