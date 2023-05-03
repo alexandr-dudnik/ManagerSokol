@@ -595,7 +595,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     TextView textBasePrice  = view.findViewById(R.id.item_base_price);
                     textBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemBasePrice));
                     TextView textPrice  = view.findViewById(R.id.price_name_label);
-                    textPrice.setText(price==null?basePrice.getName():price.getName());
+                    textPrice.setText(price==null?(basePrice==null?"":basePrice.getName()):price.getName());
                     TextView textTrade  = view.findViewById(R.id.trade_name_label);
                     textTrade.setText(trade==null?"":trade.getName());
 
