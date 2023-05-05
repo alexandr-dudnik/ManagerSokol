@@ -5,13 +5,17 @@ import android.os.Bundle;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.AuthScope;
+import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
 import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
+import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.utils.AppConfig;
+
+import javax.inject.Scope;
 
 import dagger.Provides;
 import mortar.MortarScope;
@@ -109,6 +113,8 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
         void inject(Presenter presenter);
 
         void inject(AuthView view);
+
+        RootPresenter getRootPresenter();
     }
     //endregion ============================== DI ==================================
 

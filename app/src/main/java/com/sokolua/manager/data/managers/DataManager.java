@@ -116,6 +116,7 @@ public class DataManager {
                 .resetDelaysOnRestart()
                 .build();
         mJobManager = new JobManager(config);
+        mJobManager.stop();
         mJobManager.addCallback(new JobManagerCallback() {
             @Override
             public void onJobAdded(@NonNull Job job) {}
@@ -154,11 +155,15 @@ public class DataManager {
             public void onAfterJobRun(@NonNull Job job, int resultCode) {}
         });
 
-        if (!getAutoSynchronize()) {
-            mJobManager.stop();
+        if (getAutoSynchronize() && isRetrofitValid()) {
+            mJobManager.start();
         }
 
         updateLocalDataWithTimer();
+    }
+
+    public boolean isRetrofitValid() {
+        return !mRetrofit.baseUrl().host().equalsIgnoreCase(ConstantManager.LOCAL_HOST);
     }
 
     @Override
@@ -185,9 +190,14 @@ public class DataManager {
                 });
     }
     private void updateRetrofitBaseUrl(){
-        String baseServer = mPreferencesManager.getServerAddress();
-        mRetrofit =  mRetrofit.newBuilder().baseUrl(AppConfig.getBaseURL(baseServer)).build();
-        mRestService = mRetrofit.create(RestService.class);
+        String baseUrl = AppConfig.getBaseURL();
+        if (!baseUrl.isEmpty()) {
+            mRetrofit = mRetrofit.newBuilder().baseUrl(baseUrl).build();
+            mRestService = mRetrofit.create(RestService.class);
+            if (mJobManager != null && getAutoSynchronize()) {
+                mJobManager.start();
+            }
+        }
     }
 
 
@@ -298,18 +308,17 @@ public class DataManager {
             return Observable.just(DebugManager.loginUser(userName, password));
         }
 
-        return mRestService.loginUser(new UserLoginReq(userName, password))
-                .compose(new RestCallTransformer<>())
-//                .onErrorResumeNext(throwable -> {
-//                    Log.e("SYNC","login", throwable);
-//                    return Observable.empty();
-//                })
-                .flatMap(res -> {
-                    updateUserName(userName);
-                    updateUserPassword(password);
-                    return Observable.just(res);
-                })
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.loginUser(new UserLoginReq(userName, password))
+                    .compose(new RestCallTransformer<>())
+                    .flatMap(res -> {
+                        updateUserName(userName);
+                        updateUserPassword(password);
+                        return Observable.just(res);
+                    });
+        }
     }
 
     private void setUserAuthToken(String token, String expires) {
@@ -395,41 +404,47 @@ public class DataManager {
         if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
-        
-        return mRestService.getCustomerList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(CustomerRes.class.getSimpleName()))
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(Observable::fromIterable) //List of ProductRes
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .doOnNext(cust -> {
-                    if (!cust.isActive()) {
-                        mRealmManager.deleteCustomerFromRealm(cust.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(CustomerRes::isActive) //только активные клиенты
-                .flatMap(cust->{
-                    mRealmManager.saveCustomerToRealm(cust, true);
-                    Job job = new UpdateCustomerJob(cust.getId());
-                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
-                    CustomerRealm customer = getCustomerById(cust.getId());
-                    if (customer!=null) {
-                        return Observable.just(customer);
-                    }else{
-                        return Observable.empty();
-                    }
-                })
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","customer list", throwable);
-                    return Observable.empty();
-                })
-               ;
 
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getCustomerList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(CustomerRes.class.getSimpleName()))
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(Observable::fromIterable) //List of ProductRes
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.io())
+                    .doOnNext(cust -> {
+                        if (!cust.isActive()) {
+                            mRealmManager.deleteCustomerFromRealm(cust.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(CustomerRes::isActive) //только активные клиенты
+                    .flatMap(cust -> {
+                        mRealmManager.saveCustomerToRealm(cust, true);
+                        Job job = new UpdateCustomerJob(cust.getId());
+                        try {
+                            mJobManager.addJobInBackground(job);
+                        } catch (Throwable ignore) {
+                        }
+                        CustomerRealm customer = getCustomerById(cust.getId());
+                        if (customer != null) {
+                            return Observable.just(customer);
+                        } else {
+                            return Observable.empty();
+                        }
+                    })
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "customer list", throwable);
+                        return Observable.empty();
+                    })
+                    ;
+        }
     }
 
 
@@ -437,25 +452,29 @@ public class DataManager {
         if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
-        return mRestService.getCustomer(mPreferencesManager.getUserAuthToken(), customerId)
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(custRes -> {
-                    if (!custRes.isActive()) {
-                        mRealmManager.deleteCustomerFromRealm(custRes.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(CustomerRes::isActive) //только активные Клиенты
-                .doOnNext(custRes ->  mRealmManager.saveCustomerToRealm(custRes, false)) //Save data on disk
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","customer", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(custRes -> Observable.empty())
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getCustomer(mPreferencesManager.getUserAuthToken(), customerId)
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(custRes -> {
+                        if (!custRes.isActive()) {
+                            mRealmManager.deleteCustomerFromRealm(custRes.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(CustomerRes::isActive) //только активные Клиенты
+                    .doOnNext(custRes -> mRealmManager.saveCustomerToRealm(custRes, false)) //Save data on disk
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "customer", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(custRes -> Observable.empty())
+                    ;
+        }
     }
 
     public Observable<NoteRealm> sendSingleNote(String noteId) {
@@ -464,22 +483,26 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.sendNote(mPreferencesManager.getUserAuthToken(), note.getCustomer().getCustomerId(), new SendNoteReq(note))
-                .compose(new RestCallTransformer<>())
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(ids -> {
-                    mRealmManager.updateNoteExternalId(ids.getOldId(),ids.getNewId() );
-                })
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","note send", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(ids -> Observable.empty())
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.sendNote(mPreferencesManager.getUserAuthToken(), note.getCustomer().getCustomerId(), new SendNoteReq(note))
+                    .compose(new RestCallTransformer<>())
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(ids -> {
+                        mRealmManager.updateNoteExternalId(ids.getOldId(), ids.getNewId());
+                    })
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "note send", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(ids -> Observable.empty())
+                    ;
+        }
     }
 
     public void sendAllNotes(String filter) {
@@ -511,22 +534,26 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.sendTask(mPreferencesManager.getUserAuthToken(), task.getCustomer().getCustomerId(), new SendTaskReq(task))
-                .compose(new RestCallTransformer<>())
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(ids ->
-                    mRealmManager.setCustomerTaskSynced(taskId)
-                )
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","task send", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(ids -> Observable.empty())
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.sendTask(mPreferencesManager.getUserAuthToken(), task.getCustomer().getCustomerId(), new SendTaskReq(task))
+                    .compose(new RestCallTransformer<>())
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(ids ->
+                            mRealmManager.setCustomerTaskSynced(taskId)
+                    )
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "task send", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(ids -> Observable.empty())
+                    ;
+        }
     }
 
     public void sendAllTasks(String filter) {
@@ -567,22 +594,26 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.sendVisit(mPreferencesManager.getUserAuthToken(), visit.getCustomer().getCustomerId(), new SendVisitReq(visit))
-                .compose(new RestCallTransformer<>())
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(ids ->
-                        mRealmManager.setVisitSynced(visitId)
-                )
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","visit send", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(ids -> Observable.empty())
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.sendVisit(mPreferencesManager.getUserAuthToken(), visit.getCustomer().getCustomerId(), new SendVisitReq(visit))
+                    .compose(new RestCallTransformer<>())
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(ids ->
+                            mRealmManager.setVisitSynced(visitId)
+                    )
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "visit send", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(ids -> Observable.empty())
+                    ;
+        }
     }
 
 
@@ -677,43 +708,49 @@ public class DataManager {
         if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
-        
-        return mRestService.getOrderList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(OrderRes.class.getSimpleName()))
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(Observable::fromIterable) //List of ProductRes
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .doOnNext(order -> {
-                    if (!order.isActive()) {
-                        mRealmManager.deleteOrderFromRealm(order.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(OrderRes::isActive) //только активные заказы
-                .flatMap(order -> {
-                    mRealmManager.saveOrderToRealm(order, true);
-                    Job job = new UpdateOrderJob(order.getId());
-                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
-                    OrderRealm tmpOrder = getOrderById(order.getId());
-                    if (tmpOrder != null) {
-                        return Observable.just(tmpOrder);
-                    }else{
+
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getOrderList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(OrderRes.class.getSimpleName()))
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(Observable::fromIterable) //List of ProductRes
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.io())
+                    .doOnNext(order -> {
+                        if (!order.isActive()) {
+                            mRealmManager.deleteOrderFromRealm(order.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(OrderRes::isActive) //только активные заказы
+                    .flatMap(order -> {
+                        mRealmManager.saveOrderToRealm(order, true);
+                        Job job = new UpdateOrderJob(order.getId());
+                        try {
+                            mJobManager.addJobInBackground(job);
+                        } catch (Throwable ignore) {
+                        }
+                        OrderRealm tmpOrder = getOrderById(order.getId());
+                        if (tmpOrder != null) {
+                            return Observable.just(tmpOrder);
+                        } else {
+                            return Observable.empty();
+                        }
+
+                    })
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "order list", throwable);
                         return Observable.empty();
-                    }
+                    })
 
-                })
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","order list", throwable);
-                    return Observable.empty();
-                })
-
-                ;
-
+                    ;
+        }
     }
 
 
@@ -721,27 +758,31 @@ public class DataManager {
         if (!isUserAuth() || isTestUser()){
             return Observable.empty();
         }
-        
-        return mRestService.getOrder(mPreferencesManager.getUserAuthToken(), orderId)
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(order -> {
-                    if (!order.isActive()) {
-                        mRealmManager.deleteOrderFromRealm(order.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(OrderRes::isActive) //только активные заказы
-                .doOnNext(order ->  mRealmManager.saveOrderToRealm(order, false)) //Save data on disk
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","order", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(item -> Observable.empty())
-                ;
+
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getOrder(mPreferencesManager.getUserAuthToken(), orderId)
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(order -> {
+                        if (!order.isActive()) {
+                            mRealmManager.deleteOrderFromRealm(order.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(OrderRes::isActive) //только активные заказы
+                    .doOnNext(order -> mRealmManager.saveOrderToRealm(order, false)) //Save data on disk
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "order", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(item -> Observable.empty())
+                    ;
+        }
     }
 
     public List<OrderLineRealm> getCopyOfOrderLines(String orderId){
@@ -754,28 +795,32 @@ public class DataManager {
         if (!isUserAuth() || order==null || !order.isValid()){
             return Observable.empty();
         }
-        return mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), new SendOrderReq(order, lines))
-                .compose(new RestCallTransformer<>())
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(ids -> {
-                    try {
-                        //noinspection ResultOfMethodCallIgnored
-                        UUID.fromString(ids.getNewId());
-                        mRealmManager.updateOrderExternalId(ids.getOldId(), ids.getNewId());
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                })
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","order send", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(ids -> Observable.empty())
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.sendOrder(mPreferencesManager.getUserAuthToken(), new SendOrderReq(order, lines))
+                    .compose(new RestCallTransformer<>())
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(ids -> {
+                        try {
+                            //noinspection ResultOfMethodCallIgnored
+                            UUID.fromString(ids.getNewId());
+                            mRealmManager.updateOrderExternalId(ids.getOldId(), ids.getNewId());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "order send", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(ids -> Observable.empty())
+                    ;
+        }
     }
 
     public void sendAllOrders(String filter) {
@@ -827,41 +872,47 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.getGoodsGroupList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(GoodGroupRes.class.getSimpleName()))
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(Observable::fromIterable) //List of ProductRes
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .doOnNext(group -> {
-                    if (!group.isActive()) {
-                        mRealmManager.deleteGoodsGroupFromRealm(group.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(GoodGroupRes::isActive) //только активные товары
-                .flatMap(group ->{
-                    mRealmManager.saveGoodGroupToRealm(group, true);
-                    Job job = new UpdateGoodGroupJob(group.getId());
-                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
-                    GoodsGroupRealm tmpGroup = getGoodGroupById(group.getId());
-                    if (tmpGroup != null) {
-                        return Observable.just(tmpGroup);
-                    }else{
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getGoodsGroupList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(GoodGroupRes.class.getSimpleName()))
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(Observable::fromIterable) //List of ProductRes
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.io())
+                    .doOnNext(group -> {
+                        if (!group.isActive()) {
+                            mRealmManager.deleteGoodsGroupFromRealm(group.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(GoodGroupRes::isActive) //только активные товары
+                    .flatMap(group -> {
+                        mRealmManager.saveGoodGroupToRealm(group, true);
+                        Job job = new UpdateGoodGroupJob(group.getId());
+                        try {
+                            mJobManager.addJobInBackground(job);
+                        } catch (Throwable ignore) {
+                        }
+                        GoodsGroupRealm tmpGroup = getGoodGroupById(group.getId());
+                        if (tmpGroup != null) {
+                            return Observable.just(tmpGroup);
+                        } else {
+                            return Observable.empty();
+                        }
+                    })
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "groups list", throwable);
                         return Observable.empty();
-                    }
-                })
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","groups list", throwable);
-                    return Observable.empty();
-                })
+                    })
 
-                ;
-
+                    ;
+        }
     }
 
     public Observable<GoodsGroupRealm> updateGroupFromRemote(String groupId){
@@ -869,26 +920,30 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId)
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(group -> {
-                    if (!group.isActive()) {
-                        mRealmManager.deleteGoodsGroupFromRealm(group.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(GoodGroupRes::isActive) //только активные товары
-                .doOnNext(group ->  mRealmManager.saveGoodGroupToRealm(group, false)) //Save data on disk
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","group", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(group -> Observable.empty())
-        ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getGoodsGroup(mPreferencesManager.getUserAuthToken(), groupId)
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(group -> {
+                        if (!group.isActive()) {
+                            mRealmManager.deleteGoodsGroupFromRealm(group.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(GoodGroupRes::isActive) //только активные товары
+                    .doOnNext(group -> mRealmManager.saveGoodGroupToRealm(group, false)) //Save data on disk
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "group", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(group -> Observable.empty())
+                    ;
+        }
     }
 
     private GoodsGroupRealm getGoodGroupById(String id) {
@@ -901,40 +956,46 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.getGoodsList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(GoodItemRes.class.getSimpleName()))
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(Observable::fromIterable) //List of GoodItemRes
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .doOnNext(item -> {
-                    if (!item.isActive()) {
-                        mRealmManager.deleteGoodItemFromRealm(item.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(GoodItemRes::isActive) //только активные товары
-                .flatMap(item -> {
-                    mRealmManager.saveGoodItemToRealm(item, true); //Save data on disk
-                    Job job = new UpdateGoodItemJob(item.getId());
-                    try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
-                    ItemRealm tmpItem = getItemById(item.getId());
-                    if (tmpItem != null) {
-                        return Observable.just(tmpItem);
-                    }else{
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getGoodsList(mPreferencesManager.getUserAuthToken(), mPreferencesManager.getLastUpdate(GoodItemRes.class.getSimpleName()))
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(Observable::fromIterable) //List of GoodItemRes
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.io())
+                    .doOnNext(item -> {
+                        if (!item.isActive()) {
+                            mRealmManager.deleteGoodItemFromRealm(item.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(GoodItemRes::isActive) //только активные товары
+                    .flatMap(item -> {
+                        mRealmManager.saveGoodItemToRealm(item, true); //Save data on disk
+                        Job job = new UpdateGoodItemJob(item.getId());
+                        try {
+                            mJobManager.addJobInBackground(job);
+                        } catch (Throwable ignore) {
+                        }
+                        ItemRealm tmpItem = getItemById(item.getId());
+                        if (tmpItem != null) {
+                            return Observable.just(tmpItem);
+                        } else {
+                            return Observable.empty();
+                        }
+                    })
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "items list", throwable);
                         return Observable.empty();
-                    }
-                })
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","items list", throwable);
-                    return Observable.empty();
-                })
-                ;
-
+                    })
+                    ;
+        }
     }
 
 
@@ -943,26 +1004,30 @@ public class DataManager {
             return Observable.empty();
         }
 
-        return mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .doOnNext(item -> {
-                    if (!item.isActive()) {
-                        mRealmManager.deleteGoodItemFromRealm(item.getId()); //удалить запись из локальной БД
-                    }
-                })
-                .filter(GoodItemRes::isActive) //только активные товары
-                .doOnNext(item ->  mRealmManager.saveGoodItemToRealm(item, false)) //Save data on disk
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","item", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(item -> Observable.empty())
-                ;
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getGoodItem(mPreferencesManager.getUserAuthToken(), itemId)
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .doOnNext(item -> {
+                        if (!item.isActive()) {
+                            mRealmManager.deleteGoodItemFromRealm(item.getId()); //удалить запись из локальной БД
+                        }
+                    })
+                    .filter(GoodItemRes::isActive) //только активные товары
+                    .doOnNext(item -> mRealmManager.saveGoodItemToRealm(item, false)) //Save data on disk
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "item", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(item -> Observable.empty())
+                    ;
+        }
     }
 
 
@@ -980,46 +1045,56 @@ public class DataManager {
     //region ======================= Prices =========================
 
     public Observable<CurrencyRealm> updateCurrencyFromRemote() {
-        if (!isUserAuth() || isTestUser()){
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
-        return mRestService.getCurrencyList(mPreferencesManager.getUserAuthToken())
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(Observable::fromIterable) //List of Currencies
-                .doOnNext(item ->  mRealmManager.saveCurrencyToRealm(item)) //Save data on disk
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","currency", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(item -> Observable.empty())
-                ;    }
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getCurrencyList(mPreferencesManager.getUserAuthToken())
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(Observable::fromIterable) //List of Currencies
+                    .doOnNext(item -> mRealmManager.saveCurrencyToRealm(item)) //Save data on disk
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "currency", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(item -> Observable.empty())
+                    ;
+        }
+    }
 
     public Observable<TradeRealm> updateTradesFromRemote() {
-        if (!isUserAuth() || isTestUser()){
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
-        return mRestService.getTradesList(mPreferencesManager.getUserAuthToken())
-                .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
-                .retryWhen(errorObservable -> errorObservable
-                        .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
-                        .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
-                        .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
-                .flatMap(Observable::fromIterable) //List of Trades
-                .doOnNext(item ->  mRealmManager.saveTradeToRealm(item)) //Save data on disk
-                .onExceptionResumeNext(Observable.empty())
-                .onErrorResumeNext(throwable -> {
-                    Log.e("SYNC","trade", throwable);
-                    return Observable.empty();
-                })
-                .flatMap(item -> Observable.empty())
-                ;    }
+        if (mRestService == null) {
+            return Observable.empty();
+        } else {
+            return mRestService.getTradesList(mPreferencesManager.getUserAuthToken())
+                    .compose(new RestCallTransformer<>()) //трансформируем response и выбрасываем ApiError в слуае ошибки, проверяем статус сети перед запросом, обрабатываем коды ответов
+                    .retryWhen(errorObservable -> errorObservable
+                            .zipWith(Observable.range(1, AppConfig.GET_DATA_RETRY_COUNT), (throwable, retryCount) -> retryCount)  // последовательность попыток от 1 до 5\
+                            .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
+                            .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
+                    .flatMap(Observable::fromIterable) //List of Trades
+                    .doOnNext(item -> mRealmManager.saveTradeToRealm(item)) //Save data on disk
+                    .onExceptionResumeNext(Observable.empty())
+                    .onErrorResumeNext(throwable -> {
+                        Log.e("SYNC", "trade", throwable);
+                        return Observable.empty();
+                    })
+                    .flatMap(item -> Observable.empty())
+                    ;
+        }
+    }
 
     public Observable<List<PriceListRealm>> getPriceLists() {
         return mRealmManager.getAllPriceLists();
@@ -1127,7 +1202,7 @@ public class DataManager {
 
     public void updateAutoSynchronize(Boolean sync) {
         mPreferencesManager.updateAutoSynchronize(sync);
-        if (sync) {
+        if (sync && isRetrofitValid()) {
             mJobManager.start();
         }else{
             mJobManager.stop();
@@ -1143,6 +1218,21 @@ public class DataManager {
         mPreferencesManager.saveLastUpdate(module, lastModified);
     }
 
+    public void storeApiUrl(String apiUrl) {
+        mPreferencesManager.storeApiUrl(apiUrl);
+    }
+
+    public void storeApiServers(List<String> apiServers) {
+        mPreferencesManager.storeApiServers(apiServers);
+    }
+
+    public String getApiUrl() {
+        return mPreferencesManager.getApiUrl();
+    }
+
+    public List<String> getApiServers() {
+        return mPreferencesManager.getApiServers();
+    }
 
 
     //endregion ================== Preferences =========================

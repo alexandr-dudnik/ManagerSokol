@@ -9,10 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
-import androidx.work.Configuration;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import com.sokolua.manager.data.storage.realm.RealmMigrations;
 import com.sokolua.manager.di.DaggerService;
@@ -22,12 +18,8 @@ import com.sokolua.manager.di.modules.AppModule;
 import com.sokolua.manager.di.modules.RootModule;
 import com.sokolua.manager.mortar.ScreenScoper;
 import com.sokolua.manager.services.UpdateService;
-import com.sokolua.manager.services.UpdateWorker;
 import com.sokolua.manager.ui.activities.DaggerRootActivity_RootComponent;
 import com.sokolua.manager.ui.activities.RootActivity;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;

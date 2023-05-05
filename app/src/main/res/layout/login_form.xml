@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         >
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/user_name"
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_form_fields_height"
@@ -58,7 +58,7 @@
         app:passwordToggleEnabled="true"
         >
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/user_password"
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_form_fields_height"

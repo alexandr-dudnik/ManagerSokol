@@ -134,7 +134,6 @@
     <string name="sunday">НД</string>
     <string name="routes_no_route" >На цей день маршрут не визначено</string>
 
-
     <!-- CheckIn screen -->
     <string name="check_in">Вiдмiтка</string>
     <string name="permission_need_camera">Для вiдмiтки потрiбна камера</string>
@@ -160,5 +159,7 @@
     <string name="version">Версія</string>
     <string name="running_service">service is running</string>
     <string name="service_stop_update">Stop update</string>
+    <string name="configuration_error">Помилка завантаження конфігурації!</string>
+    <string name="retry">Ще раз</string>
 
 </resources>

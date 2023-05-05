@@ -1,7 +1,7 @@
 ext {
     majorVersion = "2"
     minorVersion = "1"
-    build = 1
+    build = 2
 }
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
@@ -18,7 +18,7 @@ android {
         abi {
             enable true
             reset()
-            include 'x86', 'x86_64','armeabi', 'armeabi-v7a', 'mips'
+            include 'x86', 'x86_64','armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips', 'mips64'
             universalApk true
         }
     }
@@ -70,7 +70,11 @@ android {
             versionNameSuffix ' debug'
             minifyEnabled = false
             debuggable = true
-
+            splits {
+                abi {
+                    enable = false
+                }
+            }
         }
     }
     namespace 'com.sokolua.manager'
