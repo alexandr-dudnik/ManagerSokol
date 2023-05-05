@@ -1,7 +1,5 @@
 package com.sokolua.manager.utils;
 
-import com.sokolua.manager.data.managers.ConstantManager;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,19 +26,16 @@ public class AppConfig {
 
     public static final String SERVICE_ACTION_STOP = "ServiceStop";
 
-    private static String getApiUrl() {
-        return API_URL.isEmpty() ? "http://%s" : API_URL;
-    }
-    public static String getBaseURL() {
-        return String.format(getApiUrl(), getDefaultServer());
-    }
-
     public static String getBaseURL(String server) {
-        return String.format(getApiUrl(), server);
+        return API_URL.contains("%s") && !server.isEmpty() ? String.format(API_URL, server) : "";
     }
 
     public static String getDefaultServer() {
-        return API_SERVERS.size() == 0 ? ConstantManager.LOCAL_HOST : API_SERVERS.get(0);
+        return API_SERVERS.size() == 0 ? "" : API_SERVERS.get(0);
+    }
+
+    public static String getBaseURL() {
+        return getBaseURL(getDefaultServer());
     }
 }
 

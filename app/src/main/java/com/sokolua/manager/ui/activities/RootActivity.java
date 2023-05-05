@@ -14,9 +14,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +34,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
-import com.sokolua.manager.data.managers.DataManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.modules.RootModule;
@@ -43,7 +44,6 @@ import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.mvp.views.IActionBarView;
 import com.sokolua.manager.mvp.views.IRootView;
 import com.sokolua.manager.mvp.views.IView;
-import com.sokolua.manager.ui.screens.auth.AuthScreen;
 import com.sokolua.manager.ui.screens.customer_list.CustomerListScreen;
 import com.sokolua.manager.ui.screens.goods.GoodsScreen;
 import com.sokolua.manager.ui.screens.main.MainScreen;
@@ -89,7 +89,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     @Override
     protected void attachBaseContext(Context newBase) {
         newBase = Flow.configure(newBase, this)
-                .defaultKey((DataManager.getInstance().isUserAuth() ? new MainScreen() : new AuthScreen()))
+                .defaultKey(new MainScreen())
                 .dispatcher(new TreeKeyDispatcher(this))
                 .install();
         super.attachBaseContext(newBase);
@@ -124,13 +124,17 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         RootComponent rootComponent = DaggerService.getDaggerComponent(this);
         rootComponent.inject(this);
 
-
         initBottomMenu();
-
         initToolbar();
-
         mRootPresenter.takeView(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!mRootPresenter.isUserAuth()) {
+            mRootPresenter.navigateToAuth();
+        }
     }
 
     @Override
@@ -161,17 +165,21 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(mRootFrame, message, Snackbar.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessage(String message, @StringRes int button, View.OnClickListener callback) {
+        Snackbar.make(mRootFrame, message, Toast.LENGTH_LONG)
+                .setAction(button, callback)
+                .show();
     }
 
     @Override
     public void showError(Throwable e) {
+        showMessage(e.getMessage());
         if (BuildConfig.DEBUG) {
-            showMessage(e.getMessage());
             e.printStackTrace();
-        } else {
-            showMessage(getString(R.string.error_message));
-            //TODO: send error stacktrace to crash analytics
         }
     }
 

@@ -165,7 +165,9 @@
     <string name="dummy">--</string>
     <string name="version">Version</string>
     <string name="running_service">service is running</string>
-    <string name="service_touch_to_launch">Touch here to launch</string>
+    <string name="service_touch_to_launch" translatable="false">Touch here to launch</string>
     <string name="service_stop_update">Stop update</string>
+    <string name="configuration_error">Configuration fetch error!</string>
+    <string name="retry">Retry</string>
 
 </resources>

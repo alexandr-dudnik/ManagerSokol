@@ -1,5 +1,6 @@
 package com.sokolua.manager.di.modules;
 
+import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.network.RestService;
 import com.sokolua.manager.utils.AppConfig;
 import com.squareup.moshi.Moshi;
@@ -43,7 +44,7 @@ public class NetworkModule {
 
     private Retrofit createRetrofit(OkHttpClient client) {
         return new Retrofit.Builder()
-                .baseUrl(AppConfig.getBaseURL())
+                .baseUrl("http://"+ConstantManager.LOCAL_HOST)
                 .addConverterFactory(createConvertFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(client)

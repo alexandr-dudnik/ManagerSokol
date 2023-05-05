@@ -7,15 +7,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
 
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -26,8 +25,8 @@ import butterknife.OnItemSelected;
 public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAuthView {
 
     @BindView(R.id.login_btn)       Button mLoginBtn;
-    @BindView(R.id.user_name)       EditText mUserName;
-    @BindView(R.id.user_password)   EditText mUserPassword;
+    @BindView(R.id.user_name)       TextInputEditText mUserName;
+    @BindView(R.id.user_password)   TextInputEditText mUserPassword;
     @BindView(R.id.server_name)     Spinner mServerName;
 
 

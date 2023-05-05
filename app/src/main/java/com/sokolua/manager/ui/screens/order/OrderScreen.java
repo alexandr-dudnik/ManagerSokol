@@ -150,7 +150,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             orderChangeListener = (realmModel, changeSet) -> {
                 OrderView mView = getView();
                 if (!realmModel.isLoaded() || !realmModel.isValid()) {
-                    currentOrder.removeAllChangeListeners();
+                    realmModel.removeAllChangeListeners();
                     mView.viewOnBackPressed();
                 }
                 if (changeSet == null) {

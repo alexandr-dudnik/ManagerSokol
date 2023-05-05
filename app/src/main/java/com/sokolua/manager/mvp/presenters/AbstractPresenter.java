@@ -19,7 +19,6 @@ import io.reactivex.schedulers.Schedulers;
 import mortar.ViewPresenter;
 
 
-
 public abstract class AbstractPresenter<V extends AbstractView, M extends AbstractModel>  extends ViewPresenter<V> {
     @Inject
     protected M mModel;

@@ -10,6 +10,10 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.AppConfig;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 @Keep
 public class PreferencesManager {
     private static final String LAST_UPDATE_KEY = "pref_last_update";
@@ -20,6 +24,8 @@ public class PreferencesManager {
     private static final String USER_AUTH_TOKEN = "user_auth_token";
     private static final String USER_AUTH_TOKEN_EXPIRATION = "user_auth_token_exp";
     private static final String USER_MANAGER_NAME = "manager_name";
+    private static final String API_SERVER_LIST = "server_list";
+    private static final String API_URL = "api_url";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -29,14 +35,14 @@ public class PreferencesManager {
     }
 
 
-    public String getLastUpdate(String module){
+    public String getLastUpdate(String module) {
         return mSharedPreferences.getString(LAST_UPDATE_KEY+"_"+module, "1900-01-01 00:00:00");
     }
 
     public void saveLastUpdate(String module, String lastModified){
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(LAST_UPDATE_KEY+"_"+module, lastModified);
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putString(LAST_UPDATE_KEY+"_"+module, lastModified)
+                .apply();
     }
 
     public void clearLastUpdate() {
@@ -56,9 +62,9 @@ public class PreferencesManager {
     }
 
     public void updateServerAddress(String serverAddress){
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(SERVER_ADDRESS_STRING, serverAddress);
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putString(SERVER_ADDRESS_STRING, serverAddress)
+                .apply();
     }
 
     public Boolean getAutoSynchronize() {
@@ -66,9 +72,9 @@ public class PreferencesManager {
     }
 
     public void updateAutoSynchronize(Boolean sync) {
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putBoolean(AUTO_SYNCHRONIZE, sync);
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putBoolean(AUTO_SYNCHRONIZE, sync)
+                .apply();
     }
 
 
@@ -77,9 +83,9 @@ public class PreferencesManager {
     }
 
     public void updateUserName(String login) {
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(USER_NAME, login);
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putString(USER_NAME, login)
+                .apply();
     }
 
     public String getUserPassword() {
@@ -87,9 +93,9 @@ public class PreferencesManager {
     }
 
     public void updateUserPassword(String pass) {
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(USER_PASSWORD, pass );
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putString(USER_PASSWORD, pass )
+                .apply();
     }
 
     public String getUserAuthToken() {
@@ -101,10 +107,10 @@ public class PreferencesManager {
     }
 
     public void updateUserAuthToken(String token, String expires) {
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(USER_AUTH_TOKEN, token );
-        spEditor.putString(USER_AUTH_TOKEN_EXPIRATION, expires.isEmpty()?"1900-01-01 00:00:00":expires );
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putString(USER_AUTH_TOKEN, token )
+                .putString(USER_AUTH_TOKEN_EXPIRATION, expires.isEmpty()?"1900-01-01 00:00:00":expires )
+                .apply();
     }
 
     public String getManagerName() {
@@ -112,9 +118,31 @@ public class PreferencesManager {
     }
 
     public void updateManagerName(String managerName) {
-        SharedPreferences.Editor spEditor = mSharedPreferences.edit();
-        spEditor.putString(USER_MANAGER_NAME, managerName );
-        spEditor.apply();
+        mSharedPreferences.edit()
+                .putString(USER_MANAGER_NAME, managerName)
+                .apply();
     }
 
+    public void storeApiUrl(String apiUrl) {
+        mSharedPreferences.edit()
+                .putString(API_URL, apiUrl)
+                .apply();
+    }
+
+    public void storeApiServers(List<String> apiServers) {
+        mSharedPreferences.edit()
+                .putStringSet(API_SERVER_LIST, new HashSet<>(apiServers))
+                .apply();
+    }
+
+    public String getApiUrl() {
+        return mSharedPreferences.getString(API_URL, "");
+    }
+
+
+    public List<String> getApiServers() {
+        return new ArrayList<>(
+                mSharedPreferences.getStringSet(API_URL, new HashSet<>())
+        );
+    }
 }
