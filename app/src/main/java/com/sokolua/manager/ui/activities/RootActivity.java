@@ -185,7 +185,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void showLoad() {
-        if (mProgressDialog == null) {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCancelable(false);
             if (!this.isFinishing() && mProgressDialog.getWindow() != null) {

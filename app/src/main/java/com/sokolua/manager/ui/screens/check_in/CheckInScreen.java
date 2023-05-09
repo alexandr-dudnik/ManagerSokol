@@ -125,7 +125,9 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
 
         @Override
         public void dropView(CheckInView view) {
-            mVisit.removeChangeListener(visitChangeListener);
+            if (mVisit != null && visitChangeListener != null) {
+                mVisit.removeChangeListener(visitChangeListener);
+            }
             super.dropView(view);
         }
 

@@ -142,7 +142,7 @@ public class PreferencesManager {
 
     public List<String> getApiServers() {
         return new ArrayList<>(
-                mSharedPreferences.getStringSet(API_URL, new HashSet<>())
+                mSharedPreferences.getStringSet(API_SERVER_LIST, new HashSet<>())
         );
     }
 }

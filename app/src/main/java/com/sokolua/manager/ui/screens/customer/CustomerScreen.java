@@ -121,7 +121,9 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
 
         @Override
         public void dropView(CustomerView view) {
-            mCustomer.removeChangeListener(customerChangeListener);
+            if (mCustomer != null && customerChangeListener != null) {
+                mCustomer.removeChangeListener(customerChangeListener);
+            }
             super.dropView(view);
         }
 

@@ -95,6 +95,9 @@ public class DataManager {
 
 
     private DataManager() {
+
+        String localHost = ConstantManager.LOCAL_HOST;
+
         DataManagerComponent dmComponent = DaggerService.getComponent(DataManagerComponent.class);
         if (dmComponent==null){
             dmComponent = DaggerDataManagerComponent.builder()
