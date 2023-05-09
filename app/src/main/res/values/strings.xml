@@ -45,7 +45,7 @@
     <string name="user_name_hint">Login</string>
     <string name="user_password_hint">Password</string>
     <string name="login_button_text">Authentication</string>
-    <string name="message_auth_success">You are logged id!</string>
+    <string name="message_auth_success">You are logged in!</string>
     <string name="error_access_denied">Access denied!</string>
     <string name="login_form_caption">Your credentials</string>
 

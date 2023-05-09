@@ -41,20 +41,7 @@ public class CustomerViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHold
     @Override
     public void setCurrentItem(CustomerListItem currentItem) {
         super.setCurrentItem(currentItem);
-
         updateFields(currentItem);
-//        if (currentItem.getCustomer() != null){
-//            RealmObjectChangeListener< CustomerRealm > listener = (customerRealm, changeSet) -> {
-//                if (changeSet == null){
-//                    return;
-//                }
-////                if (changeSet.isDeleted()){
-////                }
-//                updateCartFields(currentItem);
-//            };
-//            currentItem.getCustomer().addChangeListener(listener);
-//        }
-
     }
 
     private void updateFields(CustomerListItem currentItem) {

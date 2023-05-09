@@ -253,8 +253,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         public void dropView(OrderView view) {
-            currentOrder.removeChangeListener(orderChangeListener);
-            currentOrder.getLines().removeChangeListener(lineChangeListener);
+            if (currentOrder != null && orderChangeListener != null) {
+                currentOrder.removeChangeListener(orderChangeListener);
+                if (currentOrder.getLines() != null && lineChangeListener != null) {
+                    currentOrder.getLines().removeChangeListener(lineChangeListener);
+                }
+            }
             super.dropView(view);
         }
 
@@ -265,16 +269,18 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                     .setBackArrow(true)
                     .setTitle(currentOrder == null ? "" : currentOrder.getCustomer().getName())
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item -> {
-                        if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS) {
-                            currentOrder.removeChangeListener(orderChangeListener);
-                            mModel.sendOrder(currentOrder.getId());
-                            Flow.get(getView()).goBack();
-                        } else {
-                            mModel.updateOrderFromRemote(currentOrder.getId());
+                        if (currentOrder != null) {
+                            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_IN_PROGRESS) {
+                                currentOrder.removeChangeListener(orderChangeListener);
+                                mModel.sendOrder(currentOrder.getId());
+                                Flow.get(getView()).goBack();
+                            } else {
+                                mModel.updateOrderFromRemote(currentOrder.getId());
+                            }
                         }
                         return false;
                     }, ConstantManager.MENU_ITEM_TYPE_ITEM));
-            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+            if (currentOrder != null && currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
                     if (currentOrder.getLines().isEmpty()) {
                         if (getRootView() != null) {

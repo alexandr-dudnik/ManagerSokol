@@ -182,7 +182,9 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
         @Override
         public void dropView(CustomerInfoView view) {
-            mCustomer.removeChangeListener(mCustomerChangeListener);
+            if (mCustomer != null && mCustomerChangeListener != null) {
+                mCustomer.removeChangeListener(mCustomerChangeListener);
+            }
             super.dropView(view);
         }
 

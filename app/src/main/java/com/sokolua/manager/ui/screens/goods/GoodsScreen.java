@@ -285,7 +285,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         public void dropView(GoodsView view) {
             if (currentCart != null){
                 currentCart.removeChangeListener(orderChangeListener);
-                currentCart.getLines().removeChangeListener(orderLinesChangeListener);
+                if (currentCart.getLines() != null) {
+                    currentCart.getLines().removeChangeListener(orderLinesChangeListener);
+                }
                 currentCart = null;
             }
             super.dropView(view);
