@@ -15,4 +15,9 @@ public class FetchRemoteCurrencyJob extends AbstractJob<CurrencyRealm> {
     public void onRun() throws Throwable {
         runJob(DataManager.getInstance().updateCurrencyFromRemote());
     }
+
+    @Override
+    protected int getRetryLimit() {
+        return 10;
+    }
 }

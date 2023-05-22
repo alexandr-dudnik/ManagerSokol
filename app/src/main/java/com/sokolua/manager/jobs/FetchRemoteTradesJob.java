@@ -15,4 +15,9 @@ public class FetchRemoteTradesJob extends AbstractJob<TradeRealm> {
     public void onRun() throws Throwable {
         runJob(DataManager.getInstance().updateTradesFromRemote());
     }
+
+    @Override
+    protected int getRetryLimit() {
+        return 5;
+    }
 }

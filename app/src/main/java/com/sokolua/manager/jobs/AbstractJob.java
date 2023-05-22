@@ -39,18 +39,14 @@ abstract class AbstractJob<T extends RealmObject> extends Job {
     }
 
     @Override
-    public void onAdded() {
-
-    }
+    public void onAdded() {}
 
     @Override
-    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-
-    }
+    protected void onCancel(int cancelReason, @Nullable Throwable throwable) {}
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        if (runCount > 10){
+        if (runCount > maxRunCount){
             return RetryConstraint.CANCEL;
         }
         return RetryConstraint.createExponentialBackoff(runCount, AppConfig.INITIAL_BACK_OFF_IN_MS);
@@ -60,9 +56,14 @@ abstract class AbstractJob<T extends RealmObject> extends Job {
     abstract public void onRun() throws Throwable;
 
     void runJob(Observable<T> jobObs) throws Throwable {
-        jobObs.observeOn(Schedulers.newThread())
+        jobObs.observeOn(Schedulers.single())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .blockingSubscribe();
+    }
+
+    @Override
+    protected int getRetryLimit() {
+        return 2;
     }
 }

@@ -75,8 +75,7 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<RoutesView, RoutesModel> {
 
-        private ReactiveRecyclerAdapter.ReactiveViewHolderFactory<RouteListItem> viewAndHolderFactory;
-        private ReactiveRecyclerAdapter reactiveRecyclerAdapter;
+        private ReactiveRecyclerAdapter<RouteListItem> reactiveRecyclerAdapter;
 
         public Presenter() {
         }
@@ -92,9 +91,9 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
 
-            viewAndHolderFactory = (parent, pViewType) -> {
+            ReactiveRecyclerAdapter.ReactiveViewHolderFactory<RouteListItem> viewAndHolderFactory = (parent, pViewType) -> {
                 View view;
-                switch (pViewType){
+                switch (pViewType) {
                     case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
                         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.route_list_header, parent, false);
                         break;
@@ -111,7 +110,11 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
                 );
             };
 
-            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory, true);
+            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter<>(
+                    Observable.empty(),
+                    viewAndHolderFactory,
+                    true
+            );
             getView().setAdapter(reactiveRecyclerAdapter);
         }
 

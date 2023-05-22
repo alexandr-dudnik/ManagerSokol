@@ -468,6 +468,14 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         return true;
     }
 
+    public void forceFinish() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.finishAndRemoveTask();
+        }else{
+            this.finishAffinity();
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (getCurrentScreen() == null  || getCurrentScreen().viewOnBackPressed()){
@@ -477,13 +485,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(App.getStringRes(R.string.question_quit))
                     .setCancelable(false)
-                    .setPositiveButton(App.getStringRes(R.string.button_yes_text), (dialog, whichButton) -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            this.finishAndRemoveTask();
-                        }else{
-                            this.finishAffinity();
-                        }
-                    })
+                    .setPositiveButton(App.getStringRes(R.string.button_yes_text), (dialog, whichButton) -> forceFinish())
                     .setNegativeButton(App.getStringRes(R.string.button_no_text), (dialog, whichButton) -> {});
             alert.show();
         }else {

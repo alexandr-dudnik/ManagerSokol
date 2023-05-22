@@ -81,7 +81,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
     public class Presenter extends AbstractPresenter<CustomerInfoView, CustomerModel> {
         @Inject
         protected CustomerRealm mCustomer;
-        private ReactiveRecyclerAdapter mNotesAdapter;
+        private ReactiveRecyclerAdapter<NoteRealm> mNotesAdapter;
         private ReactiveRecyclerAdapter.ReactiveViewHolderFactory<NoteRealm> viewAndHolderFactory;
         private CustomerInfoDataAdapter mDataAdapter;
         private RealmObjectChangeListener<CustomerRealm> mCustomerChangeListener;
@@ -133,7 +133,11 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
                         new CustomerNoteViewHolder(view)
                 );
             };
-            mNotesAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerNotes(mCustomer.getCustomerId()), viewAndHolderFactory,true);
+            mNotesAdapter = new ReactiveRecyclerAdapter<>(
+                    mModel.getCustomerNotes(mCustomer.getCustomerId()),
+                    viewAndHolderFactory,
+                    true
+            );
             getView().setNoteAdapter(mNotesAdapter);
 
         }
@@ -226,7 +230,7 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
                     .setCancelable(false)
                     .setView(input)
                     .setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
-                        String newNote = input.getText().toString();
+                        String newNote = input.getText() == null ? "" : input.getText().toString();
                         mModel.addNewNote(mCustomer.getCustomerId(), newNote);
                     })
                     .setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {

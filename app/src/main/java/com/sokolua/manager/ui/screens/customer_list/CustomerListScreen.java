@@ -75,7 +75,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
     public class Presenter extends AbstractPresenter<CustomerListView, CustomerListModel> {
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory;
-        ReactiveRecyclerAdapter reactiveRecyclerAdapter;
+        ReactiveRecyclerAdapter<CustomerListItem> reactiveRecyclerAdapter;
 
         public Presenter() {
         }
@@ -103,7 +103,11 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                 );
             };
 
-            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory, false);
+            reactiveRecyclerAdapter = new ReactiveRecyclerAdapter<>(
+                    Observable.empty(),
+                    viewAndHolderFactory,
+                    false
+            );
             getView().setAdapter(reactiveRecyclerAdapter);
             setCustomerListFilter("");
         }

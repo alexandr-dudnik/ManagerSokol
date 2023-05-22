@@ -122,14 +122,15 @@ public class CustomerModel extends AbstractModel {
 
     public void updateCustomerFromRemote(String customerId) {
         Observable.just(customerId)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .unsubscribeOn(Schedulers.computation())
                 .doOnNext(id -> {
                     mDataManager.sendAllNotes(id);
                     mDataManager.sendAllTasks(id);
                     mDataManager.sendAllVisits(id);
-                    mDataManager.updateCustomerFromRemote(id);
                 })
+                .flatMap(id -> mDataManager.updateCustomerFromRemote(id))
                 .doOnError(throwable -> Log.e("ERROR","Load customer", throwable) )
                 .subscribe();
     }

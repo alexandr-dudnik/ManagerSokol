@@ -32,6 +32,8 @@ import com.squareup.moshi.Types;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -55,6 +57,8 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     private ValueAnimator logoAnimator;
     private OnCompleteListener<Boolean> mFirebaseListener;
     private final DataManager mDataManager = DataManager.getInstance();
+    private TimerTask retrieveConfigTask;
+    private final Timer theTimer = new Timer();
 
 
     @Override
@@ -95,7 +99,7 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
     private void fetchFirebaseConfig() {
-        showLoad();
+        runOnUiThread(this::showLoad);
         mFirebaseRemoteConfig
                 .fetchAndActivate()
                 .addOnCompleteListener(mFirebaseListener);
@@ -145,13 +149,18 @@ public class StartActivity extends AppCompatActivity implements IRootView {
             hideLoad();
             if (!AppConfig.API_URL.isEmpty() && !AppConfig.API_SERVERS.isEmpty()) {
                 mDataManager.updateServerAddress(AppConfig.getDefaultServer());
+                retrieveConfigTask.cancel();
                 startRootActivity();
             } else {
                 showMessage(getString(R.string.configuration_error), R.string.retry, view -> fetchFirebaseConfig());
             }
         };
 
-        fetchFirebaseConfig();
+        retrieveConfigTask = new TimerTask() {
+                    @Override
+                    public void run() { fetchFirebaseConfig(); }
+                };
+        theTimer.schedule(retrieveConfigTask, 1000L, 10000L);
     }
 
     @Override
@@ -194,13 +203,10 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
     @Override
-    public void showLoad(int progressBarMax) {
-    }
+    public void showLoad(int progressBarMax) {}
 
     @Override
-    public void updateProgress(int currentProgress) {
-
-    }
+    public void updateProgress(int currentProgress) {}
 
     @Override
     public void hideLoad() {
@@ -208,9 +214,7 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
     @Override
-    public void setBottomBarVisibility(boolean state) {
-
-    }
+    public void setBottomBarVisibility(boolean state) {}
 
     @Override
     public boolean getBottomBarVisibility() {

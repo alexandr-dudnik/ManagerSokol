@@ -16,4 +16,8 @@ public class FetchRemoteCustomersJob extends AbstractJob<CustomerRealm> {
         runJob(DataManager.getInstance().updateCustomersFromRemote());
     }
 
+    @Override
+    protected int getRetryLimit() {
+        return 3;
+    }
 }

@@ -17,4 +17,8 @@ public class FetchRemoteGoodItemsJob extends AbstractJob<ItemRealm> {
         runJob(DataManager.getInstance().updateItemsFromRemote());
     }
 
+    @Override
+    protected int getRetryLimit() {
+        return 5;
+    }
 }

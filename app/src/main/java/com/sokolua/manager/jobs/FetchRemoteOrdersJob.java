@@ -16,4 +16,8 @@ public class FetchRemoteOrdersJob extends AbstractJob<OrderRealm> {
         runJob(DataManager.getInstance().updateOrdersFromRemote());
     }
 
+    @Override
+    protected int getRetryLimit() {
+        return 5;
+    }
 }

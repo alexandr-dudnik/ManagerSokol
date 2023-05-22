@@ -147,8 +147,9 @@ public class OrderModel extends AbstractModel {
     public void updateOrderFromRemote(String orderId) {
         Observable.just(orderId)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnNext(id -> mDataManager.updateOrderFromRemote(orderId))
+                .observeOn(Schedulers.computation())
+                .unsubscribeOn(Schedulers.computation())
+                .flatMap(id -> mDataManager.updateOrderFromRemote(orderId))
                 .doOnError(throwable -> Log.e("ERROR","Load order", throwable) )
                 .subscribe();
     }

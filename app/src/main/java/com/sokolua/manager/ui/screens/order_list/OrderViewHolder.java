@@ -91,7 +91,7 @@ public class OrderViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<
             }
 
             mOrderAmountText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getTotal()));
-            mCurrencyText.setText(currentItem.getCurrency().getName());
+            mCurrencyText.setText(currentItem.getCurrency() == null ? App.getStringRes(R.string.national_currency) : currentItem.getCurrency().getName());
             mOrderCommentText.setText(currentItem.getComments());
         }
 
