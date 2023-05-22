@@ -110,7 +110,7 @@ public class CustomerOrderViewHolder extends ReactiveRecyclerAdapter.ReactiveVie
                 mOrderAmountText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentItem.getTotal()));
             }
             if (mCurrencyText != null) {
-                mCurrencyText.setText(currentItem.getCurrency().getName());
+                mCurrencyText.setText(currentItem.getCurrency() == null ? App.getStringRes(R.string.national_currency) : currentItem.getCurrency().getName());
             }
             if (mOrderCommentText != null) {
                 mOrderCommentText.setText(currentItem.getComments());

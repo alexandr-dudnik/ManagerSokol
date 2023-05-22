@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -125,6 +127,9 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         protected void onLoad(Bundle savedInstanceState) {
+            if (currentOrder == null || !currentOrder.isValid() || !currentOrder.isLoaded()) {
+                Flow.get(getView()).goBack();
+            }
             super.onLoad(savedInstanceState);
 
 
@@ -135,7 +140,11 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                         new OrderLineViewHolder(view)
                 );
             };
-            linesAdapter = new ReactiveRecyclerAdapter(Observable.empty(), linesViewHolder, false);
+            linesAdapter = new ReactiveRecyclerAdapter<>(
+                    Observable.empty(),
+                    linesViewHolder,
+                    false
+            );
             updateLines();
             getView().setLinesAdapter(linesAdapter);
             lineChangeListener = orderLineRealms -> {
@@ -321,7 +330,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             mView.setOrderType(currentOrder.getPayment());
             mView.setStatus(currentOrder.getStatus());
             mView.setFact(currentOrder.isPayOnFact());
-            mView.setCurrency(currentOrder.getCurrency().getName());
+            mView.setCurrency(currentOrder.getCurrency() == null ? App.getStringRes(R.string.national_currency) : currentOrder.getCurrency().getName());
             mView.setTrade(currentOrder.getTrade() == null ? "" : currentOrder.getTrade().getName());
             mView.setPriceList(currentOrder.getPriceList() == null ? "" : currentOrder.getPriceList().getName());
 

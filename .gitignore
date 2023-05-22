@@ -3,3 +3,4 @@
 /gradle
 *.aab
 *.apk
+/app/beta/output-metadata.json

@@ -178,7 +178,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new GroupViewHolder(view)
                 );
             };
-            groupsAdapter = new ReactiveRecyclerAdapter<>(Observable.empty(), groupViewHolder, false);
+            groupsAdapter = new ReactiveRecyclerAdapter<>(
+                    Observable.empty(),
+                    groupViewHolder,
+                    false
+            );
 
             getView().setGroupsAdapter(groupsAdapter);
 
@@ -189,7 +193,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                         new ItemViewHolder(view)
                 );
             };
-            itemsAdapter = new ReactiveRecyclerAdapter<>(Observable.empty(), itemViewHolder, false);
+            itemsAdapter = new ReactiveRecyclerAdapter<>(
+                    Observable.empty(),
+                    itemViewHolder,
+                    false
+            );
 
             getView().setItemsAdapter(itemsAdapter);
 
@@ -416,7 +424,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty()?App.getStringRes(R.string.all_brands):currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
             brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
             mModel.getBrands()
-                    .take(1)
+                    //.take(1)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(brands -> {

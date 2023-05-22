@@ -1,12 +1,18 @@
 package com.sokolua.manager.mvp.presenters;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sokolua.manager.mvp.models.AbstractModel;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IRootView;
+import com.sokolua.manager.ui.activities.RootActivity;
+import com.sokolua.manager.ui.activities.StartActivity;
+import com.sokolua.manager.utils.App;
+import com.sokolua.manager.utils.AppConfig;
 
 import javax.inject.Inject;
 
@@ -32,6 +38,16 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
     @Override
     protected void onLoad(Bundle savedInstanceState) {
         super.onLoad(savedInstanceState);
+        if (AppConfig.API_URL.isEmpty()) {
+            Intent intent = new Intent(App.getContext(), StartActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            App.getContext().startActivity(intent);
+            RootActivity activity = ((RootActivity)getRootView());
+            if (activity != null) {
+                activity.forceFinish();
+            }
+            return;
+        }
         mCompSubs = new CompositeDisposable();
         initActionBar();
     }
@@ -65,7 +81,7 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
         }
     }
 
-    protected <T> Disposable subscribe(Observable<T> observable, ViewSubscriber<T> subscriber){
+    protected <T> Disposable subscribe(@NonNull Observable<T> observable, @NonNull ViewSubscriber<T> subscriber){
         return observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

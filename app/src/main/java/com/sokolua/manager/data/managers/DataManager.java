@@ -129,7 +129,7 @@ public class DataManager {
 
             @Override
             public void onJobCancelled(@NonNull Job job, boolean byCancelRequest, @Nullable Throwable throwable) {
-                if (!byCancelRequest && job.isCancelled() && job.isPersistent() ){
+                if (job.isCancelled() && job.isPersistent() ){
                     if (job instanceof FetchRemoteCurrencyJob) mJobManager.addJobInBackground(new FetchRemoteCurrencyJob());
                     if (job instanceof FetchRemoteCustomersJob) mJobManager.addJobInBackground(new FetchRemoteCustomersJob());
                     if (job instanceof FetchRemoteGoodGroupsJob) mJobManager.addJobInBackground(new FetchRemoteGoodGroupsJob());
@@ -140,6 +140,7 @@ public class DataManager {
                     if (job instanceof SendCustomerTaskJob) mJobManager.addJobInBackground(new SendCustomerTaskJob(((SendCustomerTaskJob) job).getJobId()));
                     if (job instanceof SendOrderJob) mJobManager.addJobInBackground(new SendOrderJob(((SendOrderJob) job).getJobId()));
                     if (job instanceof SendVisitJob) mJobManager.addJobInBackground(new SendVisitJob(((SendVisitJob) job).getJobId()));
+                    if (job instanceof UpdateCustomerJob) mJobManager.addJobInBackground(new UpdateCustomerJob(((UpdateCustomerJob) job).getJobId()));
                     if (job instanceof UpdateGoodGroupJob) mJobManager.addJobInBackground(new UpdateGoodGroupJob(((UpdateGoodGroupJob) job).getJobId()));
                     if (job instanceof UpdateGoodItemJob) mJobManager.addJobInBackground(new UpdateGoodItemJob(((UpdateGoodItemJob) job).getJobId()));
                     if (job instanceof UpdateOrderJob) mJobManager.addJobInBackground(new UpdateOrderJob(((UpdateOrderJob) job).getJobId()));
@@ -418,9 +419,9 @@ public class DataManager {
                             .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
                             .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                     .flatMap(Observable::fromIterable) //List of ProductRes
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(Schedulers.io())
-                    .unsubscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .unsubscribeOn(Schedulers.computation())
                     .doOnNext(cust -> {
                         if (!cust.isActive()) {
                             mRealmManager.deleteCustomerFromRealm(cust.getId()); //удалить запись из локальной БД
@@ -512,10 +513,10 @@ public class DataManager {
         if (!isUserAuth() || isTestUser()){
             return;
         }
-
         mRealmManager.getNotesToSend(filter)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .unsubscribeOn(Schedulers.computation())
                 .doOnNext(note -> {
                             Job job = new SendCustomerNoteJob(note.getNoteId());
                             try {
@@ -525,9 +526,7 @@ public class DataManager {
                         }
                 )
                 .doOnError(throwable -> Log.e("ERROR", "Send notes", throwable))
-                .subscribe(
-
-                );
+                .subscribe();
 
     }
 
@@ -565,8 +564,9 @@ public class DataManager {
         }
 
         mRealmManager.getCustomerTasks(filter)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .unsubscribeOn(Schedulers.computation())
                 .flatMapIterable(task -> task)
                 .filter(TaskRealm::isToSync)
                 .doOnNext(task ->{
@@ -627,8 +627,9 @@ public class DataManager {
         }
 
         mRealmManager.getCustomerVisits(filter)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .unsubscribeOn(Schedulers.computation())
                 .flatMapIterable(task -> task)
                 .filter(VisitRealm::isToSync)
                 .doOnNext(visit ->{
@@ -722,9 +723,9 @@ public class DataManager {
                             .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
                             .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                     .flatMap(Observable::fromIterable) //List of ProductRes
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(Schedulers.io())
-                    .unsubscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .unsubscribeOn(Schedulers.computation())
                     .doOnNext(order -> {
                         if (!order.isActive()) {
                             mRealmManager.deleteOrderFromRealm(order.getId()); //удалить запись из локальной БД
@@ -831,8 +832,9 @@ public class DataManager {
             return;
         }
         mRealmManager.getOrdersToSend(filter)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .unsubscribeOn(Schedulers.computation())
                 .doOnNext(order ->{
                         Job job = new SendOrderJob(order.getId());
                         try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
@@ -885,9 +887,9 @@ public class DataManager {
                             .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
                             .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                     .flatMap(Observable::fromIterable) //List of ProductRes
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(Schedulers.io())
-                    .unsubscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .unsubscribeOn(Schedulers.computation())
                     .doOnNext(group -> {
                         if (!group.isActive()) {
                             mRealmManager.deleteGoodsGroupFromRealm(group.getId()); //удалить запись из локальной БД
@@ -969,9 +971,9 @@ public class DataManager {
                             .map(retryCount -> (long) (AppConfig.INITIAL_BACK_OFF_IN_MS * Math.pow(Math.E, retryCount))) //генерируем задержку экспоненциально
                             .flatMap(delay -> Observable.timer(delay, TimeUnit.MILLISECONDS)))  //запускаем таймер
                     .flatMap(Observable::fromIterable) //List of GoodItemRes
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(Schedulers.io())
-                    .unsubscribeOn(Schedulers.io())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .unsubscribeOn(Schedulers.computation())
                     .doOnNext(item -> {
                         if (!item.isActive()) {
                             mRealmManager.deleteGoodItemFromRealm(item.getId()); //удалить запись из локальной БД

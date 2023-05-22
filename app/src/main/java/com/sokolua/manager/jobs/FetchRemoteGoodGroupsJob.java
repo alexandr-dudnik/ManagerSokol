@@ -17,4 +17,8 @@ public class FetchRemoteGoodGroupsJob extends AbstractJob<GoodsGroupRealm> {
         runJob(DataManager.getInstance().updateGroupsFromRemote());
     }
 
+    @Override
+    protected int getRetryLimit() {
+        return 5;
+    }
 }

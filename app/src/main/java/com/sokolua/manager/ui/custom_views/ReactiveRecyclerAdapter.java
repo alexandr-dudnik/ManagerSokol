@@ -19,11 +19,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRecyclerAdapter.ReactiveViewHolder<T>> {
-    private Observable<List<T>> observable;
     private final ReactiveViewHolderFactory<T> viewHolderFactory;
     private List<T> currentList;
     private Disposable listSub;
-    private boolean useBlankItemOnEmptyList;
+    private final boolean useBlankItemOnEmptyList;
 
     public ReactiveRecyclerAdapter(Observable<List<T>> observable, ReactiveViewHolderFactory<T> viewHolderFactory, boolean useBlankItemOnEmptyList) {
         this.viewHolderFactory = viewHolderFactory;
@@ -36,8 +35,7 @@ public class ReactiveRecyclerAdapter<T> extends RecyclerView.Adapter<ReactiveRec
         if (listSub!=null && !listSub.isDisposed()){
             listSub.dispose();
         }
-        this.observable = observable;
-        listSub = this.observable
+        listSub = observable
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(AndroidSchedulers.mainThread())

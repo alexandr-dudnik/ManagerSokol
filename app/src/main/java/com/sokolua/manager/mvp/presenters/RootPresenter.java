@@ -112,8 +112,8 @@ public class RootPresenter extends Presenter<IRootView> {
             return;
         }
 
-        Observable<UserRes> obs = mAuthModel.loginUser(userName, password);
-        obs.subscribeOn(Schedulers.io())
+        mAuthModel.loginUser(userName, password)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .take(1)
                 .subscribe(

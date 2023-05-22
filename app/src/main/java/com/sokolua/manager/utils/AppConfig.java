@@ -13,11 +13,10 @@ public class AppConfig {
 
     public static final int MIN_CONSUMER_COUNT = 1;
     public static final int MAX_CONSUMER_COUNT = 5;
-    public static final int LOAD_FACTOR = 2;
+    public static final int LOAD_FACTOR = 5;
     public static final int KEEP_ALIVE = 120;
     public static final int INITIAL_BACK_OFF_IN_MS = 100;
     public static final long JOB_UPDATE_DATA_INTERVAL = 300; //SEC
-    public static final long JOB_TIMEOUT = 1000 * 60 * 5;
     public static final int GET_DATA_RETRY_COUNT = 5;
     public static final int VAT_VALUE = 20;
 

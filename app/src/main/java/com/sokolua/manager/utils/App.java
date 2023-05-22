@@ -9,8 +9,9 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
+import androidx.work.Configuration;
+import androidx.work.WorkManager;
 
-import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.RealmMigrations;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
@@ -62,9 +63,6 @@ public class App extends MultiDexApplication {
         super.onCreate();
 
         MultiDex.install(this);
-
-        //Fabric.with(this, new Crashlytics());
-
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         createAppComponent();
@@ -96,6 +94,12 @@ public class App extends MultiDexApplication {
         ScreenScoper.registerScope(mRootActivityScope);
 
         startUpdateService();
+
+        WorkManager.initialize(
+                this.getApplicationContext(),
+                new Configuration.Builder()
+                        .build()
+        );
     }
 
     @Override

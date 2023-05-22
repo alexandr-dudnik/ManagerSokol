@@ -108,7 +108,11 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
                         new CustomerPlanViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mPlanAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerPlan(mCustomer.getCustomerId()), planViewAndHolderFactory, true);
+            ReactiveRecyclerAdapter<OrderPlanRealm> mPlanAdapter = new ReactiveRecyclerAdapter<>(
+                    mModel.getCustomerPlan(mCustomer.getCustomerId()),
+                    planViewAndHolderFactory,
+                    true
+            );
             getView().setPlanAdapter(mPlanAdapter);
 
             //Orders realm adapter
@@ -125,7 +129,11 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
                         new CustomerOrderViewHolder(view)
                 );
             };
-            ReactiveRecyclerAdapter mOrderAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerOrders(mCustomer.getCustomerId()), orderViewAndHolderFactory, true);
+            ReactiveRecyclerAdapter<OrderRealm> mOrderAdapter = new ReactiveRecyclerAdapter<>(
+                    mModel.getCustomerOrders(mCustomer.getCustomerId()),
+                    orderViewAndHolderFactory,
+                    true
+            );
             getView().setOrdersAdapter(mOrderAdapter);
         }
 

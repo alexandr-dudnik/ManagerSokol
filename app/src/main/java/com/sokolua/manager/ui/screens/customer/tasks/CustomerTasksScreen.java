@@ -112,7 +112,11 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
                     );
                 };
 
-                ReactiveRecyclerAdapter mDebtAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()), debtViewAndHolderFactory, true);
+                ReactiveRecyclerAdapter<CustomerDebtItem> mDebtAdapter = new ReactiveRecyclerAdapter<>(
+                        mModel.getCustomerDebtHeadered(mCustomer.getCustomerId()),
+                        debtViewAndHolderFactory,
+                        true
+                );
                 getView().setDebtAdapter(mDebtAdapter);
 
 
@@ -134,7 +138,11 @@ public class CustomerTasksScreen extends AbstractScreen<CustomerScreen.Component
                             new CustomerTaskViewHolder(view)
                     );
                 };
-                ReactiveRecyclerAdapter mTaskAdapter = new ReactiveRecyclerAdapter(mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()), taskViewAndHolderFactory, true);
+                ReactiveRecyclerAdapter<CustomerTaskItem> mTaskAdapter = new ReactiveRecyclerAdapter<>(
+                        mModel.getCustomerTasksHeadered(mCustomer.getCustomerId()),
+                        taskViewAndHolderFactory,
+                        true
+                );
                 getView().setTaskAdapter(mTaskAdapter);
 
             }

@@ -70,7 +70,7 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
     public class Presenter extends AbstractPresenter<OrderListView, OrderListModel> {
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> viewAndHolderFactory;
-        private ReactiveRecyclerAdapter ordersAdapter;
+        private ReactiveRecyclerAdapter<OrderRealm> ordersAdapter;
 
         public Presenter() {
         }
@@ -93,7 +93,11 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
                 );
             };
 
-            ordersAdapter = new ReactiveRecyclerAdapter(Observable.empty(), viewAndHolderFactory, false);
+            ordersAdapter = new ReactiveRecyclerAdapter<>(
+                    Observable.empty(),
+                    viewAndHolderFactory,
+                    false
+            );
             getView().setAdapter(ordersAdapter);
 
             setOrderListFilter();
