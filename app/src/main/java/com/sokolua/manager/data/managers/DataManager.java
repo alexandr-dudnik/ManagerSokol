@@ -1172,7 +1172,7 @@ public class DataManager {
             price = mItemPrice.getPrice();
         }
 
-        final float itemPrice = Math.round(price*rate*(100+tradePercent-discount))/100f;
+        final float itemPrice = Math.round(price * rate * (100 + tradePercent) * (100 - discount)) / (100f * 100f);
 
         return roundVAT ? MiscUtils.roundPrice(itemPrice) : itemPrice;
     }
