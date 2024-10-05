@@ -2,6 +2,7 @@ package com.sokolua.manager.ui.screens.routes;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -10,24 +11,21 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenRoutesBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.BindViews;
-import butterknife.OnClick;
+public class RoutesView extends AbstractView<RoutesScreen.Presenter, ScreenRoutesBinding> {
+    final private List<AppCompatButton> mButtons = new ArrayList<>();
 
-public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
-    @BindView(R.id.customer_list)    RecyclerView mCustomerList;
-    @BindViews({R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7}) List<AppCompatButton> mButtons;
 
     public RoutesView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -38,42 +36,55 @@ public class RoutesView extends AbstractView<RoutesScreen.Presenter> {
         if (!isInEditMode()) {
             DaggerService.<RoutesScreen.Component>getDaggerComponent(context).inject(this);
         }
+    }
 
-
+    @Override
+    protected ScreenRoutesBinding bindView(View view) {
+        return ScreenRoutesBinding.bind(view);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (!isInEditMode()){
+        if (!isInEditMode()) {
+            mButtons.add(binding.btn1);
+            mButtons.add(binding.btn2);
+            mButtons.add(binding.btn3);
+            mButtons.add(binding.btn4);
+            mButtons.add(binding.btn5);
+            mButtons.add(binding.btn6);
+            mButtons.add(binding.btn7);
+
+            OnClickListener buttonClickListener = buttonView -> {
+                mPresenter.daySelected(mButtons.indexOf(buttonView));
+                for (Button btn : mButtons) {
+                    if (btn.equals(buttonView)) {
+                        ViewCompat.setBackgroundTintList(btn, ContextCompat.getColorStateList(getContext(), R.color.color_accent));
+                    } else {
+                        ViewCompat.setBackgroundTintList(btn, ContextCompat.getColorStateList(getContext(), R.color.color_gray_light));
+                    }
+                }
+            };
+            for (Button btn : mButtons) {
+                btn.setOnClickListener(buttonClickListener);
+            }
+
             Calendar cal = Calendar.getInstance();
             cal.setFirstDayOfWeek(Calendar.MONDAY);
-            int dw = cal.get(Calendar.DAY_OF_WEEK)-cal.getFirstDayOfWeek();
-            dw = dw<0?(7+dw):dw;
-            dayClick(mButtons.get(dw));
+            int dw = cal.get(Calendar.DAY_OF_WEEK) - cal.getFirstDayOfWeek();
+            dw = dw < 0 ? (7 + dw) : dw;
+            mButtons.get(dw).performClick();
         }
     }
 
     @Override
     public boolean viewOnBackPressed() {
-        return false ;
+        return false;
     }
-
 
     public void setAdapter(ReactiveRecyclerAdapter mAdapter) {
-        mCustomerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerList.setAdapter(mAdapter);
+        binding.customerList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.customerList.setAdapter(mAdapter);
     }
 
-    @OnClick({R.id.btn_1, R.id.btn_2, R.id.btn_3, R.id.btn_4, R.id.btn_5, R.id.btn_6, R.id.btn_7})
-    void dayClick(AppCompatButton view){
-        mPresenter.daySelected(mButtons.indexOf(view));
-        for (Button btn : mButtons){
-            if (btn.equals(view)){
-                ViewCompat.setBackgroundTintList(btn, ContextCompat.getColorStateList(getContext(), R.color.color_accent));
-            }else{
-                ViewCompat.setBackgroundTintList(btn, ContextCompat.getColorStateList(getContext(), R.color.color_gray_light));
-            }
-        }
-    }
 }

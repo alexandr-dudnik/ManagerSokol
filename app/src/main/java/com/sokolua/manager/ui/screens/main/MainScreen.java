@@ -5,7 +5,6 @@ import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.models.MainModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
@@ -20,7 +19,6 @@ import dagger.Provides;
 import flow.Flow;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_main)
 public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     @Override
@@ -31,6 +29,10 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_main;
+    }
 
     //region ===================== DI =========================
 
@@ -63,19 +65,13 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
         void inject(Presenter presenter);
 
         void inject(MainView view);
-
     }
     //endregion ================== DI =========================
 
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<MainView, MainModel> {
-
         @Inject
         AuthModel mAuthModel;
-
-        public Presenter() {
-        }
-
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -87,7 +83,6 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
             }
         }
 
-
         @Override
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
@@ -98,35 +93,33 @@ public class MainScreen extends AbstractScreen<RootActivity.RootComponent> {
                     }, ConstantManager.MENU_ITEM_TYPE_ACTION))
                     .setTitle(mAuthModel.getManagerName())
                     .build();
-
-            //mRootPresenter.hideFab();
         }
 
-
-        void clickOnGoods(){
+        void clickOnGoods() {
             if (getRootView() != null) {
-                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarGoods);
+                ((RootActivity) getRootView()).selectNavigationMenu(R.id.bottomBarGoods);
             }
         }
 
-        void clickOnCustomers(){
+        void clickOnCustomers() {
             if (getRootView() != null) {
-                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarCustomers);
+                ((RootActivity) getRootView()).selectNavigationMenu(R.id.bottomBarCustomers);
             }
         }
 
-        void clickOnRoutes(){
+        void clickOnRoutes() {
             if (getRootView() != null) {
-                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarRoute);
+                ((RootActivity) getRootView()).selectNavigationMenu(R.id.bottomBarRoute);
             }
         }
 
-        void clickOnOrders(){
+        void clickOnOrders() {
             if (getRootView() != null) {
-                ((RootActivity)getRootView()).selectNavigationMenu(R.id.bottomBarOrders);
+                ((RootActivity) getRootView()).selectNavigationMenu(R.id.bottomBarOrders);
             }
         }
 
     }
     //endregion ================== Presenter =========================
+
 }

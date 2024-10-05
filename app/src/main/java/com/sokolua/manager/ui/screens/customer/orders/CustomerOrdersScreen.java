@@ -12,7 +12,6 @@ import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
@@ -25,7 +24,6 @@ import dagger.Provides;
 import flow.Flow;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_customer_orders)
 public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Component> {
 
     @Override
@@ -37,7 +35,9 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
                 .build();
     }
 
-    public CustomerOrdersScreen(){
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_customer_orders;
     }
 
     //region ===================== DI =========================
@@ -69,8 +69,6 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
         void inject(CustomerPlanViewHolder viewHolder);
 
         void inject(CustomerOrderViewHolder viewHolder);
-
-
     }
     //endregion ================== DI =========================
 
@@ -79,15 +77,10 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
         @Inject
         protected CustomerRealm mCustomer;
 
-
-        public Presenter() {
-        }
-
         @Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
-
         }
 
         @Override
@@ -139,15 +132,11 @@ public class CustomerOrdersScreen extends AbstractScreen<CustomerScreen.Componen
 
         @Override
         public void dropView(CustomerOrdersView view) {
-
             super.dropView(view);
         }
 
         @Override
-        protected void initActionBar() {
-
-        }
-
+        protected void initActionBar() {}
 
         public void openOrder(String orderId) {
             if (getRootView() != null) {

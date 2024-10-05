@@ -19,7 +19,7 @@
 
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/login_form"
+        android:id="@+id/login_form_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -30,14 +30,16 @@
         app:cardElevation="@dimen/login_form_elevation"
         >
 
-        <include layout="@layout/login_form" />
+        <include
+            android:id="@+id/login_form"
+            layout="@layout/login_form" />
 
     </androidx.cardview.widget.CardView>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/login_form"
+        android:layout_above="@id/login_form_wrapper"
         android:layout_gravity="top"
         android:layout_margin="@dimen/login_form_padding"
         android:scaleType="fitCenter"
@@ -46,7 +48,7 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/login_form"
+        android:layout_below="@id/login_form_wrapper"
         android:layout_margin="@dimen/login_form_margin"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_logo_text"/>

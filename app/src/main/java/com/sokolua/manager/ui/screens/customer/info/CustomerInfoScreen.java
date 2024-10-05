@@ -16,7 +16,6 @@ import com.sokolua.manager.data.storage.realm.NoteRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
@@ -30,7 +29,6 @@ import dagger.Provides;
 import io.realm.RealmObjectChangeListener;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_customer_info)
 public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component> {
 
     @Override
@@ -42,7 +40,9 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
                 .build();
     }
 
-    public CustomerInfoScreen() {
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_customer_info;
     }
 
     //region ===================== DI =========================
@@ -86,10 +86,6 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         private CustomerInfoDataAdapter mDataAdapter;
         private RealmObjectChangeListener<CustomerRealm> mCustomerChangeListener;
 
-
-        public Presenter() {
-        }
-
         @Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
@@ -97,33 +93,27 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
 
         }
 
-
-
         @Override
         protected void onLoad(Bundle savedInstanceState) {
             super.onLoad(savedInstanceState);
-
-
 
             //Data custom adapter
             mDataAdapter = new CustomerInfoDataAdapter();
             getView().setDataAdapter(mDataAdapter);
             updateCustomerData();
             mCustomerChangeListener = (realmModel, changeSet) -> {
-
-                if (changeSet!=null && changeSet.isDeleted() || !realmModel.isValid() || !realmModel.isLoaded()){
+                if (changeSet != null && changeSet.isDeleted() || !realmModel.isValid() || !realmModel.isLoaded()) {
                     realmModel.removeAllChangeListeners();
-                }else {
+                } else {
                     updateCustomerData();
                 }
             };
             mCustomer.addChangeListener(mCustomerChangeListener);
 
-
             //Notes realm adapter
             viewAndHolderFactory = (parent, pViewType) -> {
                 View view;
-                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_EMPTY){
+                if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_EMPTY) {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
                 } else {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_info_note_item, parent, false);
@@ -139,7 +129,6 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
                     true
             );
             getView().setNoteAdapter(mNotesAdapter);
-
         }
 
         private void updateCustomerData() {
@@ -147,42 +136,41 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
             item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_name_header), mCustomer.getName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION);
             if (!mCustomer.getName().isEmpty()) {
                 mDataAdapter.addItem(item);
-            }else{
+            } else {
                 mDataAdapter.removeItem(item);
             }
             item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_contact_header), mCustomer.getContactName(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION);
             if (!mCustomer.getContactName().isEmpty()) {
                 mDataAdapter.addItem(item);
-            }else{
+            } else {
                 mDataAdapter.removeItem(item);
             }
             if (!mCustomer.getCategory().isEmpty()) {
                 mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), mCustomer.getCategory(), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
-            }else{
+            } else {
                 mDataAdapter.addItem(new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_category_header), App.getStringRes(R.string.customer_info_category_no_category), CustomerInfoDataItem.ACTION_TYPE_NO_ACTION));
             }
             item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_address_header), mCustomer.getAddress(), CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP);
             if (!mCustomer.getAddress().isEmpty()) {
                 mDataAdapter.addItem(item);
-            }else{
+            } else {
                 mDataAdapter.removeItem(item);
             }
-            for (CustomerPhoneRealm phone : mCustomer.getPhones()){
+            for (CustomerPhoneRealm phone : mCustomer.getPhones()) {
                 item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_phone_header), phone.getPhoneNumber(), CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL);
                 if (!phone.getPhoneNumber().isEmpty()) {
                     mDataAdapter.addItem(item);
-                }else{
+                } else {
                     mDataAdapter.removeItem(item);
                 }
             }
             item = new CustomerInfoDataItem(App.getStringRes(R.string.customer_info_email_header), mCustomer.getEmail(), CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL);
             if (!mCustomer.getEmail().isEmpty()) {
                 mDataAdapter.addItem(item);
-            }else{
+            } else {
                 mDataAdapter.removeItem(item);
             }
         }
-
 
         @Override
         public void dropView(CustomerInfoView view) {
@@ -196,7 +184,6 @@ public class CustomerInfoScreen extends AbstractScreen<CustomerScreen.Component>
         protected void initActionBar() {
 
         }
-
 
         public void callToCustomer(CustomerInfoDataItem mItem) {
             if (!IntentStarter.openCaller(mItem.getData()) && getRootView() != null) {

@@ -118,7 +118,7 @@
     <!-- Goods screen -->
     <string name="item_wh_rest_label">СФ</string>
     <string name="item_cwh_rest_label">ЦС</string>
-    <string name="item_official_rest_label">БГ</string>
+    <string name="item_official_rest_label" formatted="false">БГ</string>
     <string name="item_base_price_label">Ціна прайс</string>
     <string name="item_min_price_label">Мін.</string>
     <string name="all_brands">УСІ</string>

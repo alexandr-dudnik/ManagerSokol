@@ -3,10 +3,9 @@ package com.sokolua.manager.ui.activities;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,7 @@ import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.managers.DataManager;
+import com.sokolua.manager.databinding.ActivitySplashBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.mvp.views.IRootView;
@@ -37,16 +37,10 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import mortar.MortarScope;
 
 public class StartActivity extends AppCompatActivity implements IRootView {
-
-    @BindView(R.id.root_frame)
-    FrameLayout mRootFrame;
-    @BindView(R.id.logo_bird)
-    ImageView mLogo;
+    ActivitySplashBinding binding;
 
     @Inject
     RootPresenter mRootPresenter;
@@ -60,7 +54,6 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     private TimerTask retrieveConfigTask;
     private final Timer theTimer = new Timer();
 
-
     @Override
     public Object getSystemService(@NonNull String name) {
         MortarScope mRootActivityScope = MortarScope.findChild(getApplicationContext(), RootActivity.class.getName());
@@ -68,7 +61,6 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
 //region ==========   Life Cycle ==================
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,12 +74,12 @@ public class StartActivity extends AppCompatActivity implements IRootView {
                 animation -> {
                     float scale;
                     if (animation.isRunning()) {
-                        scale = (float)animation.getAnimatedValue();
+                        scale = (float) animation.getAnimatedValue();
                     } else {
                         scale = 1.0f;
                     }
-                    mLogo.setScaleX(scale);
-                    mLogo.setScaleY(scale);
+                    binding.logoBird.setScaleX(scale);
+                    binding.logoBird.setScaleY(scale);
                 }
         );
     }
@@ -107,8 +99,8 @@ public class StartActivity extends AppCompatActivity implements IRootView {
 
     @Override
     protected void onStart() {
-        setContentView(R.layout.activity_splash);
-        ButterKnife.bind(this);
+        binding = ActivitySplashBinding.inflate(LayoutInflater.from(this));
+        setContentView(binding.getRoot());
 
         RootActivity.RootComponent rootComponent = DaggerService.getDaggerComponent(this);
         rootComponent.inject(this);
@@ -124,7 +116,7 @@ public class StartActivity extends AppCompatActivity implements IRootView {
                     Type arrayType = Types.newParameterizedType(List.class, String.class);
                     JsonAdapter<List<String>> adapter = moshi.adapter(arrayType);
                     AppConfig.API_SERVERS = adapter.fromJson(mFirebaseRemoteConfig.getString(ConstantManager.FIREBASE_API_SERVERS_LIST_KEY));
-                    if(!AppConfig.API_URL.isEmpty()) {
+                    if (!AppConfig.API_URL.isEmpty()) {
                         mDataManager.storeApiUrl(AppConfig.API_URL);
                     } else {
                         AppConfig.API_URL = mDataManager.getApiUrl();
@@ -157,9 +149,11 @@ public class StartActivity extends AppCompatActivity implements IRootView {
         };
 
         retrieveConfigTask = new TimerTask() {
-                    @Override
-                    public void run() { fetchFirebaseConfig(); }
-                };
+            @Override
+            public void run() {
+                fetchFirebaseConfig();
+            }
+        };
         theTimer.schedule(retrieveConfigTask, 1000L, 10000L);
     }
 
@@ -175,16 +169,15 @@ public class StartActivity extends AppCompatActivity implements IRootView {
 
 //endregion==========  Life Cycle ==================
 
-
-//region==========   IRootView    ==================
+    //region==========   IRootView    ==================
     @Override
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
-    public void showMessage(String message, @StringRes int button,  View.OnClickListener callback) {
-        Snackbar.make(this, mRootFrame, message, Snackbar.LENGTH_LONG)
+    public void showMessage(String message, @StringRes int button, View.OnClickListener callback) {
+        Snackbar.make(this, binding.rootFrame, message, Snackbar.LENGTH_LONG)
                 .setAction(button, callback)
                 .show();
     }
@@ -203,10 +196,12 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
     @Override
-    public void showLoad(int progressBarMax) {}
+    public void showLoad(int progressBarMax) {
+    }
 
     @Override
-    public void updateProgress(int currentProgress) {}
+    public void updateProgress(int currentProgress) {
+    }
 
     @Override
     public void hideLoad() {
@@ -214,7 +209,8 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     }
 
     @Override
-    public void setBottomBarVisibility(boolean state) {}
+    public void setBottomBarVisibility(boolean state) {
+    }
 
     @Override
     public boolean getBottomBarVisibility() {
@@ -224,12 +220,10 @@ public class StartActivity extends AppCompatActivity implements IRootView {
     @Nullable
     @Override
     public IView getCurrentScreen() {
-        return (IView) mRootFrame.getChildAt(0);
+        return (IView) binding.rootFrame.getChildAt(0);
     }
 
-
 //endregion==========  IRootView ==================
-
 
     @Override
     public void onBackPressed() {

@@ -2,27 +2,28 @@ package com.sokolua.manager.ui.screens.customer;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
-import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenCustomerBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 
-import butterknife.BindView;
 import flow.Flow;
 
-public class CustomerView extends AbstractView<CustomerScreen.Presenter> {
-    @BindView(R.id.tabs_pager)
-    ViewPager mViewPager;
-
+public class CustomerView extends AbstractView<CustomerScreen.Presenter, ScreenCustomerBinding> {
     private CustomerPagerAdapter mAdapter;
-
 
     public CustomerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected ScreenCustomerBinding bindView(View view) {
+        return ScreenCustomerBinding.bind(view);
     }
 
     @Override
@@ -30,8 +31,6 @@ public class CustomerView extends AbstractView<CustomerScreen.Presenter> {
         if (!isInEditMode()) {
             DaggerService.<CustomerScreen.Component>getDaggerComponent(context).inject(this);
         }
-
-
     }
 
     @Override
@@ -41,13 +40,13 @@ public class CustomerView extends AbstractView<CustomerScreen.Presenter> {
 
     @Override
     protected void onAttachedToWindow() {
-        mAdapter = new CustomerPagerAdapter();
-        mViewPager.setAdapter(mAdapter);
         super.onAttachedToWindow();
+        mAdapter = new CustomerPagerAdapter();
+        binding.tabsPager.setAdapter(mAdapter);
     }
 
     public ViewPager getViewPager() {
-        return mViewPager;
+        return binding.tabsPager;
     }
 
     public CustomerPagerAdapter getAdapter() {

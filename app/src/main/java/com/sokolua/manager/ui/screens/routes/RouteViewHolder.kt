@@ -1,114 +1,73 @@
-package com.sokolua.manager.ui.screens.routes;
+package com.sokolua.manager.ui.screens.routes
 
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.View
+import androidx.core.util.Consumer
+import androidx.core.view.isInvisible
+import androidx.viewbinding.ViewBinding
+import com.sokolua.manager.R
+import com.sokolua.manager.data.storage.realm.CustomerRealm
+import com.sokolua.manager.data.storage.realm.VisitRealm
+import com.sokolua.manager.databinding.EmptyListItemBinding
+import com.sokolua.manager.databinding.RouteListHeaderBinding
+import com.sokolua.manager.databinding.RouteListItemBinding
+import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter.ReactiveViewHolder
+import com.sokolua.manager.utils.App
 
-import androidx.annotation.Nullable;
+class RouteViewHolder<B : ViewBinding>(
+    itemView: View,
+    private val binding: B,
+    private val checkInFun: Consumer<VisitRealm>? = null,
+    private val openMapFun: Consumer<CustomerRealm>? = null,
+    private val openCallFun: Consumer<CustomerRealm>? = null,
+    private val openCustomerFun: Consumer<CustomerRealm>? = null,
+) :
+    ReactiveViewHolder<RouteListItem>(itemView) {
 
-import com.sokolua.manager.R;
-import com.sokolua.manager.di.DaggerService;
-import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
-import com.sokolua.manager.utils.App;
+    override fun setCurrentItem(currentItem: RouteListItem) {
+        super.setCurrentItem(currentItem)
 
-import javax.inject.Inject;
+        when {
+            binding is EmptyListItemBinding -> binding.emptyListText.text =
+                App.getStringRes(R.string.routes_no_route)
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Optional;
+            currentItem.isHeader && (binding is RouteListHeaderBinding) -> binding.itemHeaderText.text =
+                currentItem.headerText
 
-public class RouteViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<RouteListItem> {
-
-    @Nullable @BindView(R.id.check_in_img)      ImageView mCheckInImg;
-    @Nullable @BindView(R.id.map_pin_img)       ImageView mMapPinImg;
-    @Nullable @BindView(R.id.call_img)          ImageView mCallImg;
-    @Nullable @BindView(R.id.customer_name_text)TextView mCustomerNameText;
-    @Nullable @BindView(R.id.item_header_text)  TextView mItemHeaderText;
-    @Nullable @BindView(R.id.empty_list_text)   TextView mEmptyText;
-
-    @Inject
-    RoutesScreen.Presenter mPresenter;
-
-    public RouteViewHolder(View itemView) {
-        super(itemView);
-        DaggerService.<RoutesScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
-        ButterKnife.bind(this, itemView);
-
-        if (mEmptyText != null){
-            mEmptyText.setText(App.getStringRes(R.string.routes_no_route));
-        }
-    }
-
-
-    @Override
-    public void setCurrentItem(RouteListItem currentItem) {
-        super.setCurrentItem(currentItem);
-
-        if (currentItem != null) {
-            if (currentItem.isHeader() && mItemHeaderText != null){
-                mItemHeaderText.setText(currentItem.getHeaderText());
-            }else if (currentItem.getCustomer() != null && currentItem.getCustomer().isValid() && currentItem.getVisit() != null && currentItem.getVisit().isValid()){
-                if (mCheckInImg != null) {
-                    if (currentItem.getVisit().isToSync()) {
-                        mCheckInImg.setColorFilter(App.getColorRes(R.color.color_orange));
-                    }else {
-                        if (currentItem.getVisit().isDone()) {
-                            mCheckInImg.setColorFilter(App.getColorRes(R.color.color_green));
-                        } else {
-                            mCheckInImg.setColorFilter(App.getColorRes(R.color.color_red));
+            !currentItem.isHeader && (binding is RouteListItemBinding) -> {
+                if (currentItem.customer != null && currentItem.customer.isValid && currentItem.visit != null && currentItem.visit.isValid) {
+                    with(binding) {
+                        checkInImg.apply {
+                            setColorFilter(
+                                when {
+                                    currentItem.visit.isToSync -> App.getColorRes(R.color.color_orange)
+                                    currentItem.visit.isDone -> App.getColorRes(R.color.color_green)
+                                    else -> App.getColorRes(R.color.color_red)
+                                }
+                            )
+                            if (currentItem.visit != null && !currentItem.visit.isDone) {
+                                setOnClickListener { checkInFun?.accept(currentItem.visit) }
+                                itemView.setOnClickListener { checkInFun?.accept(currentItem.visit) }
+                            }
+                        }
+                        if (currentItem.customer != null) {
+                            customerNameText.apply {
+                                text = currentItem.customer.name
+                                setOnClickListener { openCustomerFun?.accept(currentItem.customer) }
+                            }
+                            mapPinImg.apply {
+                                isInvisible = currentItem.customer.address.isEmpty()
+                                setOnClickListener { openMapFun?.accept(currentItem.customer) }
+                            }
+                            callImg.apply {
+                                isInvisible = currentItem.customer.phone.isEmpty()
+                                setOnClickListener { openCallFun?.accept(currentItem.customer) }
+                            }
                         }
                     }
                 }
-                if (mCustomerNameText != null) {
-                    mCustomerNameText.setText(currentItem.getCustomer().getName());
-                }
-                if (mMapPinImg != null) {
-                    mMapPinImg.setVisibility(currentItem.getCustomer().getAddress().isEmpty()?View.INVISIBLE:View.VISIBLE);
-                }
-                if (mCallImg != null) {
-                    mCallImg.setVisibility(currentItem.getCustomer().getPhone().isEmpty()?View.INVISIBLE:View.VISIBLE);
-                }
             }
-        }
 
-    }
-
-    @Optional
-    @OnClick(R.id.map_pin_img)
-    void onMapClick(View view){
-        if (currentItem.getCustomer() != null) {
-
-            mPresenter.openCustomerMap(currentItem.getCustomer());
+            else -> Unit
         }
     }
-
-    @Optional
-    @OnClick(R.id.call_img)
-    void onCallClick(View view){
-        if (currentItem.getCustomer() != null) {
-
-            mPresenter.callToCustomer(currentItem.getCustomer());
-        }
-    }
-
-    @Optional
-    @OnClick({R.id.check_in_img, R.id.customer_list_item})
-    void onCheckInClick(View view){
-        if (currentItem.getVisit() != null && !currentItem.getVisit().isDone()) {
-            mPresenter.doCheckIn(currentItem.getVisit());
-        }
-    }
-
-
-    @Optional
-    @OnClick({R.id.customer_name_text})
-    void onCustomerClick(View view){
-        if (currentItem.getCustomer() != null) {
-
-            mPresenter.openCustomerCard(currentItem.getCustomer());
-        }
-    }
-
-
 }

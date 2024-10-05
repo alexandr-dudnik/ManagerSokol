@@ -93,13 +93,9 @@ public class DataManager {
     private final JobManager mJobManager;
     private Disposable autoUpdateDisposable;
 
-
     private DataManager() {
-
-        String localHost = ConstantManager.LOCAL_HOST;
-
         DataManagerComponent dmComponent = DaggerService.getComponent(DataManagerComponent.class);
-        if (dmComponent==null){
+        if (dmComponent == null) {
             dmComponent = DaggerDataManagerComponent.builder()
                     .appComponent(App.getAppComponent())
                     .networkModule(new NetworkModule())
@@ -122,41 +118,59 @@ public class DataManager {
         mJobManager.stop();
         mJobManager.addCallback(new JobManagerCallback() {
             @Override
-            public void onJobAdded(@NonNull Job job) {}
+            public void onJobAdded(@NonNull Job job) {
+            }
 
             @Override
-            public void onJobRun(@NonNull Job job, int resultCode) {}
+            public void onJobRun(@NonNull Job job, int resultCode) {
+            }
 
             @Override
             public void onJobCancelled(@NonNull Job job, boolean byCancelRequest, @Nullable Throwable throwable) {
-                if (job.isCancelled() && job.isPersistent() ){
-                    if (job instanceof FetchRemoteCurrencyJob) mJobManager.addJobInBackground(new FetchRemoteCurrencyJob());
-                    if (job instanceof FetchRemoteCustomersJob) mJobManager.addJobInBackground(new FetchRemoteCustomersJob());
-                    if (job instanceof FetchRemoteGoodGroupsJob) mJobManager.addJobInBackground(new FetchRemoteGoodGroupsJob());
-                    if (job instanceof FetchRemoteGoodItemsJob) mJobManager.addJobInBackground(new FetchRemoteGoodItemsJob());
-                    if (job instanceof FetchRemoteOrdersJob) mJobManager.addJobInBackground(new FetchRemoteOrdersJob());
-                    if (job instanceof FetchRemoteTradesJob) mJobManager.addJobInBackground(new FetchRemoteTradesJob());
-                    if (job instanceof SendCustomerNoteJob) mJobManager.addJobInBackground(new SendCustomerNoteJob(((SendCustomerNoteJob) job).getJobId()));
-                    if (job instanceof SendCustomerTaskJob) mJobManager.addJobInBackground(new SendCustomerTaskJob(((SendCustomerTaskJob) job).getJobId()));
-                    if (job instanceof SendOrderJob) mJobManager.addJobInBackground(new SendOrderJob(((SendOrderJob) job).getJobId()));
-                    if (job instanceof SendVisitJob) mJobManager.addJobInBackground(new SendVisitJob(((SendVisitJob) job).getJobId()));
-                    if (job instanceof UpdateCustomerJob) mJobManager.addJobInBackground(new UpdateCustomerJob(((UpdateCustomerJob) job).getJobId()));
-                    if (job instanceof UpdateGoodGroupJob) mJobManager.addJobInBackground(new UpdateGoodGroupJob(((UpdateGoodGroupJob) job).getJobId()));
-                    if (job instanceof UpdateGoodItemJob) mJobManager.addJobInBackground(new UpdateGoodItemJob(((UpdateGoodItemJob) job).getJobId()));
-                    if (job instanceof UpdateOrderJob) mJobManager.addJobInBackground(new UpdateOrderJob(((UpdateOrderJob) job).getJobId()));
+                if (job.isCancelled() && job.isPersistent()) {
+                    if (job instanceof FetchRemoteCurrencyJob)
+                        mJobManager.addJobInBackground(new FetchRemoteCurrencyJob());
+                    if (job instanceof FetchRemoteCustomersJob)
+                        mJobManager.addJobInBackground(new FetchRemoteCustomersJob());
+                    if (job instanceof FetchRemoteGoodGroupsJob)
+                        mJobManager.addJobInBackground(new FetchRemoteGoodGroupsJob());
+                    if (job instanceof FetchRemoteGoodItemsJob)
+                        mJobManager.addJobInBackground(new FetchRemoteGoodItemsJob());
+                    if (job instanceof FetchRemoteOrdersJob)
+                        mJobManager.addJobInBackground(new FetchRemoteOrdersJob());
+                    if (job instanceof FetchRemoteTradesJob)
+                        mJobManager.addJobInBackground(new FetchRemoteTradesJob());
+                    if (job instanceof SendCustomerNoteJob)
+                        mJobManager.addJobInBackground(new SendCustomerNoteJob(((SendCustomerNoteJob) job).getJobId()));
+                    if (job instanceof SendCustomerTaskJob)
+                        mJobManager.addJobInBackground(new SendCustomerTaskJob(((SendCustomerTaskJob) job).getJobId()));
+                    if (job instanceof SendOrderJob)
+                        mJobManager.addJobInBackground(new SendOrderJob(((SendOrderJob) job).getJobId()));
+                    if (job instanceof SendVisitJob)
+                        mJobManager.addJobInBackground(new SendVisitJob(((SendVisitJob) job).getJobId()));
+                    if (job instanceof UpdateCustomerJob)
+                        mJobManager.addJobInBackground(new UpdateCustomerJob(((UpdateCustomerJob) job).getJobId()));
+                    if (job instanceof UpdateGoodGroupJob)
+                        mJobManager.addJobInBackground(new UpdateGoodGroupJob(((UpdateGoodGroupJob) job).getJobId()));
+                    if (job instanceof UpdateGoodItemJob)
+                        mJobManager.addJobInBackground(new UpdateGoodItemJob(((UpdateGoodItemJob) job).getJobId()));
+                    if (job instanceof UpdateOrderJob)
+                        mJobManager.addJobInBackground(new UpdateOrderJob(((UpdateOrderJob) job).getJobId()));
 
-                    Log.d(App.getContext().getPackageName(), "Job "+job.getClass().getSimpleName()+" id = " + job.getSingleInstanceId() + " restarted!");
-                    if (throwable!=null) {
+                    Log.d(App.getContext().getPackageName(), "Job " + job.getClass().getSimpleName() + " id = " + job.getSingleInstanceId() + " restarted!");
+                    if (throwable != null) {
                         Log.e(App.getContext().getPackageName(), throwable.getMessage(), throwable);
                     }
                 }
             }
 
             @Override
-            public void onDone(@NonNull Job job) {}
+            public void onDone(@NonNull Job job) {
+            }
 
             @Override
-            public void onAfterJobRun(@NonNull Job job, int resultCode) {}
+            public void onAfterJobRun(@NonNull Job job, int resultCode) {
+            }
         });
 
         if (getAutoSynchronize() && isRetrofitValid()) {
@@ -185,7 +199,7 @@ public class DataManager {
                 .flatMap(aLong -> NetworkStatusChecker.isInternetAvailableObs()) //проверяем состяние интернета
                 .filter(aBoolean -> aBoolean) //идем дальше только если интернет есть
                 .doOnNext(aBoolean -> updateAllAsync()) //получаем новые товары из сети
-                .doOnError(throwable -> Log.e("ERROR","Update all", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Update all", throwable))
                 .doOnComplete(() -> autoUpdateDisposable.dispose())
                 .subscribe(aBoolean -> {
 
@@ -193,7 +207,8 @@ public class DataManager {
 
                 });
     }
-    private void updateRetrofitBaseUrl(){
+
+    private void updateRetrofitBaseUrl() {
         String baseUrl = AppConfig.getBaseURL();
         if (!baseUrl.isEmpty()) {
             mRetrofit = mRetrofit.newBuilder().baseUrl(baseUrl).build();
@@ -203,7 +218,6 @@ public class DataManager {
             }
         }
     }
-
 
     public static DataManager getInstance() {
         if (ourInstance == null) {
@@ -217,11 +231,11 @@ public class DataManager {
         mPreferencesManager.clearLastUpdate();
     }
 
-    public void cancelAllJobs(){
+    public void cancelAllJobs() {
         mJobManager.cancelJobsInBackground(cancelResult -> mJobManager.clear(), TagConstraint.ANY, ConstantManager.UPDATE_JOB_TAG);
     }
 
-    public Boolean jobQueueIsEmpty(){
+    public Boolean jobQueueIsEmpty() {
         return mJobManager.count() == 0;
     }
 
@@ -240,28 +254,44 @@ public class DataManager {
         Job jCustomers = new FetchRemoteCustomersJob();
         Job jOrders = new FetchRemoteOrdersJob();
 
-        try {mJobManager.addJobInBackground(jCurrency);}catch (Throwable ignore){}
-        try {mJobManager.addJobInBackground(jTrades);}catch (Throwable ignore){}
-        try {mJobManager.addJobInBackground(jGroups);}catch (Throwable ignore){}
-        try {mJobManager.addJobInBackground(jItems);}catch (Throwable ignore){}
-        try {mJobManager.addJobInBackground(jCustomers);}catch (Throwable ignore){}
-        try {mJobManager.addJobInBackground(jOrders);}catch (Throwable ignore){}
+        try {
+            mJobManager.addJobInBackground(jCurrency);
+        } catch (Throwable ignore) {
+        }
+        try {
+            mJobManager.addJobInBackground(jTrades);
+        } catch (Throwable ignore) {
+        }
+        try {
+            mJobManager.addJobInBackground(jGroups);
+        } catch (Throwable ignore) {
+        }
+        try {
+            mJobManager.addJobInBackground(jItems);
+        } catch (Throwable ignore) {
+        }
+        try {
+            mJobManager.addJobInBackground(jCustomers);
+        } catch (Throwable ignore) {
+        }
+        try {
+            mJobManager.addJobInBackground(jOrders);
+        } catch (Throwable ignore) {
+        }
     }
 
-
     //region ===================== Getters =========================
-
 
     public Retrofit getRetrofit() {
         return mRetrofit;
     }
 
-    public JobManager getJobManager() { return mJobManager; }
-
+    public JobManager getJobManager() {
+        return mJobManager;
+    }
 
     //endregion ================== Getters =========================
 
-    
     //region ===================== UserInfo =========================
 
     private boolean isTestUser() {
@@ -269,7 +299,7 @@ public class DataManager {
     }
 
     public boolean isUserAuth() {
-        if (mPreferencesManager.getUserAuthToken().isEmpty()){
+        if (mPreferencesManager.getUserAuthToken().isEmpty()) {
             return false;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -277,7 +307,7 @@ public class DataManager {
             Date dueDate = sdf.parse(mPreferencesManager.getUserAuthTokenExpiration());
             if (dueDate == null) {
                 return false;
-            }else{
+            } else {
                 return !dueDate.before(Calendar.getInstance().getTime()) || !NetworkStatusChecker.isNetworkAvailable();
             }
 
@@ -285,7 +315,6 @@ public class DataManager {
         }
         return false;
     }
-
 
     public String getUserName() {
         return mPreferencesManager.getUserName();
@@ -303,10 +332,8 @@ public class DataManager {
         mPreferencesManager.updateUserPassword(pass);
     }
 
-
     public Observable<UserRes> loginUser(String userName, String password) {
-
-        if (userName.equals(AppConfig.TEST_USERNAME) && password.equals(AppConfig.TEST_USERPASSWORD)){
+        if (userName.equals(AppConfig.TEST_USERNAME) && password.equals(AppConfig.TEST_USERPASSWORD)) {
             updateUserName(userName);
             updateUserPassword(password);
             return Observable.just(DebugManager.loginUser(userName, password));
@@ -344,17 +371,16 @@ public class DataManager {
 
     //endregion ================== UserInfo =========================
 
-    
     //region ===================== Customers =========================
     public Observable<List<CustomerRealm>> getCustomersFromRealm(String filter) {
         return mRealmManager.getCustomersList(filter);
     }
 
-    public CustomerRealm getCustomerById(String id){
+    public CustomerRealm getCustomerById(String id) {
         return mRealmManager.getCustomerById(id);
     }
 
-    public int getCustomerDebtType(String id){
+    public int getCustomerDebtType(String id) {
         return mRealmManager.getCustomerDebtType(id);
     }
 
@@ -373,7 +399,6 @@ public class DataManager {
     public Observable<List<OrderPlanRealm>> getCustomerPlan(String customerId) {
         return mRealmManager.getCustomerPlan(customerId);
     }
-
 
     public void updateCustomerTask(String taskId, boolean checked, String result) {
         mRealmManager.updateCustomerTask(taskId, checked, result);
@@ -403,9 +428,8 @@ public class DataManager {
         mRealmManager.deleteNote(noteId);
     }
 
-
-    public Observable<CustomerRealm> updateCustomersFromRemote(){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<CustomerRealm> updateCustomersFromRemote() {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -451,9 +475,8 @@ public class DataManager {
         }
     }
 
-
-    public Observable<CustomerRealm> updateCustomerFromRemote(String customerId){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<CustomerRealm> updateCustomerFromRemote(String customerId) {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
         if (mRestService == null) {
@@ -483,7 +506,7 @@ public class DataManager {
 
     public Observable<NoteRealm> sendSingleNote(String noteId) {
         NoteRealm note = mRealmManager.getCustomerNoteById(noteId);
-        if (!isUserAuth() || note==null || !note.isValid() || note.getCustomer()==null || !note.getCustomer().isValid()){
+        if (!isUserAuth() || note == null || !note.isValid() || note.getCustomer() == null || !note.getCustomer().isValid()) {
             return Observable.empty();
         }
 
@@ -510,7 +533,7 @@ public class DataManager {
     }
 
     public void sendAllNotes(String filter) {
-        if (!isUserAuth() || isTestUser()){
+        if (!isUserAuth() || isTestUser()) {
             return;
         }
         mRealmManager.getNotesToSend(filter)
@@ -532,7 +555,7 @@ public class DataManager {
 
     public Observable<TaskRealm> sendSingleTask(String taskId) {
         TaskRealm task = mRealmManager.getCustomerTaskByTypeId(taskId);
-        if (!isUserAuth() || task==null || !task.isValid() || task.getCustomer()==null || !task.getCustomer().isValid()){
+        if (!isUserAuth() || task == null || !task.isValid() || task.getCustomer() == null || !task.getCustomer().isValid()) {
             return Observable.empty();
         }
 
@@ -559,7 +582,7 @@ public class DataManager {
     }
 
     public void sendAllTasks(String filter) {
-        if (!isUserAuth() || isTestUser()){
+        if (!isUserAuth() || isTestUser()) {
             return;
         }
 
@@ -569,12 +592,15 @@ public class DataManager {
                 .unsubscribeOn(Schedulers.computation())
                 .flatMapIterable(task -> task)
                 .filter(TaskRealm::isToSync)
-                .doOnNext(task ->{
+                .doOnNext(task -> {
                             Job job = new SendCustomerTaskJob(task.getTaskId());
-                            try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+                            try {
+                                mJobManager.addJobInBackground(job);
+                            } catch (Throwable ignore) {
+                            }
                         }
                 )
-                .doOnError(throwable -> Log.e("ERROR","Send tasks", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Send tasks", throwable))
                 .subscribe();
 
     }
@@ -582,18 +608,24 @@ public class DataManager {
     public void updateVisitGeolocation(String visitId, float mLat, float mLong) {
         mRealmManager.updateVisitGeolocation(visitId, mLat, mLong);
         Job job = new SendVisitJob(visitId);
-        try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+        try {
+            mJobManager.addJobInBackground(job);
+        } catch (Throwable ignore) {
+        }
     }
 
     public void updateVisitScreenshot(String visitId, String imageURI) {
         mRealmManager.updateVisitScreenshot(visitId, imageURI);
         Job job = new SendVisitJob(visitId);
-        try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+        try {
+            mJobManager.addJobInBackground(job);
+        } catch (Throwable ignore) {
+        }
     }
 
     public Observable<VisitRealm> sendSingleVisit(String visitId) {
         VisitRealm visit = mRealmManager.getVisitById(visitId);
-        if (!isUserAuth() || visit==null || !visit.isValid() || visit.getCustomer()==null || !visit.getCustomer().isValid()){
+        if (!isUserAuth() || visit == null || !visit.isValid() || visit.getCustomer() == null || !visit.getCustomer().isValid()) {
             return Observable.empty();
         }
 
@@ -620,9 +652,8 @@ public class DataManager {
     }
 
 
-
     public void sendAllVisits(String filter) {
-        if (!isUserAuth() || isTestUser()){
+        if (!isUserAuth() || isTestUser()) {
             return;
         }
 
@@ -632,12 +663,15 @@ public class DataManager {
                 .unsubscribeOn(Schedulers.computation())
                 .flatMapIterable(task -> task)
                 .filter(VisitRealm::isToSync)
-                .doOnNext(visit ->{
+                .doOnNext(visit -> {
                             Job job = new SendVisitJob(visit.getId());
-                            try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
+                            try {
+                                mJobManager.addJobInBackground(job);
+                            } catch (Throwable ignore) {
+                            }
                         }
                 )
-                .doOnError(throwable -> Log.e("ERROR","Send visits", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Send visits", throwable))
                 .subscribe();
 
     }
@@ -688,7 +722,7 @@ public class DataManager {
     }
 
     public OrderRealm getCartForCustomer(String customerId) {
-        return mRealmManager.getCartForCustomer(customerId) ;
+        return mRealmManager.getCartForCustomer(customerId);
     }
 
     public void updateOrderComment(String orderId, String comment) {
@@ -708,8 +742,8 @@ public class DataManager {
     }
 
 
-    public Observable<OrderRealm> updateOrdersFromRemote(){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<OrderRealm> updateOrdersFromRemote() {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -757,9 +791,8 @@ public class DataManager {
         }
     }
 
-
-    public Observable<OrderRealm> updateOrderFromRemote(String orderId){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<OrderRealm> updateOrderFromRemote(String orderId) {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -789,14 +822,14 @@ public class DataManager {
         }
     }
 
-    public List<OrderLineRealm> getCopyOfOrderLines(String orderId){
-      return mRealmManager.getOrderLines(orderId);
+    public List<OrderLineRealm> getCopyOfOrderLines(String orderId) {
+        return mRealmManager.getOrderLines(orderId);
     }
 
-    public Observable<OrderRealm> sendSingleOrder(String orderId){
+    public Observable<OrderRealm> sendSingleOrder(String orderId) {
         OrderRealm order = mRealmManager.getOrderById(orderId);
         List<OrderLineRealm> lines = mRealmManager.getOrderLines(orderId);
-        if (!isUserAuth() || order==null || !order.isValid()){
+        if (!isUserAuth() || order == null || !order.isValid()) {
             return Observable.empty();
         }
         if (mRestService == null) {
@@ -828,23 +861,25 @@ public class DataManager {
     }
 
     public void sendAllOrders(String filter) {
-        if (!isUserAuth() || isTestUser()){
+        if (!isUserAuth() || isTestUser()) {
             return;
         }
         mRealmManager.getOrdersToSend(filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .unsubscribeOn(Schedulers.computation())
-                .doOnNext(order ->{
-                        Job job = new SendOrderJob(order.getId());
-                        try{mJobManager.addJobInBackground(job);}catch (Throwable ignore){}
-                    }
+                .doOnNext(order -> {
+                            Job job = new SendOrderJob(order.getId());
+                            try {
+                                mJobManager.addJobInBackground(job);
+                            } catch (Throwable ignore) {
+                            }
+                        }
                 )
-                .doOnError(throwable -> Log.e("ERROR","Send orders", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Send orders", throwable))
                 .subscribe();
 
     }
-
 
     public void updateOrderCurrency(String orderId, String currencyCode) {
         mRealmManager.updateOrderCurrency(orderId, currencyCode);
@@ -858,9 +893,7 @@ public class DataManager {
         mRealmManager.updateOrderFactFlag(orderId, fact);
     }
 
-
     //endregion ================== Orders =========================
-
 
     //region ===================== Goods =========================
     public Observable<List<GoodsGroupRealm>> getGroupList(String parentId, String brand) {
@@ -871,9 +904,8 @@ public class DataManager {
         return mRealmManager.getItemList(parentId, filter, brand, categoryId);
     }
 
-
-    public Observable<GoodsGroupRealm> updateGroupsFromRemote(){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<GoodsGroupRealm> updateGroupsFromRemote() {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -920,8 +952,8 @@ public class DataManager {
         }
     }
 
-    public Observable<GoodsGroupRealm> updateGroupFromRemote(String groupId){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<GoodsGroupRealm> updateGroupFromRemote(String groupId) {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -955,9 +987,8 @@ public class DataManager {
         return mRealmManager.getGroupById(id);
     }
 
-
-    public Observable<ItemRealm> updateItemsFromRemote(){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<ItemRealm> updateItemsFromRemote() {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -1003,9 +1034,8 @@ public class DataManager {
         }
     }
 
-
-    public Observable<ItemRealm> updateGoodItemFromRemote(String itemId){
-        if (!isUserAuth() || isTestUser()){
+    public Observable<ItemRealm> updateGoodItemFromRemote(String itemId) {
+        if (!isUserAuth() || isTestUser()) {
             return Observable.empty();
         }
 
@@ -1035,7 +1065,6 @@ public class DataManager {
         }
     }
 
-
     public Observable<List<BrandsRealm>> getBrands() {
         return mRealmManager.getAllBrands();
     }
@@ -1045,7 +1074,6 @@ public class DataManager {
     }
 
     //endregion ================== Goods =========================
-
 
     //region ======================= Prices =========================
 
@@ -1070,8 +1098,7 @@ public class DataManager {
                         Log.e("SYNC", "currency", throwable);
                         return Observable.empty();
                     })
-                    .flatMap(item -> Observable.empty())
-                    ;
+                    .flatMap(item -> Observable.empty());
         }
     }
 
@@ -1135,7 +1162,7 @@ public class DataManager {
 
     public float getTradePercent(String itemId, String tradeId) {
         ItemRealm mItem = mRealmManager.getItemById(itemId);
-        return (mItem == null) ? 0 : mRealmManager.getTradePercent(tradeId, (mItem.getCategory()==null)?"":mItem.getCategory().getCategoryId());
+        return (mItem == null) ? 0 : mRealmManager.getTradePercent(tradeId, (mItem.getCategory() == null) ? "" : mItem.getCategory().getCategoryId());
     }
 
     public Float getCustomerDiscount(String customerId, String itemId) {
@@ -1145,11 +1172,12 @@ public class DataManager {
 
     public float getItemPrice(String itemId, String priceId, String tradeId, String currencyId, String customerId, boolean roundVAT) {
         final ItemRealm mItem = mRealmManager.getItemById(itemId);
-        final PriceListItemRealm mItemPrice = mRealmManager.getPriceListItem(itemId, (priceId == null || priceId.isEmpty())?ConstantManager.PRICE_BASE_PRICE_ID:priceId);
-        final CurrencyRealm mCurrency = mRealmManager.getCurrencyById((currencyId==null || currencyId.isEmpty()? ConstantManager.MAIN_CURRENCY_CODE:currencyId));
+        final PriceListItemRealm mItemPrice = mRealmManager.getPriceListItem(itemId, (priceId == null || priceId.isEmpty()) ? ConstantManager.PRICE_BASE_PRICE_ID : priceId);
+        final CurrencyRealm mCurrency = mRealmManager.getCurrencyById((currencyId == null || currencyId.isEmpty() ? ConstantManager.MAIN_CURRENCY_CODE : currencyId));
         final CurrencyRealm priceCurrency;
 
-        if (mItem == null || mItemPrice == null || mCurrency == null ||mCurrency.getRate() == 0 ) return 0;
+        if (mItem == null || mItemPrice == null || mCurrency == null || mCurrency.getRate() == 0)
+            return 0;
 
         final Pair<CurrencyRealm, Float> personalPrice = mRealmManager.getCustomerPrice(customerId, itemId);
 
@@ -1157,18 +1185,18 @@ public class DataManager {
         final float tradePercent;
         final float rate;
         final float price;
-        if (personalPrice != null && personalPrice.first !=null && personalPrice.second !=null && personalPrice.second > 0){
+        if (personalPrice != null && personalPrice.first != null && personalPrice.second != null && personalPrice.second > 0) {
             priceCurrency = personalPrice.first;
             discount = 0;
             tradePercent = 0;
-            rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate()/mCurrency.getRate();
+            rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate() / mCurrency.getRate();
             price = personalPrice.second;
-        }else{
+        } else {
             priceCurrency = mItemPrice.getCurrency();
             if (priceCurrency == null || priceCurrency.getRate() == 0) return 0;
             discount = getCustomerDiscount(customerId, itemId);
-            tradePercent = mRealmManager.getTradePercent(tradeId, (mItem.getCategory()==null)?"":mItem.getCategory().getCategoryId());
-            rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate()/mCurrency.getRate();
+            tradePercent = mRealmManager.getTradePercent(tradeId, (mItem.getCategory() == null) ? "" : mItem.getCategory().getCategoryId());
+            rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate() / mCurrency.getRate();
             price = mItemPrice.getPrice();
         }
 
@@ -1185,9 +1213,7 @@ public class DataManager {
         return mRealmManager.getTradeById(tradeId);
     }
 
-
     //endregion ===================== Prices =========================
-
 
     //region ===================== Preferences =========================
 
@@ -1209,17 +1235,16 @@ public class DataManager {
         mPreferencesManager.updateAutoSynchronize(sync);
         if (sync && isRetrofitValid()) {
             mJobManager.start();
-        }else{
+        } else {
             mJobManager.stop();
         }
     }
 
-
-    public String getLastUpdate(String module){
+    public String getLastUpdate(String module) {
         return mPreferencesManager.getLastUpdate(module);
     }
 
-    public void setLastUpdate(String module, String lastModified){
+    public void setLastUpdate(String module, String lastModified) {
         mPreferencesManager.saveLastUpdate(module, lastModified);
     }
 
@@ -1239,9 +1264,6 @@ public class DataManager {
         return mPreferencesManager.getApiServers();
     }
 
-
     //endregion ================== Preferences =========================
 
-
 }
-

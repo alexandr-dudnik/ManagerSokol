@@ -9,7 +9,6 @@ import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.OrderListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
@@ -22,8 +21,7 @@ import flow.Flow;
 import io.reactivex.Observable;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_order_list)
-public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
+public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -33,6 +31,10 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_order_list;
+    }
 
     //region ===================== DI =========================
 
@@ -53,7 +55,6 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     }
 
-
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(OrderListScreen.class)
     public interface Component {
@@ -65,15 +66,10 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
     }
     //endregion ================== DI =========================
 
-
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<OrderListView, OrderListModel> {
-
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<OrderRealm> viewAndHolderFactory;
         private ReactiveRecyclerAdapter<OrderRealm> ordersAdapter;
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -103,7 +99,7 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
             setOrderListFilter();
         }
 
-        public void setOrderListFilter(){
+        public void setOrderListFilter() {
             ordersAdapter.refreshList(mModel.getOrderList());
         }
 
@@ -126,7 +122,6 @@ public class OrderListScreen extends AbstractScreen<RootActivity.RootComponent>{
 //                    }, ConstantManager.MENU_ITEM_TYPE_SEARCH))
                     .setTitle(App.getStringRes(R.string.menu_orders))
                     .build();
-
         }
 
         @Override

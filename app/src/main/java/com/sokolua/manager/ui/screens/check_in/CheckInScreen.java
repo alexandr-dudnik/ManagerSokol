@@ -14,7 +14,6 @@ import com.sokolua.manager.data.storage.realm.VisitRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CheckInModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
@@ -29,7 +28,6 @@ import flow.TreeKey;
 import io.realm.RealmObjectChangeListener;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_check_in)
 public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> implements TreeKey {
     private String mVisitId;
 
@@ -42,15 +40,19 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_check_in;
+    }
+
     public CheckInScreen(String visitId) {
         mVisitId = visitId;
     }
 
     @Override
     public String getScopeName() {
-        return super.getScopeName()+"_"+ mVisitId;
+        return super.getScopeName() + "_" + mVisitId;
     }
-
 
     //region ===================== DI =========================
 
@@ -75,6 +77,7 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
     @DaggerScope(CheckInScreen.class)
     public interface Component {
         void inject(Presenter presenter);
+
         void inject(CheckInView view);
 
         RootPresenter getRootPresenter();
@@ -86,21 +89,14 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
 
         private RealmObjectChangeListener<VisitRealm> visitChangeListener;
         private VisitRealm mVisit;
-
         boolean useCamera = false;
-
-
-        public Presenter() {
-        }
-
-
 
         @Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
 
-            useCamera = App.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+            useCamera = App.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
 
             mVisit = mModel.getVisitById(mVisitId);
 
@@ -137,28 +133,27 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
                     .setVisible(true)
                     .setBackArrow(true)
                     .setTitle(mVisit.getCustomer().getName())
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.check_in), R.drawable.ic_check_in, item ->{
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.check_in), R.drawable.ic_check_in, item -> {
                         doCheckIn();
                         return true;
-                    } , ConstantManager.MENU_ITEM_TYPE_ACTION))
+                    }, ConstantManager.MENU_ITEM_TYPE_ACTION))
                     .build();
-
         }
 
         public String getCustomerName() {
-            return mVisit.getCustomer()==null?"":mVisit.getCustomer().getName();
+            return mVisit.getCustomer() == null ? "" : mVisit.getCustomer().getName();
         }
 
         public String getCustomerAddress() {
-            return mVisit.getCustomer()==null?"":mVisit.getCustomer().getAddress();
+            return mVisit.getCustomer() == null ? "" : mVisit.getCustomer().getAddress();
         }
 
         public void doCheckIn() {
-            if (getView() != null){
+            if (getView() != null) {
                 float mLat = getView().getLatitude();
                 float mLong = getView().getLongitude();
-                if (mLat == 0f && mLong == 0f){
-                    if (getRootView()!=null){
+                if (mLat == 0f && mLong == 0f) {
+                    if (getRootView() != null) {
                         getRootView().showMessage(App.getStringRes(R.string.message_unable_checkin));
                         return;
                     }
@@ -166,10 +161,9 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
                 mModel.updateVisitGeolocation(mVisitId, mLat, mLong);
                 getView().makeScreenshot();
             }
-
         }
 
-        public void setScreenshot(Bitmap scr){
+        public void setScreenshot(Bitmap scr) {
             mModel.setVisitScreenshot(mVisitId, scr);
 
             if (getRootView() != null) {
@@ -178,7 +172,6 @@ public class CheckInScreen extends AbstractScreen<RootActivity.RootComponent> im
             if (getView() != null) {
                 getView().viewOnBackPressed();
             }
-
         }
 
         @Nullable

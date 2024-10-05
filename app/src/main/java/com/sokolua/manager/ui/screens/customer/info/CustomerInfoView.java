@@ -11,25 +11,22 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenCustomerInfoBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 import com.sokolua.manager.utils.SwipeToDeleteCallback;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
-public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>{
-    @BindView(R.id.customer_info_list)
-    RecyclerView mCustomerInfoList;
-    @BindView(R.id.customer_notes_list)
-    RecyclerView mCustomerNotesList;
-
+public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter, ScreenCustomerInfoBinding> {
 
     public CustomerInfoView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected ScreenCustomerInfoBinding bindView(View view) {
+        return ScreenCustomerInfoBinding.bind(view);
     }
 
     @Override
@@ -37,45 +34,37 @@ public class CustomerInfoView extends AbstractView<CustomerInfoScreen.Presenter>
         DaggerService.<CustomerInfoScreen.Component>getDaggerComponent(context).inject(this);
     }
 
-
     @Override
     public boolean viewOnBackPressed() {
         return false;
     }
 
-
-
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                new SwipeToDeleteCallback(getContext()) {
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                        mPresenter.deleteNote(((CustomerNoteViewHolder) viewHolder).getCurrentItem().getNoteId());
+                    }
+                }
+        );
+        itemTouchHelper.attachToRecyclerView(binding.customerNotesList);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(getContext()) {
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                mPresenter.deleteNote(((CustomerNoteViewHolder) viewHolder).getCurrentItem().getNoteId());
-            }
-
-        });
-        itemTouchHelper.attachToRecyclerView(mCustomerNotesList);
+        binding.noteAddImage.setOnClickListener(view -> mPresenter.addNewNote());
     }
 
-
     public void setNoteAdapter(ReactiveRecyclerAdapter mNoteAdapter) {
-        mCustomerNotesList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerNotesList.setAdapter(mNoteAdapter);
-        mCustomerNotesList.setHasFixedSize(true);
+        binding.customerNotesList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.customerNotesList.setAdapter(mNoteAdapter);
+        binding.customerNotesList.setHasFixedSize(true);
     }
 
     public void setDataAdapter(CustomerInfoDataAdapter mDataAdapter) {
-        mCustomerInfoList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mCustomerInfoList.setAdapter(mDataAdapter);
-        mCustomerNotesList.setHasFixedSize(true);
+        binding.customerInfoList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.customerInfoList.setAdapter(mDataAdapter);
+        binding.customerInfoList.setHasFixedSize(true);
     }
-
-    @OnClick(R.id.note_add_image)
-    void clickAddNote(View v){
-        mPresenter.addNewNote();
-    }
-
 }

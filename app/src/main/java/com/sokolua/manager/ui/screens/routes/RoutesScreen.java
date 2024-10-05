@@ -8,10 +8,12 @@ import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
 import com.sokolua.manager.data.storage.realm.VisitRealm;
+import com.sokolua.manager.databinding.EmptyListItemBinding;
+import com.sokolua.manager.databinding.RouteListHeaderBinding;
+import com.sokolua.manager.databinding.RouteListItemBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.RoutesModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
@@ -28,8 +30,7 @@ import flow.Flow;
 import io.reactivex.Observable;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_routes)
-public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
+public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -39,6 +40,10 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_routes;
+    }
 
     //region ===================== DI =========================
 
@@ -59,32 +64,23 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     }
 
-
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(RoutesScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
         void inject(RoutesView view);
-
-        void inject(RouteViewHolder viewHolder);
     }
     //endregion ================== DI =========================
 
-
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<RoutesView, RoutesModel> {
-
         private ReactiveRecyclerAdapter<RouteListItem> reactiveRecyclerAdapter;
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
             super.onEnterScope(scope);
             ((Component) scope.getService(DaggerService.SERVICE_NAME)).inject(this);
-
         }
 
         @Override
@@ -92,22 +88,29 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
             super.onLoad(savedInstanceState);
 
             ReactiveRecyclerAdapter.ReactiveViewHolderFactory<RouteListItem> viewAndHolderFactory = (parent, pViewType) -> {
-                View view;
-                switch (pViewType) {
-                    case ConstantManager.RECYCLER_VIEW_TYPE_HEADER:
+                final View view;
+                final RouteViewHolder<?> holder = switch (pViewType) {
+                    case ConstantManager.RECYCLER_VIEW_TYPE_HEADER -> {
                         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.route_list_header, parent, false);
-                        break;
-                    case ConstantManager.RECYCLER_VIEW_TYPE_ITEM:
+                        yield new RouteViewHolder<RouteListHeaderBinding>(view, RouteListHeaderBinding.bind(view), null, null, null, null);
+                    }
+                    case ConstantManager.RECYCLER_VIEW_TYPE_ITEM -> {
                         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.route_list_item, parent, false);
-                        break;
-                    default:
+                        yield new RouteViewHolder<RouteListItemBinding>(
+                                view,
+                                RouteListItemBinding.bind(view),
+                                this::doCheckIn,
+                                this::openCustomerMap,
+                                this::callToCustomer,
+                                this::openCustomerCard
+                        );
+                    }
+                    default -> {
                         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.empty_list_item, parent, false);
-
-                }
-                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
-                        view,
-                        new RouteViewHolder(view)
-                );
+                        yield new RouteViewHolder<EmptyListItemBinding>(view, EmptyListItemBinding.bind(view), null, null, null, null);
+                    }
+                };
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(view, holder);
             };
 
             reactiveRecyclerAdapter = new ReactiveRecyclerAdapter<>(
@@ -118,30 +121,26 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
             getView().setAdapter(reactiveRecyclerAdapter);
         }
 
-
         @Override
         protected void initActionBar() {
             mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setTitle(App.getStringRes(R.string.menu_route))
                     .build();
-
         }
-
 
         public void daySelected(int day) {
             Calendar cal = Calendar.getInstance();
             cal.setFirstDayOfWeek(Calendar.MONDAY);
             cal.set(Calendar.AM_PM, 0);
-            cal.set(Calendar.HOUR,0);
-            cal.set(Calendar.MINUTE,0);
-            cal.set(Calendar.SECOND,0);
-            cal.set(Calendar.MILLISECOND,0);
+            cal.set(Calendar.HOUR, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
 
-            int curD = cal.get(Calendar.DAY_OF_WEEK)-cal.getFirstDayOfWeek();
-            curD = curD<0?(7+curD):curD;
-            cal.add(Calendar.DAY_OF_MONTH, day-curD);
-
+            int curD = cal.get(Calendar.DAY_OF_WEEK) - cal.getFirstDayOfWeek();
+            curD = curD < 0 ? (7 + curD) : curD;
+            cal.add(Calendar.DAY_OF_MONTH, day - curD);
 
             reactiveRecyclerAdapter.refreshList(mModel.getVisitsByDate(cal.getTime()));
         }
@@ -154,14 +153,14 @@ public class RoutesScreen extends AbstractScreen<RootActivity.RootComponent>{
             Flow.get(getView().getContext()).set(new CheckInScreen(visit.getId()));
         }
 
-        void openCustomerMap(CustomerRealm customer){
+        void openCustomerMap(CustomerRealm customer) {
             if (!IntentStarter.openMap(customer.getAddress()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
             }
         }
 
         void callToCustomer(CustomerRealm customer) {
-            if (!IntentStarter.openCaller(customer.getPhone()) && getRootView()!= null){
+            if (!IntentStarter.openCaller(customer.getPhone()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
             }
         }

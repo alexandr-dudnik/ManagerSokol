@@ -3,31 +3,27 @@ package com.sokolua.manager.ui.screens.customer.orders;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenCustomerOrdersBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
 
-import butterknife.BindView;
-
-public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presenter>{
-
-    @BindView(R.id.plan_list)
-    RecyclerView mPlanList;
-
-    @BindView(R.id.orders_list)
-    RecyclerView mOrdersList;
-
+public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presenter, ScreenCustomerOrdersBinding> {
 
     public CustomerOrdersView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected ScreenCustomerOrdersBinding bindView(View view) {
+        return ScreenCustomerOrdersBinding.bind(view);
     }
 
     @Override
@@ -45,14 +41,13 @@ public class CustomerOrdersView extends AbstractView<CustomerOrdersScreen.Presen
         super.onAttachedToWindow();
     }
 
-
     public void setPlanAdapter(ReactiveRecyclerAdapter planAdapter) {
-        mPlanList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mPlanList.setAdapter(planAdapter);
+        binding.planList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.planList.setAdapter(planAdapter);
     }
 
     public void setOrdersAdapter(ReactiveRecyclerAdapter ordersAdapter) {
-        mOrdersList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL,false));
-        mOrdersList.setAdapter(ordersAdapter);
+        binding.ordersList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.ordersList.setAdapter(ordersAdapter);
     }
 }

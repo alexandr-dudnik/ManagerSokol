@@ -13,7 +13,6 @@ import com.sokolua.manager.data.storage.realm.OrderRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
@@ -29,8 +28,7 @@ import flow.TreeKey;
 import io.realm.RealmObjectChangeListener;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_customer)
-public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  implements TreeKey {
+public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent> implements TreeKey {
     private CustomerRealm mCustomer;
     private String mCustomerId;
 
@@ -43,6 +41,11 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_customer;
+    }
+
     public CustomerScreen(String customerId) {
         mCustomerId = customerId;
         mCustomer = DataManager.getInstance().getCustomerById(customerId);
@@ -50,9 +53,8 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
 
     @Override
     public String getScopeName() {
-        return super.getScopeName()+"_"+mCustomerId;
+        return super.getScopeName() + "_" + mCustomerId;
     }
-
 
     //region ===================== DI =========================
 
@@ -94,12 +96,9 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
     //endregion ================== DI =========================
 
     //region ===================== Presenter =========================
-    public class Presenter extends AbstractPresenter<CustomerView, CustomerModel>{
+    public class Presenter extends AbstractPresenter<CustomerView, CustomerModel> {
 
         private RealmObjectChangeListener<CustomerRealm> customerChangeListener;
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -134,17 +133,19 @@ public class CustomerScreen extends AbstractScreen<RootActivity.RootComponent>  
                     .setBackArrow(true)
                     .setTitle(mCustomer.getName())
                     .setTabs(getView().getViewPager())
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.cart_title), R.drawable.ic_cart, item ->{
+                    .addAction(
+                            new MenuItemHolder(App.getStringRes(R.string.cart_title), R.drawable.ic_cart, item -> {
                                 OrderRealm cart = mModel.getCartForCustomer(mCustomerId);
                                 Flow.get(getView()).set(new OrderScreen(cart.getId()));
                                 return false;
-                            } , ConstantManager.MENU_ITEM_TYPE_ACTION))
-                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item ->{
+                            },
+                            ConstantManager.MENU_ITEM_TYPE_ACTION)
+                    )
+                    .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_synchronize), R.drawable.ic_sync, item -> {
                         mModel.updateCustomerFromRemote(mCustomerId);
                         return false;
-                    } , ConstantManager.MENU_ITEM_TYPE_ITEM))
+                    }, ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .build();
-
         }
     }
     //endregion ================== Presenter =========================

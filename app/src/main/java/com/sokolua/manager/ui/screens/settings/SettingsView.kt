@@ -1,141 +1,91 @@
-package com.sokolua.manager.ui.screens.settings;
+package com.sokolua.manager.ui.screens.settings
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import android.view.animation.AnimationUtils
+import android.widget.ArrayAdapter
+import com.sokolua.manager.BuildConfig
+import com.sokolua.manager.R
+import com.sokolua.manager.databinding.ScreenSettingsBinding
+import com.sokolua.manager.di.DaggerService
+import com.sokolua.manager.mvp.views.AbstractView
+import com.sokolua.manager.mvp.views.IAuthView
+import com.sokolua.manager.ui.custom_views.OnSpinItemSelectedListener
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.SwitchCompat;
+class SettingsView(context: Context, attrs: AttributeSet?) :
+    AbstractView<SettingsScreen.Presenter, ScreenSettingsBinding>(context, attrs), IAuthView {
 
-import com.sokolua.manager.BuildConfig;
-import com.sokolua.manager.R;
-import com.sokolua.manager.di.DaggerService;
-import com.sokolua.manager.mvp.views.AbstractView;
-import com.sokolua.manager.mvp.views.IAuthView;
-
-import java.util.Arrays;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.OnCheckedChanged;
-import butterknife.OnClick;
-import butterknife.OnItemSelected;
-
-public class SettingsView extends AbstractView<SettingsScreen.Presenter> implements IAuthView{
-
-    @BindView(R.id.auto_sync_switch)        SwitchCompat mAutoSyncSwitch;
-    @BindView(R.id.user_name)               EditText mUserName;
-    @BindView(R.id.user_password)           EditText mUserPassword;
-    @BindView(R.id.login_btn)               Button mLoginBtn;
-    @BindView(R.id.server_name)             Spinner mServerName;
-    @BindView(R.id.tv_app_version)          AppCompatTextView mAppVersion;
-
-
-    public SettingsView(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    @Override
-    protected void initDagger(Context context) {
-        if (!isInEditMode()) {
-            DaggerService.<SettingsScreen.Component>getDaggerComponent(context).inject(this);
+    override fun initDagger(context: Context) {
+        if (!isInEditMode) {
+            DaggerService.getDaggerComponent<SettingsScreen.Component>(context).inject(this)
         }
-
-
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        String ver = getResources().getString(R.string.version)+": "+BuildConfig.VERSION_NAME;
-        mAppVersion.setText(ver);
+    override fun bindView(view: View) = ScreenSettingsBinding.bind(view)
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        val ver = resources.getString(R.string.version) + ": " + BuildConfig.VERSION_NAME
+        with(binding) {
+            tvAppVersion.text = ver
+            loginForm.serverName.onItemSelectedListener = OnSpinItemSelectedListener {
+                mPresenter.updateServer(loginForm.serverName.selectedItem.toString())
+            }
+            autoSyncSwitch.setOnCheckedChangeListener { _, isChecked ->
+                mPresenter.updateAutoSynchronize(isChecked)
+            }
+            loginForm.loginBtn.setOnClickListener {
+                mPresenter.checkAuth()
+            }
+        }
     }
 
-    @Override
-    public boolean viewOnBackPressed() {
-        return false ;
+    override fun viewOnBackPressed(): Boolean {
+        return false
     }
 
-    public void setServerList(List<String> servers, String currentServer){
-        mServerName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
-        int idx = servers.indexOf(currentServer);
-        mServerName.setSelection(Math.max(idx, 0));
+    fun setServerList(servers: List<String>, currentServer: String) {
+        val idx = servers.indexOf(currentServer).coerceAtLeast(0)
+        with(binding.loginForm.serverName) {
+            adapter = ArrayAdapter(this.context, R.layout.server_item, servers)
+            setSelection(idx)
+        }
     }
 
 
     //region ===================== IAuthView =========================
-    @Override
-    public String getUserName() {
-        return mUserName.getText().toString();
+    override fun getUserName(): String = binding.loginForm.userName.text.toString()
+
+    override fun getUserPassword(): String = binding.loginForm.userPassword.text.toString()
+
+    override fun showInvalidUserName() {
+        binding.loginForm.userName.error = context.getString(R.string.error_empty_login)
     }
 
-    @Override
-    public String getUserPassword() {
-        return mUserPassword.getText().toString();
+    override fun showInvalidPassword() {
+        binding.loginForm.userPassword.error = context.getString(R.string.error_bad_password)
     }
 
-    @Override
-    public void showInvalidUserName() {
-        mUserName.setError(getContext().getString(R.string.error_empty_login));
-    }
-
-    @Override
-    public void showInvalidPassword() {
-        mUserPassword.setError(getContext().getString(R.string.error_bad_password));
-    }
-
-    @Override
-    public void login_error(){
-        Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_animation);
-        mLoginBtn.startAnimation(shake);
+    override fun login_error() {
+        val shake = AnimationUtils.loadAnimation(context, R.anim.shake_animation)
+        binding.loginForm.loginBtn.startAnimation(shake)
     }
 
     //endregion ===================== IAuthView =========================
 
     //region ===================== Synchronize =========================
-
-    public void setAutoSynchronize(Boolean autoSynchronize) {
-        mAutoSyncSwitch.setChecked(autoSynchronize);
+    fun setAutoSynchronize(autoSynchronize: Boolean) {
+        binding.autoSyncSwitch.isChecked = autoSynchronize
     }
 
-    public void setUserName(String name) {
-        mUserName.setText(name);
+    fun setUserName(name: String) {
+        binding.loginForm.userName.setText(name)
     }
 
-    public void setUserPassword(String password) {
-        mUserPassword.setText(password);
+    fun setUserPassword(password: String) {
+        binding.loginForm.userPassword.setText(password)
     }
-
     //endregion ================== Synchronize =========================
-
-
-
-    //region ===================== Events =========================
-    @OnItemSelected(R.id.server_name)
-    void serverChange(View view){
-        mPresenter.updateServer(mServerName.getSelectedItem().toString());
-    }
-
-
-    @OnCheckedChanged(R.id.auto_sync_switch)
-    void serverSyncChanged(CompoundButton buttonView, boolean isChecked){
-        mPresenter.updateAutoSynchronize(mAutoSyncSwitch.isChecked());
-    }
-
-    @OnClick(R.id.login_btn)
-    void authBtnClick(View v){
-        mPresenter.checkAuth();
-    }
-    //endregion ================== Events =========================
-
 
 }

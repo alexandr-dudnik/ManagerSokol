@@ -8,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DiffUtil;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
@@ -22,7 +20,6 @@ import com.sokolua.manager.data.storage.realm.TradeRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.OrderModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
@@ -48,7 +45,6 @@ import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_order)
 public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     private String currentOrderId;
@@ -61,6 +57,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_order;
+    }
 
     public OrderScreen(String currentOrderId) {
         this.currentOrderId = currentOrderId;
@@ -90,7 +90,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     }
 
-
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(OrderScreen.class)
     public interface Component {
@@ -102,7 +101,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
     }
     //endregion ================== DI =========================
 
-
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<OrderView, OrderModel> {
 
@@ -113,9 +111,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         OrderRealm currentOrder;
         private Disposable tradesSub;
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -131,7 +126,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                 Flow.get(getView()).goBack();
             }
             super.onLoad(savedInstanceState);
-
 
             linesViewHolder = (parent, pViewType) -> {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_line_item, parent, false);
@@ -217,7 +211,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                             getView().setCurrencyList(arrCurrencies);
                         }
                     })
-                    .doOnError(throwable -> Log.e("ERROR","Currencies list", throwable) )
+                    .doOnError(throwable -> Log.e("ERROR", "Currencies list", throwable))
                     .subscribe()
             ;
 
@@ -230,13 +224,13 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             }
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 CustomerRealm cust = currentOrder.getCustomer();
-                TradeRealm custTrade = cust.getTradeCash() == null? (cust.getTradeFop() == null? cust.getTradeFop() : cust.getTradeOfficial()) : cust.getTradeCash();
+                TradeRealm custTrade = cust.getTradeCash() == null ? (cust.getTradeFop() == null ? cust.getTradeFop() : cust.getTradeOfficial()) : cust.getTradeCash();
                 boolean isRemote = custTrade != null && custTrade.isRemote();
                 tradesSub = mModel.getTrades(
-                        currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_FOP,
-                        currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_CASH,
-                        currentOrder.isPayOnFact(),
-                        isRemote
+                                currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_FOP,
+                                currentOrder.getPayment() == ConstantManager.ORDER_PAYMENT_CASH,
+                                currentOrder.isPayOnFact(),
+                                isRemote
                         )
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -249,7 +243,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                                 getView().setTradeList(arrTrades);
                             }
                         })
-                        .doOnError(throwable -> Log.e("ERROR","Trades list", throwable) )
+                        .doOnError(throwable -> Log.e("ERROR", "Trades list", throwable))
                         .subscribe();
             }
         }
@@ -291,35 +285,31 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                     }, ConstantManager.MENU_ITEM_TYPE_ITEM));
             if (currentOrder != null && currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
                 abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
-                    if (currentOrder.getLines().isEmpty()) {
-                        if (getRootView() != null) {
-                            getRootView().showMessage(App.getStringRes(R.string.error_empty_order));
+                            if (currentOrder.getLines().isEmpty()) {
+                                if (getRootView() != null) {
+                                    getRootView().showMessage(App.getStringRes(R.string.error_empty_order));
+                                    return false;
+                                }
+                            }
+                            if (currentOrder.getDate().after(currentOrder.getDelivery())) {
+                                if (getRootView() != null) {
+                                    getRootView().showMessage(App.getStringRes(R.string.error_wrong_delivery));
+                                    return false;
+                                }
+                            }
+                            currentOrder.removeChangeListener(orderChangeListener);
+                            mModel.sendOrder(currentOrderId);
+                            Flow.get(getView()).goBack();
                             return false;
-                        }
-                    }
-                    if (currentOrder.getDate().after(currentOrder.getDelivery())) {
-                        if (getRootView() != null) {
-                            getRootView().showMessage(App.getStringRes(R.string.error_wrong_delivery));
-                            return false;
-                        }
-                    }
-                    currentOrder.removeChangeListener(orderChangeListener);
-                    mModel.sendOrder(currentOrderId);
-                    Flow.get(getView()).goBack();
-                    return false;
-                }, ConstantManager.MENU_ITEM_TYPE_ACTION))
+                        }, ConstantManager.MENU_ITEM_TYPE_ACTION))
                         .addAction(new MenuItemHolder(App.getStringRes(R.string.action_clear_order), R.drawable.ic_clear_all, item -> {
                             mModel.clearOrderLines(currentOrderId);
                             return false;
-                        }, ConstantManager.MENU_ITEM_TYPE_ITEM))
-                ;
-
+                        }, ConstantManager.MENU_ITEM_TYPE_ITEM));
             }
 
             abb.build();
-
         }
-
 
         public void updateAllFields() {
             OrderView mView = getView();
@@ -333,7 +323,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             mView.setCurrency(currentOrder.getCurrency() == null ? App.getStringRes(R.string.national_currency) : currentOrder.getCurrency().getName());
             mView.setTrade(currentOrder.getTrade() == null ? "" : currentOrder.getTrade().getName());
             mView.setPriceList(currentOrder.getPriceList() == null ? "" : currentOrder.getPriceList().getName());
-
         }
 
         public void updateDeliveryDate(Date mDate) {
@@ -342,7 +331,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         public void updatePrice(OrderLineRealm line) {
             if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
-
                 AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
                 alert.setTitle(App.getStringRes(R.string.order_items_header_price));
                 alert.setMessage(line.getItem().getName());
@@ -365,14 +353,12 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                         newValue = MiscUtils.roundPrice(newValue);
                     }
 
-
                     //check price
                     final double itemLowPrice = mModel.getItemLowPrice(line.getItem().getItemId());
                     if (newValue < itemLowPrice) {
                         if (getRootView() != null) {
                             getRootView().showMessage(App.getStringRes(R.string.error_low_price) + " (" + String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), itemLowPrice) + ")");
                         }
-//                    } else {
                     }
                     mModel.updateOrderItemPrice(currentOrderId, line.getItem().getItemId(), newValue);
                 });
@@ -427,7 +413,6 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             }
         }
 
-
         public void updateComment(String comment) {
             mModel.updateOrderComment(currentOrderId, comment);
         }
@@ -478,6 +463,5 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
         }
     }
     //endregion ================== Presenter =========================
-
 
 }
