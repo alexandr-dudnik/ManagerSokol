@@ -130,7 +130,7 @@ public class RealmManager {
         Observable<List<T>> obs;
         if (isUIThread()) {
             obs = Observable.create((ObservableOnSubscribe<List<T>>) emitter -> {
-                final RealmResults<T> res = realmQuery.findAllAsync();
+                final RealmResults<T> res = realmQuery.findAll();
                 final RealmChangeListener<RealmResults<T>> realmChangeListener = element -> {
                     if (element.isLoaded() && element.isValid() && !emitter.isDisposed()) {
                         emitter.onNext(element);
@@ -143,6 +143,7 @@ public class RealmManager {
                     closeQueryInstance(realmInstance);
                 }));
                 res.addChangeListener(realmChangeListener);
+                emitter.onNext(res);
             })
             .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())

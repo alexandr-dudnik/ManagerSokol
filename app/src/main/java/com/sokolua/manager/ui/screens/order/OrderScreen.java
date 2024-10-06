@@ -267,6 +267,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
 
         @Override
         protected void initActionBar() {
+            if (!currentOrder.isLoaded() || !currentOrder.isValid()){
+                Flow.get(this.getView()).goBack();
+                return;
+            }
             RootPresenter.ActionBarBuilder abb = mRootPresenter.newActionBarBuilder()
                     .setVisible(true)
                     .setBackArrow(true)
