@@ -54,49 +54,49 @@ public class UpdateService extends Service {
 
     private void generateForegroundNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            final Intent intentStopService = new Intent(this, this.getClass());
-            intentStopService.setAction(AppConfig.SERVICE_ACTION_STOP);
-            final PendingIntent pendingStopIntent = PendingIntent.getService(this, 0, intentStopService, 0);
-            final Bitmap cancelIconNotification = BitmapFactory.decodeResource(getResources(), R.drawable.ic_cancel);
-
-            final Intent intentMainLanding = new Intent(this, RootActivity.class);
-            final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentMainLanding, 0);
-            iconNotification = BitmapFactory.decodeResource(getResources(), R.drawable.ic_logo_bird);
-            if (mNotificationManager == null) {
-                mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-            }
-
-            assert(mNotificationManager != null);
-            mNotificationManager.createNotificationChannelGroup(
-                    new NotificationChannelGroup("sokol_manager", "updates")
-            );
-            final NotificationChannel notificationChannel =
-                    new NotificationChannel("updates_channel", "Update Service Notifications",
-                            NotificationManager.IMPORTANCE_MIN);
-            notificationChannel.enableLights(false);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-            mNotificationManager.createNotificationChannel(notificationChannel);
-
-            final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "updates_channel");
-
-            final Resources resources = getResources();
-            final String title = resources.getString(R.string.app_name) + " " + resources.getString(R.string.running_service);
-            builder.setContentTitle(title)
-                    .setTicker(title)
-                    .setContentText(resources.getString(R.string.service_touch_to_launch) + " " + resources.getString(R.string.app_name))
-                    .setSmallIcon(R.drawable.ic_logo_bird)
-                    .setPriority(NotificationCompat.PRIORITY_LOW)
-                    .setWhen(0)
-                    .setOnlyAlertOnce(true)
-                    .setContentIntent(pendingIntent)
-                    .setOngoing(true)
-                    .addAction(R.drawable.ic_cancel, resources.getString(R.string.service_stop_update), pendingStopIntent);
-            if (iconNotification != null) {
-                builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification, 128, 128, false));
-            }
-            builder.setColor(resources.getColor(R.color.color_red));
-            notification = builder.build();
-            startForeground(mNotificationId, notification);
+//            final Intent intentStopService = new Intent(this, this.getClass());
+//            intentStopService.setAction(AppConfig.SERVICE_ACTION_STOP);
+//            final PendingIntent pendingStopIntent = PendingIntent.getService(this, 0, intentStopService, 0);
+//            final Bitmap cancelIconNotification = BitmapFactory.decodeResource(getResources(), R.drawable.ic_cancel);
+//
+//            final Intent intentMainLanding = new Intent(this, RootActivity.class);
+//            final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentMainLanding, 0);
+//            iconNotification = BitmapFactory.decodeResource(getResources(), R.drawable.ic_logo_bird);
+//            if (mNotificationManager == null) {
+//                mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+//            }
+//
+//            assert(mNotificationManager != null);
+//            mNotificationManager.createNotificationChannelGroup(
+//                    new NotificationChannelGroup("sokol_manager", "updates")
+//            );
+//            final NotificationChannel notificationChannel =
+//                    new NotificationChannel("updates_channel", "Update Service Notifications",
+//                            NotificationManager.IMPORTANCE_MIN);
+//            notificationChannel.enableLights(false);
+//            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+//            mNotificationManager.createNotificationChannel(notificationChannel);
+//
+//            final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "updates_channel");
+//
+//            final Resources resources = getResources();
+//            final String title = resources.getString(R.string.app_name) + " " + resources.getString(R.string.running_service);
+//            builder.setContentTitle(title)
+//                    .setTicker(title)
+//                    .setContentText(resources.getString(R.string.service_touch_to_launch) + " " + resources.getString(R.string.app_name))
+//                    .setSmallIcon(R.drawable.ic_logo_bird)
+//                    .setPriority(NotificationCompat.PRIORITY_LOW)
+//                    .setWhen(0)
+//                    .setOnlyAlertOnce(true)
+//                    .setContentIntent(pendingIntent)
+//                    .setOngoing(true)
+//                    .addAction(R.drawable.ic_cancel, resources.getString(R.string.service_stop_update), pendingStopIntent);
+//            if (iconNotification != null) {
+//                builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification, 128, 128, false));
+//            }
+//            builder.setColor(resources.getColor(R.color.color_red));
+//            notification = builder.build();
+//            startForeground(mNotificationId, notification);
         }
 
     }

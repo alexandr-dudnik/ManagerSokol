@@ -38,6 +38,7 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
     @Override
     protected void onLoad(Bundle savedInstanceState) {
         super.onLoad(savedInstanceState);
+        mCompSubs = new CompositeDisposable();
         if (AppConfig.API_URL.isEmpty()) {
             Intent intent = new Intent(App.getContext(), StartActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -48,13 +49,12 @@ public abstract class AbstractPresenter<V extends AbstractView, M extends Abstra
             }
             return;
         }
-        mCompSubs = new CompositeDisposable();
         initActionBar();
     }
 
     @Override
     public void dropView(V view) {
-        if (mCompSubs.size()>0){
+        if (mCompSubs != null && mCompSubs.size()>0){
             mCompSubs.clear();
         }
         super.dropView(view);
