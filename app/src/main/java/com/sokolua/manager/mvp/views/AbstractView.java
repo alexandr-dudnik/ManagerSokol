@@ -2,27 +2,30 @@ package com.sokolua.manager.mvp.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.viewbinding.ViewBinding;
 
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
-
-public abstract class AbstractView <P extends AbstractPresenter> extends FrameLayout implements IView{
+public abstract class AbstractView<P extends AbstractPresenter, B extends ViewBinding> extends FrameLayout implements IView {
     @Inject
     protected P mPresenter;
+    protected B binding;
 
     public AbstractView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        if (!isInEditMode()){
+        if (!isInEditMode()) {
             initDagger(context);
         }
     }
+
+    protected abstract B bindView(View view);
 
     protected abstract void initDagger(Context context);
 
@@ -31,7 +34,8 @@ public abstract class AbstractView <P extends AbstractPresenter> extends FrameLa
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (!isInEditMode()){
+        if (!isInEditMode()) {
+            binding = bindView(this);
             mPresenter.takeView(this);
         }
     }
@@ -39,7 +43,7 @@ public abstract class AbstractView <P extends AbstractPresenter> extends FrameLa
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (!isInEditMode()){
+        if (!isInEditMode()) {
             mPresenter.dropView(this);
         }
     }
@@ -47,7 +51,6 @@ public abstract class AbstractView <P extends AbstractPresenter> extends FrameLa
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        ButterKnife.bind(this);
     }
     //endregion ================== Life Cycle =========================
 

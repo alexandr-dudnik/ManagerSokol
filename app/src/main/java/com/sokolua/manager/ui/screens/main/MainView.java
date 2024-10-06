@@ -4,16 +4,19 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenMainBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IView;
 
-import butterknife.OnClick;
-
-public class MainView extends AbstractView<MainScreen.Presenter> implements IView {
+public class MainView extends AbstractView<MainScreen.Presenter, ScreenMainBinding> implements IView {
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected ScreenMainBinding bindView(View view) {
+        return ScreenMainBinding.bind(view);
     }
 
     @Override
@@ -24,32 +27,24 @@ public class MainView extends AbstractView<MainScreen.Presenter> implements IVie
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        binding.customersImg.setOnClickListener(view -> mPresenter.clickOnCustomers());
+        binding.customersText.setOnClickListener(view -> mPresenter.clickOnCustomers());
+
+        binding.goodsImg.setOnClickListener(view -> mPresenter.clickOnGoods());
+        binding.goodsText.setOnClickListener(view -> mPresenter.clickOnGoods());
+
+        binding.routeImg.setOnClickListener(view -> mPresenter.clickOnRoutes());
+        binding.routeText.setOnClickListener(view -> mPresenter.clickOnRoutes());
+
+        binding.ordersImg.setOnClickListener(view -> mPresenter.clickOnOrders());
+        binding.ordersText.setOnClickListener(view -> mPresenter.clickOnOrders());
+    }
+
+    @Override
     public boolean viewOnBackPressed() {
-        return false ;
+        return false;
     }
-
-    //region ===================== Events =========================
-
-    @OnClick({R.id.customers_text,R.id.customers_img})
-    public void customersClick(View view){
-        mPresenter.clickOnCustomers();
-    }
-
-    @OnClick({R.id.goods_text,R.id.goods_img})
-    public void goodsClick(View view){
-        mPresenter.clickOnGoods();
-    }
-
-    @OnClick({R.id.route_text,R.id.route_img})
-    public void routeClick(View view){
-        mPresenter.clickOnRoutes();
-    }
-
-    @OnClick({R.id.orders_text,R.id.orders_img})
-    public void ordersClick(View view){
-        mPresenter.clickOnOrders();
-    }
-    //endregion ================== Events =========================
-
 
 }

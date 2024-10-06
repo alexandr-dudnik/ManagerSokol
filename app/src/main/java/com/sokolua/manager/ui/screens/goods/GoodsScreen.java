@@ -26,7 +26,6 @@ import com.sokolua.manager.data.storage.realm.TradeRealm;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.GoodsModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
@@ -52,8 +51,7 @@ import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_goods)
-public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
+public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent> {
     private String mCustomerOrderId = null;
     private String mFilterCategoryId = null;
 
@@ -65,6 +63,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_goods;
+    }
 
     //region ===================== DI =========================
 
@@ -86,11 +88,10 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         @Provides
         @DaggerScope(GoodsScreen.class)
         String provideCustomerCart() {
-            return mCustomerOrderId==null?"":mCustomerOrderId;
+            return mCustomerOrderId == null ? "" : mCustomerOrderId;
         }
 
     }
-
 
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(GoodsScreen.class)
@@ -102,7 +103,6 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         void inject(GroupViewHolder viewHolder);
 
         void inject(ItemViewHolder viewHolder);
-
     }
 
     public GoodsScreen() {
@@ -122,15 +122,13 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     @Override
     public String getScopeName() {
-        return super.getScopeName()+(mCustomerOrderId==null||mCustomerOrderId.isEmpty()?"":("_"+mCustomerOrderId));
+        return super.getScopeName() + (mCustomerOrderId == null || mCustomerOrderId.isEmpty() ? "" : ("_" + mCustomerOrderId));
     }
 
     //endregion ================== DI =========================
 
-
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<GoodsView, GoodsModel> {
-
         OrderRealm currentCart;
         CustomerRealm mCustomer;
 
@@ -142,7 +140,6 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         ReactiveRecyclerAdapter<ItemRealm> itemsAdapter;
         private RealmObjectChangeListener<OrderRealm> orderChangeListener;
         private RealmChangeListener<RealmResults<OrderLineRealm>> orderLinesChangeListener;
-
 
         private String currentFilter = "";
         private String currentBrand = "";
@@ -157,10 +154,6 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         private String priceId;
         private String tradeId;
         private String currencyId;
-
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -201,38 +194,35 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
             getView().setItemsAdapter(itemsAdapter);
 
-            if (savedInstanceState != null){
-                mCustomerOrderId = savedInstanceState.getString(ConstantManager.STATE_GOODS_ORDER_KEY,"");
-                mFilterCategoryId = savedInstanceState.getString(ConstantManager.STATE_GOODS_CATEGORY_KEY,"");
-                currentPrice = savedInstanceState.getString(ConstantManager.STATE_GOODS_PRICE_KEY,"");
-                currentTrade = savedInstanceState.getString(ConstantManager.STATE_GOODS_TRADE_KEY,"");
-                currentCurrency = savedInstanceState.getString(ConstantManager.STATE_GOODS_CURRENCY_KEY,"");
+            if (savedInstanceState != null) {
+                mCustomerOrderId = savedInstanceState.getString(ConstantManager.STATE_GOODS_ORDER_KEY, "");
+                mFilterCategoryId = savedInstanceState.getString(ConstantManager.STATE_GOODS_CATEGORY_KEY, "");
+                currentPrice = savedInstanceState.getString(ConstantManager.STATE_GOODS_PRICE_KEY, "");
+                currentTrade = savedInstanceState.getString(ConstantManager.STATE_GOODS_TRADE_KEY, "");
+                currentCurrency = savedInstanceState.getString(ConstantManager.STATE_GOODS_CURRENCY_KEY, "");
             }
 
-            if (mCustomerOrderId!=null && !mCustomerOrderId.isEmpty()) {
+            if (mCustomerOrderId != null && !mCustomerOrderId.isEmpty()) {
                 currentCart = mModel.getOrderById(mCustomerOrderId);
                 mCustomer = currentCart.getCustomer();
-                currentPrice = mCustomer.getPrice()==null?"":mCustomer.getPrice().getName();
-                TradeRealm mTrade = currentCart.getTrade()==null?currentCart.getPayment() == ConstantManager.ORDER_PAYMENT_CASH ? mCustomer.getTradeCash() : mCustomer.getTradeOfficial() : currentCart.getTrade();
+                currentPrice = mCustomer.getPrice() == null ? "" : mCustomer.getPrice().getName();
+                TradeRealm mTrade = currentCart.getTrade() == null ? currentCart.getPayment() == ConstantManager.ORDER_PAYMENT_CASH ? mCustomer.getTradeCash() : mCustomer.getTradeOfficial() : currentCart.getTrade();
                 currentTrade = mTrade == null ? "" : mTrade.getName();
                 currentCurrency = currentCart.getCurrency().getName();
             }
-
 
             checkTrade(currentTrade);
             checkPrice(currentPrice);
             checkCurrency(currentCurrency);
 
-            if (currentCurrency==null || currentCurrency.isEmpty()) currentCurrency = ConstantManager.MAIN_CURRENCY;
+            if (currentCurrency == null || currentCurrency.isEmpty())
+                currentCurrency = ConstantManager.MAIN_CURRENCY;
 
             super.onLoad(savedInstanceState);
 
-
             updateGoodsList();
 
-
-
-            if (currentCart != null){
+            if (currentCart != null) {
                 getView().setCartMode();
                 updateCartFields();
 
@@ -259,23 +249,20 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 };
                 currentCart.addChangeListener(orderChangeListener);
                 orderLinesChangeListener = orderLineRealms -> {
-                            if (!orderLineRealms.isLoaded() || !orderLineRealms.isValid()){
-                                orderLineRealms.removeAllChangeListeners();
-                            }else {
-                                if (currentCart != null && getView() != null){
-                                    getView().setCartAmount(currentCart.getTotal());
-                                    getView().setCartItemsCount(currentCart.getLines().size());
-                                }
-                            }
-                        };
+                    if (!orderLineRealms.isLoaded() || !orderLineRealms.isValid()) {
+                        orderLineRealms.removeAllChangeListeners();
+                    } else {
+                        if (currentCart != null && getView() != null) {
+                            getView().setCartAmount(currentCart.getTotal());
+                            getView().setCartItemsCount(currentCart.getLines().size());
+                        }
+                    }
+                };
                 currentCart.getLines().addChangeListener(orderLinesChangeListener);
 
-            }else{
+            } else {
                 getView().setCatalogMode();
             }
-
-
-
         }
 
         @Override
@@ -291,7 +278,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
         @Override
         public void dropView(GoodsView view) {
-            if (currentCart != null){
+            if (currentCart != null) {
                 currentCart.removeChangeListener(orderChangeListener);
                 if (currentCart.getLines() != null) {
                     currentCart.getLines().removeChangeListener(orderLinesChangeListener);
@@ -301,85 +288,81 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             super.dropView(view);
         }
 
-        private void checkTrade(String tradeName){
+        private void checkTrade(String tradeName) {
             final TradeRealm mTrade = mModel.getTradeByName(tradeName);
-            if (mTrade == null){
+            if (mTrade == null) {
                 currentTrade = "";
                 tradeId = "";
-            }else{
+            } else {
                 currentTrade = mTrade.getName();
                 tradeId = mTrade.getTradeId();
             }
             updateGoodsList();
         }
 
-        private void checkPrice(String priceName){
+        private void checkPrice(String priceName) {
             PriceListRealm mPrice = mModel.getPriceByName(priceName);
             if (mPrice == null) mPrice = mModel.getPriceById(ConstantManager.PRICE_BASE_PRICE_ID);
-            if (mPrice == null){
+            if (mPrice == null) {
                 currentPrice = "";
                 priceId = "";
-            }else{
+            } else {
                 currentPrice = mPrice.getName();
                 priceId = mPrice.getPriceId();
             }
             updateGoodsList();
         }
 
-        private void checkCurrency(String currencyName){
+        private void checkCurrency(String currencyName) {
             final CurrencyRealm mCurrency = mModel.getCurrencyByName(currencyName);
             if (mCurrency == null) mModel.getCurrencyByName(ConstantManager.MAIN_CURRENCY);
-            if (mCurrency == null){
+            if (mCurrency == null) {
                 currentCurrency = "";
                 currencyId = "";
-            }else{
+            } else {
                 currentCurrency = mCurrency.getName();
                 currencyId = mCurrency.getCurrencyId();
             }
             updateGoodsList();
         }
 
-
         void updateCartFields() {
-
             getView().setCustomer(currentCart.getCustomer().getName());
             getView().setCartCurrency(currentCart.getCurrency().getName());
             getView().setCartAmount(currentCart.getTotal());
             getView().setCartItemsCount(currentCart.getLines().size());
-
         }
 
-        void updateGoodsList(){
+        void updateGoodsList() {
             if (getRootView() != null) {
-                ((RootActivity) getRootView()).setBackArrow(currentGroup!=null||currentCart!=null);
-                ((RootActivity) getRootView()).setActionBarTitle((currentGroup == null?App.getStringRes(R.string.menu_goods):currentGroup.getName())+(currentBrand.isEmpty()?"":" ("+currentBrand+")"));
-
+                ((RootActivity) getRootView()).setBackArrow(currentGroup != null || currentCart != null);
+                ((RootActivity) getRootView()).setActionBarTitle((currentGroup == null ? App.getStringRes(R.string.menu_goods) : currentGroup.getName()) + (currentBrand.isEmpty() ? "" : " (" + currentBrand + ")"));
             }
 
             if (getView() != null) {
-                String currentGroupId = currentGroup == null?"":currentGroup.getGroupId();
-                if ((currentGroup == null || currentGroup.getParent() == null) && (currentFilter == null || currentFilter.isEmpty()) && (mFilterCategoryId == null || mFilterCategoryId.isEmpty())){
+                String currentGroupId = currentGroup == null ? "" : currentGroup.getGroupId();
+                if ((currentGroup == null || currentGroup.getParent() == null) && (currentFilter == null || currentFilter.isEmpty()) && (mFilterCategoryId == null || mFilterCategoryId.isEmpty())) {
                     groupsAdapter.refreshList(mModel.getGroupList(currentGroupId, currentBrand));
                     getView().showGroups();
-                }else{
+                } else {
                     itemsAdapter.refreshList(mModel.getItemList(currentGroupId, currentFilter, currentBrand, mFilterCategoryId));
                     getView().showItems();
                 }
             }
         }
 
-        private void subMenuItemAction(MenuItem item, String parentTitle){
+        private void subMenuItemAction(MenuItem item, String parentTitle) {
             if (getRootView() != null) {
-                MenuItem groupItem = ((RootActivity)getRootView()).getMainMenuItemParent(item.getItemId());
+                MenuItem groupItem = ((RootActivity) getRootView()).getMainMenuItemParent(item.getItemId());
                 if (groupItem != null) {
-                    groupItem.setTitle(String.format("%s: %s",parentTitle, item.getTitle()));
+                    groupItem.setTitle(String.format("%s: %s", parentTitle, item.getTitle()));
                 }
             }
             item.setChecked(true);
             updateGoodsList();
         }
 
-        private void rebuildActionBar(){
+        private void rebuildActionBar() {
             if (getView() != null) {
                 RootPresenter.ActionBarBuilder mActionBarBuilder = mRootPresenter.newActionBarBuilder()
                         .setVisible(true)
@@ -411,31 +394,29 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             }
         }
 
-
         @Override
         protected void initActionBar() {
-
             MenuItem.OnMenuItemClickListener brandListener = item -> {
                 currentBrand = item.getTitle().toString().equals(App.getStringRes(R.string.all_brands)) ? "" : item.getTitle().toString();
                 subMenuItemAction(item, App.getStringRes(R.string.menu_brands));
                 return true;
             };
 
-            brandsSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty()?App.getStringRes(R.string.all_brands):currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+            brandsSubMenu = new MenuItemHolder(String.format("%s: %s", App.getStringRes(R.string.menu_brands), (currentBrand.isEmpty() ? App.getStringRes(R.string.all_brands) : currentBrand)), R.drawable.ic_brand, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
             brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
             mModel.getBrands()
                     //.take(1)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext(brands -> {
-                            brandsSubMenu.clearSubMenu();
-                            brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
-                            for (BrandsRealm brand : brands) {
-                                brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
-                            }
-                            rebuildActionBar();
-                        })
-                    .doOnError(throwable -> Log.e("ERROR","Menu brands", throwable) )
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext(brands -> {
+                        brandsSubMenu.clearSubMenu();
+                        brandsSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.all_brands), brandListener, 1, (currentBrand.isEmpty())));
+                        for (BrandsRealm brand : brands) {
+                            brandsSubMenu.addSubMenuItem(new MenuItemHolder(brand.getName(), brandListener, 1, (currentBrand.equals(brand.getName()))));
+                        }
+                        rebuildActionBar();
+                    })
+                    .doOnError(throwable -> Log.e("ERROR", "Menu brands", throwable))
                     .subscribe()
             ;
 
@@ -456,7 +437,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     return true;
                 };
 
-                pricesSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_prices), currentPrice), R.drawable.ic_price, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+                pricesSubMenu = new MenuItemHolder(String.format("%s: %s", App.getStringRes(R.string.menu_prices), currentPrice), R.drawable.ic_price, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
 
                 mModel.getPrices()
                         //.take(1)
@@ -469,11 +450,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             }
                             rebuildActionBar();
                         })
-                        .doOnError(throwable -> Log.e("ERROR","Menu prices", throwable) )
+                        .doOnError(throwable -> Log.e("ERROR", "Menu prices", throwable))
                         .subscribe()
                 ;
 
-                tradesSubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_trades), (currentTrade.isEmpty()?App.getStringRes(R.string.no_trades):currentTrade)), R.drawable.ic_trade, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+                tradesSubMenu = new MenuItemHolder(String.format("%s: %s", App.getStringRes(R.string.menu_trades), (currentTrade.isEmpty() ? App.getStringRes(R.string.no_trades) : currentTrade)), R.drawable.ic_trade, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
                 tradesSubMenu.addSubMenuItem(new MenuItemHolder(App.getStringRes(R.string.no_trades), tradeListener, 1, (currentTrade.isEmpty())));
 
                 mModel.getTrades(null, null, null, null)
@@ -488,11 +469,11 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             }
                             rebuildActionBar();
                         })
-                        .doOnError(throwable -> Log.e("ERROR","Menu trades", throwable) )
+                        .doOnError(throwable -> Log.e("ERROR", "Menu trades", throwable))
                         .subscribe()
                 ;
 
-                currencySubMenu = new MenuItemHolder(String.format("%s: %s",App.getStringRes(R.string.menu_currency), currentCurrency), R.drawable.ic_price, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
+                currencySubMenu = new MenuItemHolder(String.format("%s: %s", App.getStringRes(R.string.menu_currency), currentCurrency), R.drawable.ic_price, null, ConstantManager.MENU_ITEM_TYPE_ITEM);
 
                 mModel.getCurrencies()
                         //.take(1)
@@ -505,17 +486,16 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             }
                             rebuildActionBar();
                         })
-                        .doOnError(throwable -> Log.e("ERROR","Menu currencies", throwable) )
+                        .doOnError(throwable -> Log.e("ERROR", "Menu currencies", throwable))
                         .subscribe()
                 ;
-            }else{
+            } else {
                 pricesSubMenu = null;
                 tradesSubMenu = null;
                 currencySubMenu = null;
             }
 
             rebuildActionBar();
-
         }
 
         private MenuItem.OnMenuItemClickListener syncClickCallback() {
@@ -531,17 +511,18 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             @Override
                             public void onSubscribe(Disposable d) {
                                 if (getRootView() != null) {
-                                    ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().showLoad());
+                                    ((RootActivity) getRootView()).runOnUiThread(() -> getRootView().showLoad());
                                 }
                             }
 
                             @Override
-                            public void onNext(Boolean aBoolean) {  }
+                            public void onNext(Boolean aBoolean) {
+                            }
 
                             @Override
                             public void onError(Throwable e) {
                                 if (getRootView() != null) {
-                                    ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
+                                    ((RootActivity) getRootView()).runOnUiThread(() -> getRootView().hideLoad());
                                     getRootView().showError(e);
                                 }
                             }
@@ -549,7 +530,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             @Override
                             public void onComplete() {
                                 if (getRootView() != null) {
-                                    ((RootActivity)getRootView()).runOnUiThread(() -> getRootView().hideLoad());
+                                    ((RootActivity) getRootView()).runOnUiThread(() -> getRootView().hideLoad());
                                     getRootView().showMessage(App.getStringRes(R.string.message_sync_complete));
                                 }
                             }
@@ -558,17 +539,14 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
             };
         }
 
-
         void mainGroupSelected(GoodsGroupRealm selectedGroup) {
-
             if (getRootView() != null) {
                 currentGroup = selectedGroup;
                 updateGoodsList();
             }
-
         }
 
-        public boolean goGroupBack(){
+        public boolean goGroupBack() {
             if (currentGroup == null) {
                 return false;
             } else {
@@ -579,9 +557,9 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         void itemSelected(String selectedItemId) {
-            if (currentCart == null){
+            if (currentCart == null) {
                 //TODO: make screen with item card
-            }else{
+            } else {
                 if (getView() != null && getRootView() != null) {
                     ItemRealm selectedItem = mModel.getItemById(selectedItemId);
                     TradeRealm trade = mModel.getTradeById(tradeId);
@@ -593,22 +571,21 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     Float itemDiscount = getCustomerDiscount(selectedItemId, tradeId);
                     Float itemPrice = getItemPrice(selectedItemId);
 
-                    LayoutInflater layoutInflater = ((Activity)getRootView()).getLayoutInflater();
+                    LayoutInflater layoutInflater = ((Activity) getRootView()).getLayoutInflater();
                     View view = layoutInflater.inflate(R.layout.add_item_to_cart, null);
                     EditText inputPrice = view.findViewById(R.id.item_price);
-                    inputPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemPrice));
+                    inputPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), itemPrice));
                     inputPrice.setEnabled(itemPrice < 0.01f);
-                    EditText inputQty  = view.findViewById(R.id.item_quantity);
-                    inputQty.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),1f));
-                    TextView textDiscount  = view.findViewById(R.id.item_discount);
-                    textDiscount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemDiscount));
-                    TextView textBasePrice  = view.findViewById(R.id.item_base_price);
-                    textBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),itemBasePrice));
-                    TextView textPrice  = view.findViewById(R.id.price_name_label);
-                    textPrice.setText(price==null?(basePrice==null?"":basePrice.getName()):price.getName());
-                    TextView textTrade  = view.findViewById(R.id.trade_name_label);
-                    textTrade.setText(trade==null?"":trade.getName());
-
+                    EditText inputQty = view.findViewById(R.id.item_quantity);
+                    inputQty.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), 1f));
+                    TextView textDiscount = view.findViewById(R.id.item_discount);
+                    textDiscount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), itemDiscount));
+                    TextView textBasePrice = view.findViewById(R.id.item_base_price);
+                    textBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), itemBasePrice));
+                    TextView textPrice = view.findViewById(R.id.price_name_label);
+                    textPrice.setText(price == null ? (basePrice == null ? "" : basePrice.getName()) : price.getName());
+                    TextView textTrade = view.findViewById(R.id.trade_name_label);
+                    textTrade.setText(trade == null ? "" : trade.getName());
 
                     AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext())
                             .setTitle(selectedItem.getName())
@@ -616,12 +593,18 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
                     alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
                         float newPrice = 0;
-                        try{newPrice = Float.parseFloat(inputPrice.getText().toString().replace(",","."));}catch (Throwable ignore){}
-                        if (trade!=null && !trade.isCash()){
+                        try {
+                            newPrice = Float.parseFloat(inputPrice.getText().toString().replace(",", "."));
+                        } catch (Throwable ignore) {
+                        }
+                        if (trade != null && !trade.isCash()) {
                             newPrice = MiscUtils.roundPrice(newPrice);
                         }
-                        float newQty = 0 ;
-                        try{newQty = Float.parseFloat(inputQty.getText().toString());}catch (Throwable ignore){}
+                        float newQty = 0;
+                        try {
+                            newQty = Float.parseFloat(inputQty.getText().toString());
+                        } catch (Throwable ignore) {
+                        }
                         //check price
                         final float itemLowPrice = mModel.getItemLowPrice(selectedItemId, currencyId);
                         if (newPrice < itemLowPrice) {
@@ -630,7 +613,7 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
                             }
                         }
 
-                        if (newQty > 0){
+                        if (newQty > 0) {
                             mModel.addItemToCart(mCustomerOrderId, selectedItemId, newQty, newPrice);
 
                         }
@@ -650,15 +633,15 @@ public class GoodsScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
 
         Float getCustomerDiscount(String itemId, String tradeId) {
-            return  mModel.getCustomerDiscount(mCustomer.getCustomerId(), itemId) - mModel.getTradePercent(itemId, tradeId);
+            return mModel.getCustomerDiscount(mCustomer.getCustomerId(), itemId) - mModel.getTradePercent(itemId, tradeId);
         }
 
-        Float getItemPrice(String itemId){
+        Float getItemPrice(String itemId) {
             TradeRealm trade = mModel.getTradeById(tradeId);
-            return mModel.getItemPrice(itemId, priceId, tradeId, currencyId, mCustomer==null?null:mCustomer.getCustomerId(), trade != null && trade.isLTD());
+            return mModel.getItemPrice(itemId, priceId, tradeId, currencyId, mCustomer == null ? null : mCustomer.getCustomerId(), trade != null && trade.isLTD());
         }
 
-        Float getLowPrice(String itemId){
+        Float getLowPrice(String itemId) {
             return mModel.getItemLowPrice(itemId, currencyId);
         }
     }

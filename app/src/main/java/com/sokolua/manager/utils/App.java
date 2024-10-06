@@ -2,13 +2,12 @@ package com.sokolua.manager.utils;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.hardware.Camera;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
 import androidx.work.Configuration;
 import androidx.work.WorkManager;
 
@@ -28,7 +27,7 @@ import io.realm.RealmConfiguration;
 import mortar.MortarScope;
 import mortar.bundler.BundleServiceRunner;
 
-public class App extends MultiDexApplication {
+public class App extends Application {
     public static AppComponent sAppComponent;
     @SuppressLint("StaticFieldLeak")
     private static Context sContext;
@@ -55,14 +54,12 @@ public class App extends MultiDexApplication {
             } catch (Throwable ignore) {
             }
         }
-
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        MultiDex.install(this);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         createAppComponent();
@@ -114,8 +111,6 @@ public class App extends MultiDexApplication {
             return mRootScope.hasService(name) ? mRootScope.getService(name) : super.getSystemService(name);
         }
         return super.getSystemService(name);
-
-
     }
 
 
@@ -134,7 +129,6 @@ public class App extends MultiDexApplication {
                 .appComponent(sAppComponent)
                 .rootModule(new RootModule())
                 .build();
-
     }
 
     public static RootActivity.RootComponent getRootActivityRootComponent() {
@@ -152,13 +146,6 @@ public class App extends MultiDexApplication {
 
     public static int getColorRes(int res_id) {
         return ResourcesCompat.getColor(sContext.getResources(), res_id, sContext.getTheme());
-    }
-
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     public static boolean checkUpdateServiceRunning() {

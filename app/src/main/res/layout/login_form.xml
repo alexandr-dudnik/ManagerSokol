@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_margin="@dimen/login_form_padding"
-              android:orientation="vertical"
-              tools:showIn="@layout/screen_auth">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/login_form_padding"
+    android:orientation="vertical"
+    tools:showIn="@layout/screen_auth">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/server_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:fontFamily="@string/roboto_medium"
         android:text="@string/settings_server_address"
         android:textAlignment="center"
@@ -22,15 +23,15 @@
         android:id="@+id/server_name"
         android:layout_width="match_parent"
         android:layout_height="@dimen/login_form_fields_height"
-        android:spinnerMode="dropdown"
         android:layout_marginLeft="@dimen/login_form_padding"
         android:layout_marginRight="@dimen/login_form_padding"
-        />
+        android:spinnerMode="dropdown" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/login_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:fontFamily="@string/roboto_medium"
         android:text="@string/login_form_caption"
         android:textAlignment="center"
@@ -39,43 +40,41 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/user_name"
+            style="@style/login_input_text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_form_fields_height"
             android:layout_marginLeft="@dimen/login_form_padding"
             android:layout_marginRight="@dimen/login_form_padding"
-            android:inputType="text"
-            style="@style/login_input_text" />
+            android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:passwordToggleEnabled="true"
-        >
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/user_password"
+            style="@style/password_input_text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/login_form_fields_height"
             android:layout_marginLeft="@dimen/login_form_padding"
             android:layout_marginRight="@dimen/login_form_padding"
             android:layout_marginBottom="@dimen/login_form_padding"
-            android:inputType="textWebPassword"
-            style="@style/password_input_text" />
+            android:inputType="textWebPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/login_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#03A9F4"
         android:layout_margin="@dimen/login_form_padding"
+        android:background="#03A9F4"
         android:text="@string/login_button_text"
-        android:textStyle="bold"
-        android:textColor="@color/color_white" />
+        android:textColor="@color/color_white"
+        android:textStyle="bold" />
 </LinearLayout>

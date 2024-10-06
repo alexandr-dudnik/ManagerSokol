@@ -9,10 +9,11 @@ import androidx.appcompat.widget.SearchView;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
 import com.sokolua.manager.data.storage.realm.CustomerRealm;
+import com.sokolua.manager.databinding.CustomerListHeaderBinding;
+import com.sokolua.manager.databinding.CustomerListItemBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.CustomerListModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.MenuItemHolder;
@@ -27,8 +28,7 @@ import flow.Flow;
 import io.reactivex.Observable;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_customer_list)
-public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponent>{
+public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponent> {
 
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -38,6 +38,10 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_customer_list;
+    }
 
     //region ===================== DI =========================
 
@@ -58,27 +62,20 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
 
     }
 
-
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(CustomerListScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
         void inject(CustomerListView view);
-
-        void inject(CustomerViewHolder viewHolder);
     }
     //endregion ================== DI =========================
-
 
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<CustomerListView, CustomerListModel> {
 
         ReactiveRecyclerAdapter.ReactiveViewHolderFactory<CustomerListItem> viewAndHolderFactory;
         ReactiveRecyclerAdapter<CustomerListItem> reactiveRecyclerAdapter;
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -91,16 +88,22 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
             super.onLoad(savedInstanceState);
 
             viewAndHolderFactory = (parent, pViewType) -> {
-                View view;
+                final View view;
+                final CustomerViewHolder<?> holder;
                 if (pViewType == ConstantManager.RECYCLER_VIEW_TYPE_HEADER) {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_header, parent, false);
-                }else{
+                    holder = new CustomerViewHolder<CustomerListHeaderBinding>(view, CustomerListHeaderBinding.bind(view), null, null, null);
+                } else {
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.customer_list_item, parent, false);
+                    holder = new CustomerViewHolder<CustomerListItemBinding>(
+                            view,
+                            CustomerListItemBinding.bind(view),
+                            this::openCustomerMap,
+                            this::callToCustomer,
+                            this::openCustomerCard
+                    );
                 }
-                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(
-                        view,
-                        new CustomerViewHolder(view)
-                );
+                return new ReactiveRecyclerAdapter.ReactiveViewHolderFactory.ViewAndHolder<>(view, holder);
             };
 
             reactiveRecyclerAdapter = new ReactiveRecyclerAdapter<>(
@@ -112,7 +115,7 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
             setCustomerListFilter("");
         }
 
-        public void setCustomerListFilter(String filter){
+        public void setCustomerListFilter(String filter) {
             reactiveRecyclerAdapter.refreshList(mModel.getCustomerListHeadered(filter));
         }
 
@@ -135,25 +138,23 @@ public class CustomerListScreen extends AbstractScreen<RootActivity.RootComponen
                     }))
                     .setTitle(App.getStringRes(R.string.menu_customers))
                     .build();
-
         }
-
 
         //region ===================== Event Actions =========================
 
-        public void openCustomerMap(CustomerRealm customer){
+        public void openCustomerMap(CustomerRealm customer) {
             if (!IntentStarter.openMap(customer.getAddress()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_google_maps_not_found));
             }
         }
 
         public void callToCustomer(CustomerRealm customer) {
-            if (!IntentStarter.openCaller(customer.getPhone()) && getRootView()!= null){
+            if (!IntentStarter.openCaller(customer.getPhone()) && getRootView() != null) {
                 getRootView().showMessage(App.getStringRes(R.string.error_phone_not_available));
             }
         }
 
-        public void openCustomerCard(CustomerRealm customer){
+        public void openCustomerCard(CustomerRealm customer) {
             Flow.get(getView().getContext()).set(new CustomerScreen(customer.getCustomerId()));
         }
 

@@ -17,7 +17,6 @@ import com.sokolua.manager.data.managers.DebugManager;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.models.SettingsModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
@@ -41,7 +40,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_settings)
 public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
 
     @Override
@@ -52,8 +50,12 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_settings;
+    }
 
-    //region ===================== DI =========================
+//region ===================== DI =========================
 
     @dagger.Module
     class Module {
@@ -77,26 +79,19 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         }
     }
 
-
     @dagger.Component(dependencies = RootActivity.RootComponent.class, modules = Module.class)
     @DaggerScope(SettingsScreen.class)
     public interface Component {
         void inject(Presenter presenter);
 
         void inject(SettingsView view);
-
     }
     //endregion ================== DI =========================
 
-
     //region ===================== Presenter =========================
     public class Presenter extends AbstractPresenter<SettingsView, SettingsModel> {
-
         @Inject
         AuthModel mAuthModel;
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -125,7 +120,6 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
                     .addAction(new MenuItemHolder(App.getStringRes(R.string.menu_logout), R.drawable.ic_logout, logoutClickCallback(), ConstantManager.MENU_ITEM_TYPE_ITEM))
                     .setTitle(App.getStringRes(R.string.menu_settings))
                     .build();
-
         }
 
         private MenuItem.OnMenuItemClickListener updateApplication() {
@@ -302,7 +296,6 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
             };
         }
 
-
         public void updateServerAddress(String address) {
             mModel.updateServerAddress(address);
         }
@@ -310,7 +303,6 @@ public class SettingsScreen extends AbstractScreen<RootActivity.RootComponent>{
         public void updateAutoSynchronize(boolean checked) {
             mModel.updateAutoSynchronize(checked);
         }
-
 
         public void checkAuth() {
             mRootPresenter.doUserLogin(getView().getUserName(),getView().getUserPassword());

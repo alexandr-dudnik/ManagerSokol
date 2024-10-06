@@ -5,9 +5,7 @@ import android.os.Bundle;
 import com.sokolua.manager.R;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.scopes.AuthScope;
-import com.sokolua.manager.di.scopes.DaggerScope;
 import com.sokolua.manager.flow.AbstractScreen;
-import com.sokolua.manager.flow.Screen;
 import com.sokolua.manager.mvp.models.AuthModel;
 import com.sokolua.manager.mvp.presenters.AbstractPresenter;
 import com.sokolua.manager.mvp.presenters.IAuthPresenter;
@@ -15,12 +13,9 @@ import com.sokolua.manager.mvp.presenters.RootPresenter;
 import com.sokolua.manager.ui.activities.RootActivity;
 import com.sokolua.manager.utils.AppConfig;
 
-import javax.inject.Scope;
-
 import dagger.Provides;
 import mortar.MortarScope;
 
-@Screen(R.layout.screen_auth)
 public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
     @Override
     public Object createScreenComponent(RootActivity.RootComponent parentComponent) {
@@ -30,13 +25,13 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
                 .build();
     }
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.screen_auth;
+    }
 
     //region ===================== Presenter =========================
     public static class Presenter extends AbstractPresenter<AuthView, AuthModel> implements IAuthPresenter {
-
-
-        public Presenter() {
-        }
 
         @Override
         protected void onEnterScope(MortarScope scope) {
@@ -46,7 +41,6 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             if (getRootView() != null) {
                 getRootView().setBottomBarVisibility(false);
             }
-
         }
 
         @Override
@@ -60,7 +54,6 @@ public class AuthScreen extends AbstractScreen<RootActivity.RootComponent> {
             if (!mModel.getUserName().isEmpty() && !mModel.getUserPassword().isEmpty()){
                 clickOnLogin();
             }
-
         }
 
         @Override

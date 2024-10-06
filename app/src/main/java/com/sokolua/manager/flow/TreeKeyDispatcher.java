@@ -29,14 +29,12 @@ import flow.Traversal;
 import flow.TraversalCallback;
 import flow.TreeKey;
 
-
 public class TreeKeyDispatcher implements Dispatcher, KeyChanger {
     FrameLayout mRootFrame;
     private Activity mActivity;
     private Object inKey;
     @Nullable
     private Object outKey;
-
 
     public TreeKeyDispatcher(Activity activity) {
         mActivity = activity;
@@ -48,28 +46,28 @@ public class TreeKeyDispatcher implements Dispatcher, KeyChanger {
         State inState = traversal.getState(traversal.destination.top());
         inKey = inState.getKey();
         State outState = traversal.origin == null ? null : traversal.getState(traversal.origin.top());
-        outKey = outState ==null ? null : outState.getKey();
+        outKey = outState == null ? null : outState.getKey();
 
         mRootFrame = mActivity.findViewById(R.id.root_frame);
 
-        if (inKey.equals(outKey)){
+        if (inKey.equals(outKey)) {
             callback.onTraversalCompleted();
             return;
         }
 
-        if (inKey instanceof TreeKey){
+        if (inKey instanceof TreeKey) {
             //TODO: implement treekey case
         }
 
         Context flowContext = traversal.createContext(inKey, mActivity);
-        Context mortarContext = ScreenScoper.getScreenScope((AbstractScreen)inKey).createContext(flowContext);
+        Context mortarContext = ScreenScoper.getScreenScope((AbstractScreen) inKey).createContext(flowContext);
         contexts = Collections.singletonMap(inKey, mortarContext);
         changeKey(outState, inState, traversal.direction, contexts, callback);
     }
 
     @Override
     public void changeKey(@Nullable State outgoingState, State incomingState, final Direction direction, Map<Object, Context> incomingContexts, final TraversalCallback callback) {
-        Context context  = incomingContexts.get(inKey);
+        Context context = incomingContexts.get(inKey);
 
         //save prev view
         if (outgoingState != null) {
@@ -77,40 +75,33 @@ public class TreeKeyDispatcher implements Dispatcher, KeyChanger {
         }
 
         //create new view
-        Screen screen;
-        screen = inKey.getClass().getAnnotation(Screen.class);
-        if (screen == null) {
-            throw new IllegalStateException("@Screen annotation is missing on screen " + ((AbstractScreen) inKey).getScopeName());
-        }else{
-            int layout = screen.value();
+        AbstractScreen<?> screen = (AbstractScreen<?>) inKey;
+        int layout = screen.getLayoutResId();
 
-            LayoutInflater inflater =  LayoutInflater.from(context);
-            final View newView = inflater.inflate(layout, mRootFrame, false);
-            final View oldView = mRootFrame.getChildAt(0);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        final View newView = inflater.inflate(layout, mRootFrame, false);
+        final View oldView = mRootFrame.getChildAt(0);
 
-            //restore state to new view
-            incomingState.restore(newView);
+        //restore state to new view
+        incomingState.restore(newView);
 
 
-            //delete old view
-            /*
-            if (mRootFrame.getChildAt(0) != null){
-                mRootFrame.removeView(mRootFrame.getChildAt(0));
-            }
-            */
-
-            mRootFrame.addView(newView);
-
-            //start animation
-            UiHelper.waitForMeasure(newView, (view, width, height) -> runAnimation(mRootFrame, oldView, newView, direction, () -> {
-                //animation completed - do thmsg.
-                if ((outKey != null) && !(inKey instanceof TreeKey)) {
-                    ((AbstractScreen) outKey).unregisterScope();
-                }
-
-                callback.onTraversalCompleted();
-            }));
+        //delete old view
+        if (mRootFrame.getChildAt(0) != null) {
+            mRootFrame.removeView(mRootFrame.getChildAt(0));
         }
+
+        mRootFrame.addView(newView);
+
+        //start animation
+        UiHelper.waitForMeasure(newView, (view, width, height) -> runAnimation(mRootFrame, oldView, newView, direction, () -> {
+            //animation completed - do thmsg.
+            if ((outKey != null) && !(inKey instanceof TreeKey)) {
+                ((AbstractScreen<?>) outKey).unregisterScope();
+            }
+
+            callback.onTraversalCompleted();
+        }));
     }
 
     private void runAnimation(final FrameLayout parent, final View from, View to, Direction direction, final TraversalCallback callback) {

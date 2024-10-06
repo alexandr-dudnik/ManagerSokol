@@ -5,14 +5,13 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -23,17 +22,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.sokolua.manager.BuildConfig;
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.managers.ConstantManager;
+import com.sokolua.manager.databinding.ActivityRootBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.di.components.AppComponent;
 import com.sokolua.manager.di.modules.RootModule;
@@ -55,8 +52,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import flow.Direction;
 import flow.Flow;
 import mortar.MortarScope;
@@ -69,22 +64,11 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     RootPresenter mRootPresenter;
 
     protected static ProgressDialog mProgressDialog;
-
-
-    @BindView(R.id.root_frame)
-    FrameLayout mRootFrame;
-    @BindView(R.id.bottom_bar)
-    BottomNavigationView mBottomBar;
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.appbar)
-    AppBarLayout mAppBarLayout;
-
+    private ActivityRootBinding binding;
 
     private ActionBar mActionBar;
     private List<MenuItemHolder> mActionBarMenuItem;
     private Menu mOptionsMenu;
-
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -102,24 +86,23 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     }
 
     private void initBottomMenu() {
-        mBottomBar.setOnNavigationItemSelectedListener(this::navigationItemSelected);
+        binding.bottomBar.setOnNavigationItemSelectedListener(this::navigationItemSelected);
     }
 
     private void initToolbar() {
-        setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        setSupportActionBar(binding.toolbar);
+        binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
         mActionBar = getSupportActionBar();
     }
-
 
     //region ===================== Life cycle =========================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_root);
+        binding = ActivityRootBinding.inflate(LayoutInflater.from(this));
+        setContentView(binding.getRoot());
         BundleServiceRunner.getBundleServiceRunner(this).onCreate(savedInstanceState);
-        ButterKnife.bind(this);
 
         RootComponent rootComponent = DaggerService.getDaggerComponent(this);
         rootComponent.inject(this);
@@ -143,14 +126,12 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         BundleServiceRunner.getBundleServiceRunner(this).onSaveInstanceState(outState);
     }
 
-
     @Override
     protected void onDestroy() {
         mRootPresenter.dropView(this);
         super.onDestroy();
     }
     //endregion ================== Life cycle =========================
-
 
     //region ===================== IView =========================
 
@@ -170,7 +151,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void showMessage(String message, @StringRes int button, View.OnClickListener callback) {
-        Snackbar.make(mRootFrame, message, Toast.LENGTH_LONG)
+        Snackbar.make(binding.rootFrame, message, Toast.LENGTH_LONG)
                 .setAction(button, callback)
                 .show();
     }
@@ -201,7 +182,6 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         }
     }
 
-
     @Override
     public void showLoad(int progressBarMax) {
         if (this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
@@ -215,9 +195,9 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void updateProgress(int currentProgress) {
-        if (mProgressDialog != null && mProgressDialog.isShowing()){
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
             ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
-            if (mProgressBar.getVisibility() == View.VISIBLE){
+            if (mProgressBar.getVisibility() == View.VISIBLE) {
                 mProgressBar.setProgress(currentProgress);
             }
         }
@@ -227,48 +207,43 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     public void hideLoad() {
         if (this.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) && mProgressDialog != null && mProgressDialog.isShowing()) {
             ProgressBar mProgressBar = mProgressDialog.findViewById(R.id.progress_horizontal);
-            if (mProgressBar.getVisibility() == View.VISIBLE){
+            if (mProgressBar.getVisibility() == View.VISIBLE) {
                 mProgressBar.setVisibility(View.GONE);
             }
-           mProgressDialog.dismiss();
+            mProgressDialog.dismiss();
         }
     }
 
     @Nullable
     @Override
     public IView getCurrentScreen() {
-        return (IView) mRootFrame.getChildAt(0);
+        return (IView) binding.rootFrame.getChildAt(0);
     }
-
 
     @Override
     public void setBottomBarVisibility(boolean state) {
-        if (state){
-            mBottomBar.setTranslationY(0);
-            mBottomBar.setVisibility(View.VISIBLE);
-        }else{
-            mBottomBar.setTranslationY(mBottomBar.getHeight());
-            mBottomBar.setVisibility(View.GONE);
+        if (state) {
+            binding.bottomBar.setTranslationY(0);
+            binding.bottomBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.bottomBar.setTranslationY(binding.bottomBar.getHeight());
+            binding.bottomBar.setVisibility(View.GONE);
         }
     }
 
     @Override
     public boolean getBottomBarVisibility() {
-        return mBottomBar.getVisibility() == View.VISIBLE;
+        return binding.bottomBar.getVisibility() == View.VISIBLE;
     }
-
 
     //endregion ================== IRootView =========================
 
-
     //region ===================== IActionBarView =========================
-
 
     @Override
     public void setActionBarTitle(CharSequence title) {
         mActionBar.setTitle(title);
     }
-
 
     @Override
     public void setVisible(boolean visible) {
@@ -277,8 +252,6 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         } else {
             mActionBar.hide();
         }
-
-
     }
 
     @Override
@@ -296,7 +269,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     private void addMenuItem(Menu menu, MenuItemHolder menuItem) {
         MenuItem item;
         int mId = generateMenuItemId();
-        if (menuItem.getItemType() == ConstantManager.MENU_ITEM_TYPE_SEARCH){
+        if (menuItem.getItemType() == ConstantManager.MENU_ITEM_TYPE_SEARCH) {
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             if (searchManager != null) {
                 getMenuInflater().inflate(R.menu.search_menu, menu);
@@ -311,7 +284,7 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         }
 
         if (menuItem.hasSubMenu()) {
-            SubMenu subMenu = menu.addSubMenu(Menu.NONE, mId, Menu.NONE , menuItem.getItemTitle());
+            SubMenu subMenu = menu.addSubMenu(Menu.NONE, mId, Menu.NONE, menuItem.getItemTitle());
             item = subMenu.getItem();
 
             for (MenuItemHolder subItem : menuItem.getSubMenu()) {
@@ -323,32 +296,27 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
                 item.setCheckable(menuItem.isCheckable());
                 item.setChecked(menuItem.isChecked());
                 menu.setGroupCheckable(menuItem.getGroupId(), true, true);
-            }else{
+            } else {
                 item = menu.add(Menu.NONE, mId, Menu.NONE, menuItem.getItemTitle());
             }
         }
-        int flags;
-        switch (menuItem.getItemType()){
-            case ConstantManager.MENU_ITEM_TYPE_ACTION:
-                flags = MenuItem.SHOW_AS_ACTION_IF_ROOM;
-                break;
-             default:
-                 flags = MenuItem.SHOW_AS_ACTION_NEVER;
-        }
+        int flags = switch (menuItem.getItemType()) {
+            case ConstantManager.MENU_ITEM_TYPE_ACTION -> MenuItem.SHOW_AS_ACTION_IF_ROOM;
+            default -> MenuItem.SHOW_AS_ACTION_NEVER;
+        };
         item.setShowAsActionFlags(flags)
-            .setOnMenuItemClickListener(menuItem.getListener());
+                .setOnMenuItemClickListener(menuItem.getListener());
 
-        if (menuItem.getIconResId() != 0){
+        if (menuItem.getIconResId() != 0) {
             item.setIcon(menuItem.getIconResId());
             this.tintMenuIcon(this, item, R.color.menu_item_icon_color);
         }
-
     }
 
-    private int generateMenuItemId(){
-        while (mOptionsMenu!=null) {
-            int rnd = (int) (Math.random()*Integer.MAX_VALUE);
-            if (mOptionsMenu.findItem(rnd) == null){
+    private int generateMenuItemId() {
+        while (mOptionsMenu != null) {
+            int rnd = (int) (Math.random() * Integer.MAX_VALUE);
+            if (mOptionsMenu.findItem(rnd) == null) {
                 return rnd;
             }
         }
@@ -356,10 +324,10 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     }
 
     @Nullable
-    private MenuItem checkMenu(MenuItem currentItem, Menu menu, int itemId){
-        for (int i=0;i<menu.size();i++){
+    private MenuItem checkMenu(MenuItem currentItem, Menu menu, int itemId) {
+        for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
-            if (item.getItemId() == itemId){
+            if (item.getItemId() == itemId) {
                 return currentItem;
             }
             if (item.hasSubMenu()) {
@@ -379,7 +347,6 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         return null;
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mActionBarMenuItem != null && !mActionBarMenuItem.isEmpty()) {
@@ -396,16 +363,15 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
         return super.onCreateOptionsMenu(menu);
     }
 
-
     @Override
     public void setTabLayout(ViewPager tabs) {
-        View view = mAppBarLayout.getChildAt(1);
+        View view = binding.appbar.getChildAt(1);
         TabLayout tabView;
         if (view == null) {
             tabView = new TabLayout(this); //создаем TabLayout
             tabView.setupWithViewPager(tabs); //связываем его с ViewPager
             tabView.setTabGravity(TabLayout.GRAVITY_FILL);
-            mAppBarLayout.addView(tabView); //добавляем табы в Appbar
+            binding.appbar.addView(tabView); //добавляем табы в Appbar
             tabs.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabView)); // регистрируем обработчик переключения по табам для ViewPager
         } else {
             tabView = (TabLayout) view;
@@ -416,15 +382,13 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     @Override
     public void removeTabLayout() {
-        View tabView = mAppBarLayout.getChildAt(1);
+        View tabView = binding.appbar.getChildAt(1);
         if (tabView instanceof TabLayout) { //проверяем если у аппбара есть дочерняя View являющаяся TabLayout
-            mAppBarLayout.removeView(tabView); //то удаляем ее
+            binding.appbar.removeView(tabView); //то удаляем ее
         }
     }
 
-
     //endregion ================== IActionBarView =========================
-
 
     //region ======================== DI =======================================
 
@@ -432,7 +396,9 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     @DaggerScope(RootActivity.class)
     public interface RootComponent {
         void inject(RootActivity activity);
+
         void inject(StartActivity activity);
+
         void inject(RootPresenter presenter);
 
         RootPresenter getRootPresenter();
@@ -441,26 +407,16 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     //endregion ======================== DI =======================================
 
     //region ===================== Events =========================
-    public boolean navigationItemSelected(@NonNull MenuItem item) {
-        Object key = null;
 
-        switch (item.getItemId()) {
-            case R.id.bottomBarMainScreen:
-                key = new MainScreen();
-                break;
-            case R.id.bottomBarCustomers:
-                key = new CustomerListScreen();
-                break;
-            case R.id.bottomBarOrders:
-                key = new OrderListScreen();
-                break;
-            case R.id.bottomBarRoute:
-                key = new RoutesScreen();
-                break;
-            case R.id.bottomBarGoods:
-                key = new GoodsScreen();
-                break;
-        }
+    public boolean navigationItemSelected(@NonNull MenuItem item) {
+        Object key = switch (item.getItemId()) {
+            case R.id.bottomBarMainScreen -> new MainScreen();
+            case R.id.bottomBarCustomers -> new CustomerListScreen();
+            case R.id.bottomBarOrders -> new OrderListScreen();
+            case R.id.bottomBarRoute -> new RoutesScreen();
+            case R.id.bottomBarGoods -> new GoodsScreen();
+            default -> null;
+        };
 
         if (key != null) {
             Flow.get(this).replaceHistory(key, Direction.REPLACE);
@@ -469,26 +425,23 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
     }
 
     public void forceFinish() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.finishAndRemoveTask();
-        }else{
-            this.finishAffinity();
-        }
+        this.finishAndRemoveTask();
     }
 
     @Override
     public void onBackPressed() {
-        if (getCurrentScreen() == null  || getCurrentScreen().viewOnBackPressed()){
+        if (getCurrentScreen() == null || getCurrentScreen().viewOnBackPressed()) {
             return;
         }
-        if (Flow.get(this).getHistory().size()<=1){
+        if (Flow.get(this).getHistory().size() <= 1) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(App.getStringRes(R.string.question_quit))
                     .setCancelable(false)
                     .setPositiveButton(App.getStringRes(R.string.button_yes_text), (dialog, whichButton) -> forceFinish())
-                    .setNegativeButton(App.getStringRes(R.string.button_no_text), (dialog, whichButton) -> {});
+                    .setNegativeButton(App.getStringRes(R.string.button_no_text), (dialog, whichButton) -> {
+                    });
             alert.show();
-        }else {
+        } else {
             if (!Flow.get(this).goBack()) {
                 super.onBackPressed();
             }
@@ -498,9 +451,8 @@ public class RootActivity extends AppCompatActivity implements IRootView, IActio
 
     //endregion ================== Events =========================
 
-
     public void selectNavigationMenu(int menuItemId) {
-        mBottomBar.setSelectedItemId(menuItemId);
+        binding.bottomBar.setSelectedItemId(menuItemId);
     }
 
 }

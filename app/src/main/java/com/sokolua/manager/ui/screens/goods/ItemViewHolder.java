@@ -1,10 +1,10 @@
 package com.sokolua.manager.ui.screens.goods;
 
 import android.view.View;
-import android.widget.TextView;
 
 import com.sokolua.manager.R;
 import com.sokolua.manager.data.storage.realm.ItemRealm;
+import com.sokolua.manager.databinding.GoodsItemsItemBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
 import com.sokolua.manager.utils.App;
@@ -13,65 +13,42 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class ItemViewHolder extends ReactiveRecyclerAdapter.ReactiveViewHolder<ItemRealm> {
-
-    @BindView(R.id.good_article_text)     TextView mArticle;
-    @BindView(R.id.good_brand_text)       TextView mBrand;
-    @BindView(R.id.good_rest_wh_text)     TextView mRestWH;
-    @BindView(R.id.good_rest_cwh_text)    TextView mRestCWH;
-    @BindView(R.id.good_rest_official_text)TextView mRestOF;
-    @BindView(R.id.good_base_price_text)  TextView mBasePrice;
-    @BindView(R.id.good_min_price_text)   TextView mMinPrice;
-    @BindView(R.id.good_name_text)        TextView mName;
-
-
+    private GoodsItemsItemBinding binding;
 
     @Inject
     GoodsScreen.Presenter mPresenter;
     @Inject
     String cartId;
 
-
-
     ItemViewHolder(View itemView) {
         super(itemView);
         DaggerService.<GoodsScreen.Component>getDaggerComponent(itemView.getContext()).inject(this);
-        ButterKnife.bind(this, itemView);
+        binding = GoodsItemsItemBinding.bind(itemView);
     }
-
 
     @Override
     public void setCurrentItem(ItemRealm currentItem) {
         super.setCurrentItem(currentItem);
-
         updateFields(currentItem);
     }
 
-    private void updateFields(ItemRealm currentItem){
-
+    private void updateFields(ItemRealm currentItem) {
         if (currentItem.isLoaded() && currentItem.isValid()) {
-            mArticle.setText(currentItem.getArtNumber());
-            mBrand.setText(currentItem.getBrand() != null ? currentItem.getBrand().getName() : "");
-            mRestWH.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestStore()));
-            mRestCWH.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestDistr()));
+            binding.goodArticleText.setText(currentItem.getArtNumber());
+            binding.goodBrandText.setText(currentItem.getBrand() != null ? currentItem.getBrand().getName() : "");
+            binding.goodRestWhText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestStore()));
+            binding.goodRestCwhText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestDistr()));
             if (currentItem.getRestOfficial() > 999999) {
-                mRestOF.setText("∞");
+                binding.goodRestOfficialText.setText("∞");
             } else {
-                mRestOF.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestOfficial()));
+                binding.goodRestOfficialText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), currentItem.getRestOfficial()));
             }
-            mBasePrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getItemPrice(currentItem.getItemId())));
-            mMinPrice.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getLowPrice(currentItem.getItemId())));
-            mName.setText(currentItem.getName());
+            binding.goodBasePriceText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getItemPrice(currentItem.getItemId())));
+            binding.goodMinPriceText.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), mPresenter.getLowPrice(currentItem.getItemId())));
+            binding.goodNameText.setText(currentItem.getName());
+            itemView.setOnClickListener(view -> mPresenter.itemSelected(currentItem.getItemId()));
         }
-    }
-
-    @OnClick(R.id.good_item_wrapper)
-    void onClick(View view){
-        mPresenter.itemSelected(currentItem.getItemId());
     }
 
 }

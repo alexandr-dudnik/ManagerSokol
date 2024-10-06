@@ -3,16 +3,14 @@ package com.sokolua.manager.ui.screens.goods;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenGoodsBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.ui.custom_views.ReactiveRecyclerAdapter;
@@ -20,21 +18,15 @@ import com.sokolua.manager.utils.App;
 
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
-public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
-    @BindView(R.id.groups_grid)         RecyclerView mGrid;
-    @BindView(R.id.item_list)           RecyclerView mItems;
-    @BindView(R.id.cart_panel)          RelativeLayout mCartPanel;
-    @BindView(R.id.cart_customer_text)  TextView mCustomerName;
-    @BindView(R.id.cart_currency)       TextView mCartCurrency;
-    @BindView(R.id.cart_amount)         TextView mCartAmount;
-    @BindView(R.id.cart_items_counter)  TextView mCartItemsCount;
-
+public class GoodsView extends AbstractView<GoodsScreen.Presenter, ScreenGoodsBinding> {
 
     public GoodsView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected ScreenGoodsBinding bindView(View view) {
+        return ScreenGoodsBinding.bind(view);
     }
 
     @Override
@@ -42,80 +34,77 @@ public class GoodsView extends AbstractView<GoodsScreen.Presenter> {
         if (!isInEditMode()) {
             DaggerService.<GoodsScreen.Component>getDaggerComponent(context).inject(this);
         }
+    }
 
-
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        binding.cartImage.setOnClickListener(view -> mPresenter.returnToCart());
     }
 
     @Override
     public boolean viewOnBackPressed() {
-        return mPresenter.goGroupBack() ;
+        return mPresenter.goGroupBack();
     }
 
-
-    public void setGroupsAdapter(ReactiveRecyclerAdapter mAdapter) {
-        mGrid.setHasFixedSize(true);
-        mGrid.setLayoutManager(new GridLayoutManager(getContext(), 3)); //в три колонки
-        mGrid.setAdapter(mAdapter);
+    public void setGroupsAdapter(ReactiveRecyclerAdapter<?> mAdapter) {
+        binding.groupsGrid.setHasFixedSize(true);
+        binding.groupsGrid.setLayoutManager(new GridLayoutManager(getContext(), 3)); //в три колонки
+        binding.groupsGrid.setAdapter(mAdapter);
     }
 
-    public void setItemsAdapter(ReactiveRecyclerAdapter mAdapter) {
-        mItems.setHasFixedSize(true);
-        mItems.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
-        mItems.setAdapter(mAdapter);
+    public void setItemsAdapter(ReactiveRecyclerAdapter<?> mAdapter) {
+        binding.itemList.setHasFixedSize(true);
+        binding.itemList.setLayoutManager(new LinearLayoutManager(App.getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.itemList.setAdapter(mAdapter);
     }
 
     public void showGroups() {
-        if (mGrid.getAlpha() == 0f) {
-            mItems.setAlpha(0f);
-            mItems.setVisibility(GONE);
-            mGrid.setVisibility(VISIBLE);
-            mGrid.animate()
+        if (binding.groupsGrid.getAlpha() == 0f) {
+            binding.itemList.setAlpha(0f);
+            binding.itemList.setVisibility(GONE);
+            binding.groupsGrid.setVisibility(VISIBLE);
+            binding.groupsGrid.animate()
                     .setDuration(500)
                     .alpha(1f)
                     .start();
         }
     }
+
     public void showItems() {
-        if (mItems.getAlpha() == 0f) {
-            mGrid.setAlpha(0f);
-            mGrid.setVisibility(GONE);
-            mItems.setVisibility(VISIBLE);
-            mItems.animate()
+        if (binding.itemList.getAlpha() == 0f) {
+            binding.groupsGrid.setAlpha(0f);
+            binding.groupsGrid.setVisibility(GONE);
+            binding.itemList.setVisibility(VISIBLE);
+            binding.itemList.animate()
                     .setDuration(500)
                     .alpha(1f)
                     .start();
         }
     }
 
-
-
-    public void setCartMode(){
-        mCartPanel.setVisibility(VISIBLE);
-    }
-    public void setCatalogMode(){
-        mCartPanel.setVisibility(GONE);
+    public void setCartMode() {
+        binding.cartPanel.setVisibility(VISIBLE);
     }
 
-    public void setCustomer(String customerName){
-        mCustomerName.setText(customerName);
+    public void setCatalogMode() {
+        binding.cartPanel.setVisibility(GONE);
     }
 
-    public void setCartCurrency(String currency){
-        mCartCurrency.setText(currency);
+    public void setCustomer(String customerName) {
+        binding.cartCustomerText.setText(customerName);
     }
 
-    public void setCartAmount(Float amount){
-        mCartAmount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format),amount));
+    public void setCartCurrency(String currency) {
+        binding.cartCurrency.setText(currency);
     }
 
-    public void setCartItemsCount(int count){
-        mCartItemsCount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int),(count+0.f)));
+    public void setCartAmount(Float amount) {
+        binding.cartAmount.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), amount));
     }
 
-
-    @OnClick(R.id.cart_image)
-    void onCartClick(View v){
-        mPresenter.returnToCart();
+    public void setCartItemsCount(int count) {
+        binding.cartItemsCounter.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format_int), (count + 0.f)));
     }
 
 }

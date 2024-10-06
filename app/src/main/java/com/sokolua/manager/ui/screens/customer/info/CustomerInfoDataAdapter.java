@@ -1,27 +1,20 @@
 package com.sokolua.manager.ui.screens.customer.info;
 
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.CustomerInfoDataItemBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.utils.App;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
-
-import butterknife.BindDrawable;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDataAdapter.ViewHolder> {
     private ArrayList<CustomerInfoDataItem> items = new ArrayList<>();
@@ -48,8 +41,6 @@ public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDa
         return items.size();
     }
 
-
-
     public void addItem(CustomerInfoDataItem item) {
         if (!items.contains(item)) {
             items.add(item);
@@ -57,37 +48,21 @@ public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDa
         }
     }
 
-    public void removeItem(CustomerInfoDataItem item){
+    public void removeItem(CustomerInfoDataItem item) {
         if (items.contains(item)) {
             items.remove(item);
             notifyDataSetChanged();
         }
     }
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.customer_info_header)
-        TextView mCustomerInfoHeader;
-        @BindView(R.id.customer_info_data)
-        TextView mCustomerInfoData;
-        @BindView(R.id.customer_info_icon)
-        ImageView mCustomerInfoIcon;
-
-        @BindDrawable(R.drawable.ic_person_pin)
-        Drawable mapImage;
-        @BindDrawable(R.drawable.ic_call)
-        Drawable callImage;
-        @BindDrawable(R.drawable.ic_mail)
-        Drawable mailImage;
-
-
+        private CustomerInfoDataItemBinding binding;
         private CustomerInfoDataItem mItem = null;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            binding = CustomerInfoDataItemBinding.bind(itemView);
         }
-
 
         public void bind(CustomerInfoDataItem item) {
             this.mItem = item;
@@ -95,51 +70,47 @@ public class CustomerInfoDataAdapter extends RecyclerView.Adapter<CustomerInfoDa
         }
 
         public void refreshInfo() {
-            mCustomerInfoHeader.setText(mItem.getHeader());
-            mCustomerInfoData.setText(mItem.getData());
-            if (mItem.getActionType()!=CustomerInfoDataItem.ACTION_TYPE_NO_ACTION){
-                mCustomerInfoIcon.setVisibility(View.VISIBLE);
+            binding.customerInfoHeader.setText(mItem.getHeader());
+            binding.customerInfoData.setText(mItem.getData());
+            if (mItem.getActionType() != CustomerInfoDataItem.ACTION_TYPE_NO_ACTION) {
+                binding.customerInfoIcon.setVisibility(View.VISIBLE);
                 switch (mItem.getActionType()) {
                     case CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL:
-                        mCustomerInfoIcon.setImageDrawable(callImage);
-                        mCustomerInfoIcon.setColorFilter(App.getColorRes(R.color.transparent));
-                        mCustomerInfoIcon.setBackgroundColor(App.getColorRes(R.color.color_green));
+                        binding.customerInfoIcon.setImageResource(R.drawable.ic_call);
+                        binding.customerInfoIcon.setColorFilter(App.getColorRes(R.color.transparent));
+                        binding.customerInfoIcon.setBackgroundColor(App.getColorRes(R.color.color_green));
                         break;
                     case CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP:
-                        mCustomerInfoIcon.setImageDrawable(mapImage);
-                        mCustomerInfoIcon.setColorFilter(App.getColorRes(R.color.color_green));
-                        mCustomerInfoIcon.setBackgroundColor(App.getColorRes(R.color.color_white));
+                        binding.customerInfoIcon.setImageResource(R.drawable.ic_map);
+                        binding.customerInfoIcon.setColorFilter(App.getColorRes(R.color.color_green));
+                        binding.customerInfoIcon.setBackgroundColor(App.getColorRes(R.color.color_white));
                         break;
                     case CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL:
-                        mCustomerInfoIcon.setImageDrawable(mailImage);
-                        mCustomerInfoIcon.setColorFilter(App.getColorRes(R.color.color_black));
-                        mCustomerInfoIcon.setBackgroundColor(App.getColorRes(R.color.transparent));
+                        binding.customerInfoIcon.setImageResource(R.drawable.ic_mail);
+                        binding.customerInfoIcon.setColorFilter(App.getColorRes(R.color.color_black));
+                        binding.customerInfoIcon.setBackgroundColor(App.getColorRes(R.color.transparent));
                         break;
                     default:
-                        mCustomerInfoIcon.setVisibility(View.GONE);
+                        binding.customerInfoIcon.setVisibility(View.GONE);
                 }
-            }else{
-                mCustomerInfoIcon.setVisibility(View.GONE);
+            } else {
+                binding.customerInfoIcon.setVisibility(View.GONE);
             }
+            binding.customerInfoIcon.setOnClickListener(view -> {
+                switch (mItem.getActionType()) {
+                    case CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL:
+                        mPresenter.callToCustomer(mItem);
+                        break;
+                    case CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP:
+                        mPresenter.openMap(mItem);
+                        break;
+                    case CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL:
+                        mPresenter.sendEmail(mItem);
+                        break;
+                    default:
 
-        }
-
-        @OnClick(R.id.customer_info_icon)
-        public void onIconClick(View view) {
-            switch (mItem.getActionType()) {
-                case CustomerInfoDataItem.ACTION_TYPE_MAKE_CALL:
-                    mPresenter.callToCustomer(mItem);
-                    break;
-                case CustomerInfoDataItem.ACTION_TYPE_OPEN_MAP:
-                    mPresenter.openMap(mItem);
-                    break;
-                case CustomerInfoDataItem.ACTION_TYPE_SEND_MAIL:
-                    mPresenter.sendEmail(mItem);
-                    break;
-                default:
-
-            }
-
+                }
+            });
         }
     }
 

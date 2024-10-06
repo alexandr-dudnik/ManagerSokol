@@ -6,32 +6,27 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.sokolua.manager.R;
+import com.sokolua.manager.databinding.ScreenAuthBinding;
 import com.sokolua.manager.di.DaggerService;
 import com.sokolua.manager.mvp.views.AbstractView;
 import com.sokolua.manager.mvp.views.IAuthView;
+import com.sokolua.manager.ui.custom_views.OnSpinItemSelectedListener;
 
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnItemSelected;
+import kotlin.Unit;
 
-
-public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAuthView {
-
-    @BindView(R.id.login_btn)       Button mLoginBtn;
-    @BindView(R.id.user_name)       TextInputEditText mUserName;
-    @BindView(R.id.user_password)   TextInputEditText mUserPassword;
-    @BindView(R.id.server_name)     Spinner mServerName;
-
+public class AuthView extends AbstractView<AuthScreen.Presenter, ScreenAuthBinding> implements IAuthView {
 
     public AuthView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    @Override
+    protected ScreenAuthBinding bindView(View view) {
+        return ScreenAuthBinding.bind(view);
     }
 
     @Override
@@ -46,64 +41,60 @@ public class AuthView extends AbstractView<AuthScreen.Presenter> implements IAut
         return false;
     }
 
-
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        binding.loginForm.loginBtn.setOnClickListener(view -> mPresenter.clickOnLogin());
+        binding.loginForm.serverName.setOnItemSelectedListener(
+                new OnSpinItemSelectedListener(
+                        () -> {
+                            mPresenter.updateServer(binding.loginForm.serverName.getSelectedItem().toString());
+                            return Unit.INSTANCE;
+                        }
+                )
+        );
+    }
 
     public void setUserName(String userName) {
-        this.mUserName.setText(userName);
+        binding.loginForm.userName.setText(userName);
     }
 
     public void setUserPassword(String userPassword) {
-        this.mUserPassword.setText(userPassword);
+        binding.loginForm.userPassword.setText(userPassword);
     }
 
-    public void setServerList(List<String> servers, String currentServer){
-        mServerName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
+    public void setServerList(List<String> servers, String currentServer) {
         int idx = servers.indexOf(currentServer);
-        mServerName.setSelection(Math.max(idx, 0));
+        binding.loginForm.serverName.setAdapter(new ArrayAdapter<>(this.getContext(), R.layout.server_item, servers));
+        binding.loginForm.serverName.setSelection(Math.max(idx, 0));
     }
-
-    //region ===================== Events =========================
-
-
-    @OnClick(R.id.login_btn)
-    void loginClick(){
-        mPresenter.clickOnLogin();
-    }
-
-    @OnItemSelected(R.id.server_name)
-    void serverChange(View view){
-        mPresenter.updateServer(mServerName.getSelectedItem().toString());
-    }
-
-    //endregion ================== Events =========================
-
 
 
     //region ===================== IAuthView =========================
     @Override
     public String getUserName() {
-        return mUserName.getText().toString();
+        return binding.loginForm.userName.getText().toString();
     }
 
     @Override
     public String getUserPassword() {
-        return mUserPassword.getText().toString();
+        return binding.loginForm.userPassword.getText().toString();
     }
 
     @Override
     public void showInvalidUserName() {
-        mUserName.setError(getContext().getString(R.string.error_empty_login));
+        binding.loginForm.userName.setError(getContext().getString(R.string.error_empty_login));
     }
 
     @Override
     public void showInvalidPassword() {
-        mUserPassword.setError(getContext().getString(R.string.error_bad_password));
+        binding.loginForm.userPassword.setError(getContext().getString(R.string.error_bad_password));
     }
 
     @Override
-    public void login_error(){
+    public void login_error() {
         Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_animation);
-        mLoginBtn.startAnimation(shake);
+        binding.loginForm.loginBtn.startAnimation(shake);
     }
 
     //endregion ===================== IAuthView =========================
