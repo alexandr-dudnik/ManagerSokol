@@ -97,7 +97,9 @@ public class OrderRealm extends RealmObject implements Serializable{
         if (isValid() && lines!=null && lines.isValid()) {
             for (OrderLineRealm line : lines) {
                 if (line.isValid()) {
-                    total += line.getPrice() * line.getQuantity();
+                    Float itemPrice = this.status == ConstantManager.ORDER_STATUS_CART && line.getPriceRequest() > 0f
+                            ? line.getPriceRequest() : line.getPrice();
+                    total += itemPrice * line.getQuantity();
                 }
             }
         }

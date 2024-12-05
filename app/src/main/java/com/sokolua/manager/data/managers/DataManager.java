@@ -698,6 +698,10 @@ public class DataManager {
         mRealmManager.updateOrderItemPrice(orderId, itemId, value);
     }
 
+    public void updateOrderItemPriceRequest(String orderId, String itemId, Float value) {
+        mRealmManager.updateOrderItemPriceRequest(orderId, itemId, value);
+    }
+
     public void updateOrderItemQty(String orderId, String itemId, Float value) {
         mRealmManager.updateOrderItemQty(orderId, itemId, value);
     }

@@ -884,6 +884,20 @@ public class RealmManager {
         closeQueryInstance(curInstance);
     }
 
+    void updateOrderItemPriceRequest(String orderId, String itemId, Float value) {
+        if (orderId == null || orderId.isEmpty() || itemId == null || itemId.isEmpty()) return;
+        Realm curInstance = getQueryRealmInstance();
+        OrderLineRealm line = curInstance
+                .where(OrderLineRealm.class)
+                .equalTo("order.id", orderId)
+                .equalTo("item.itemId", itemId)
+                .findFirst();
+        if (line != null) {
+            curInstance.executeTransaction(db -> line.setPriceRequest(value));
+        }
+        closeQueryInstance(curInstance);
+    }
+
     void updateOrderItemQty(String orderId, String itemId, Float value) {
         if (orderId == null || orderId.isEmpty() || itemId == null || itemId.isEmpty()) return;
         Realm curInstance = getQueryRealmInstance();
@@ -1047,7 +1061,7 @@ public class RealmManager {
                     .equalTo("itemId", itemId)
                     .findFirst();
             if (order != null && order.isValid() && item !=null && item.isValid()) {
-                    OrderLineRealm tmpLine = new OrderLineRealm(order, item, newQty, newPrice);
+                    OrderLineRealm tmpLine = new OrderLineRealm(order, item, newQty, newPrice, 0f);
                     curInstance.executeTransaction(db -> db.insertOrUpdate(tmpLine));
             }
         }else{
@@ -1157,7 +1171,7 @@ public class RealmManager {
                 if (mItem == null) {
                     mItem = new ItemRealm(line.getItemId(),line.getItemName(),line.getItemArticle(), null);
                 }
-                lines.add(new OrderLineRealm(newOrder, mItem, line.getQuantity(), line.getPrice()));
+                lines.add(new OrderLineRealm(newOrder, mItem, line.getQuantity(), line.getPrice(), 0f));
             }
         }
 
