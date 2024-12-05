@@ -7,8 +7,8 @@ import androidx.annotation.Keep;
 
 @Keep
 public class UserLoginReq {
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
 
     public UserLoginReq(String username, String password) {
         this.username = username;

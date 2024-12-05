@@ -11,13 +11,12 @@ import java.util.Locale;
 
 @Keep
 public class SendVisitReq {
-    private String id;
-    private String latitude;
-    private String longitude;
-    private String visited;
-    private String image;
-    private boolean done;
-
+    private final String id;
+    private final String latitude;
+    private final String longitude;
+    private final String visited;
+    private final String image;
+    private final boolean done;
 
     public SendVisitReq(String id, float latitude, float longitude, Date visited, String imageURI, boolean done) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm':00'", Locale.getDefault());
@@ -39,8 +38,4 @@ public class SendVisitReq {
         this.image = UiHelper.getBase64FromImage(visit.getImageURI());
         this.done = visit.isDone();
     }
-
-
-
-
 }

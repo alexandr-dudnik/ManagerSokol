@@ -13,16 +13,16 @@ import java.util.Locale;
 
 @Keep
 public class SendOrderReq {
-    private String id;
-    private String date;
-    private String delivery;
-    private String customer_id;
-    private String payment;
-    private List<OrderLineReq> lines = new ArrayList<>();
-    private String currency_id;
-    private String trade_id;
-    private String price_id;
-    private String comments;
+    private final String id;
+    private final String date;
+    private final String delivery;
+    private final String customer_id;
+    private final String payment;
+    private final List<OrderLineReq> lines = new ArrayList<>();
+    private final String currency_id;
+    private final String trade_id;
+    private final String price_id;
+    private final String comments;
 
     public SendOrderReq(OrderRealm order, List<OrderLineRealm> orderLines) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -91,15 +91,17 @@ public class SendOrderReq {
     //region =======================  OrderLine  =========================
 
     @Keep
-    static class OrderLineReq{
-        private String item_id;
-        private Float quantity;
-        private Float price;
+    public static class OrderLineReq{
+        private final String item_id;
+        private final Float quantity;
+        private final Float price;
+        private final Float priceRequest;
 
 
         OrderLineReq(OrderLineRealm line) {
             this.item_id = line.getItem().getItemId();
             this.price = line.getPrice();
+            this.priceRequest = line.getPriceRequest();
             this.quantity = line.getQuantity();
         }
 
@@ -113,6 +115,9 @@ public class SendOrderReq {
         }
         public Float getPrice() {
             return price;
+        }
+        public Float getPriceRequest() {
+            return priceRequest;
         }
 
         //endregion ====================  Getters  =========================

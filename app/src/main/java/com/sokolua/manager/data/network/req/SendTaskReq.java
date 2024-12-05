@@ -7,10 +7,10 @@ import com.sokolua.manager.data.storage.realm.TaskRealm;
 
 @Keep
 public class SendTaskReq {
-    private String id;
-    private String task;
-    private boolean completed;
-    private String result;
+    private final String id;
+    private final String task;
+    private final boolean completed;
+    private final String result;
 
     public SendTaskReq(String id, String task, boolean completed, String result) {
         this.id = id;

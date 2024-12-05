@@ -10,10 +10,10 @@ import java.util.Locale;
 
 @Keep
 public class SendNoteReq {
-    private String id;
-    private String customer_id;
-    private String date;
-    private String text;
+    private final String id;
+    private final String customer_id;
+    private final String date;
+    private final String text;
 
     public SendNoteReq(String id, String customer_id, String date, String text) {
         this.id = id;
