@@ -222,7 +222,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             if (tradesSub != null && !tradesSub.isDisposed()) {
                 tradesSub.dispose();
             }
-            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+            if (isOrderEditable()) {
                 CustomerRealm cust = currentOrder.getCustomer();
                 TradeRealm custTrade = cust.getTradeCash() == null ? (cust.getTradeFop() == null ? cust.getTradeFop() : cust.getTradeOfficial()) : cust.getTradeCash();
                 boolean isRemote = custTrade != null && custTrade.isRemote();
@@ -287,7 +287,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
                         }
                         return false;
                     }, ConstantManager.MENU_ITEM_TYPE_ITEM));
-            if (currentOrder != null && currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+            if (currentOrder != null && isOrderEditable()) {
                 abb.addAction(new MenuItemHolder(App.getStringRes(R.string.action_send_order), R.drawable.ic_send, item -> {
                             if (currentOrder.getLines().isEmpty()) {
                                 if (getRootView() != null) {
@@ -334,7 +334,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
         }
 
         public void updatePrice(OrderLineRealm line) {
-            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+            if (isOrderEditable()) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
                 alert.setTitle(App.getStringRes(R.string.order_items_header_price));
                 alert.setMessage(line.getItem().getName());
@@ -372,8 +372,43 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             }
         }
 
+        public void requestPrice(OrderLineRealm line) {
+            if (isOrderEditable()) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
+                alert.setTitle(App.getStringRes(R.string.order_items_header_price_request));
+                alert.setMessage(line.getItem().getName());
+
+                final Float currentValue = line.getPriceRequest() > 0f ? line.getPriceRequest() : line.getPrice();
+                final EditText input = new EditText(getView().getContext());
+                alert.setView(input);
+                input.setText(String.format(Locale.getDefault(), App.getStringRes(R.string.numeric_format), currentValue));
+                input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                input.setRawInputType(Configuration.KEYBOARD_12KEY);
+
+                alert.setPositiveButton(App.getStringRes(R.string.button_positive_text), (dialog, whichButton) -> {
+                    float newValue = 0f;
+                    try {
+                        newValue = Float.parseFloat(input.getText().toString().replace(",", "."));
+                    } catch (Throwable ignore) {
+                    }
+
+                    if (currentOrder.getTrade() != null && !currentOrder.getTrade().isCash()) {
+                        newValue = MiscUtils.roundPrice(newValue);
+                    }
+
+                    mModel.updateOrderItemPriceRequest(currentOrderId, line.getItem().getItemId(), line.getPrice() != newValue ? newValue : 0f);
+                });
+                alert.setNeutralButton(App.getStringRes(R.string.button_reset_text), (dialog, whichButton) -> {
+                    mModel.updateOrderItemPriceRequest(currentOrderId, line.getItem().getItemId(), 0f);
+                });
+                alert.setNegativeButton(App.getStringRes(R.string.button_negative_text), (dialog, whichButton) -> {
+                });
+                alert.show();
+            }
+        }
+
         public void updateQuantity(OrderLineRealm line) {
-            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+            if (isOrderEditable()) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
                 alert.setTitle(App.getStringRes(R.string.order_items_header_quantity));
 
@@ -403,7 +438,7 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
         }
 
         public void removeLine(OrderLineRealm currentItem) {
-            if (currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART) {
+            if (isOrderEditable()) {
                 if (currentItem.getItem().isValid()) {
                     mModel.removeOrderItem(currentOrderId, currentItem.getItem().getItemId());
                 }
@@ -464,6 +499,10 @@ public class OrderScreen extends AbstractScreen<RootActivity.RootComponent> {
             });
 
             builder.show();
+        }
+
+        public boolean isOrderEditable() {
+            return currentOrder.getStatus() == ConstantManager.ORDER_STATUS_CART;
         }
     }
     //endregion ================== Presenter =========================

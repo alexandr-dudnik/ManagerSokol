@@ -28,6 +28,7 @@
     <string name="search_hint">Поиск…</string>
     <string name="button_negative_text">Отмена</string>
     <string name="button_positive_text">OK</string>
+    <string name="button_reset_text">Сброс</string>
     <string name="question_quit">Завершить работу с приложением?</string>
     <string name="customer_add_new_note_title">Добавление новой заметки</string>
     <string name="default_manager_name">Вася Пупкин</string>
@@ -114,6 +115,7 @@
     <string name="order_price_title">Прайс</string>
     <string name="order_trade_title">Условия</string>
     <string name="order_fact_title">Оплата по факту</string>
+    <string name="order_items_header_price_request">Запрос цены на</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">СФ</string>
@@ -160,5 +162,4 @@
     <string name="service_stop_update">Stop update</string>
     <string name="configuration_error">Ошибка загрузки конфигурации!</string>
     <string name="retry">Повтор</string>
-
 </resources>

@@ -15,18 +15,20 @@ public class OrderLineRealm extends RealmObject implements Serializable {
     private String lineId;
     private OrderRealm order;
     private ItemRealm item;
-    private Float quantity=0f;
-    private Float price=0f;
+    private Float quantity = 0f;
+    private Float price = 0f;
+    private Float priceRequest = 0f;
 
     public OrderLineRealm() {
     }
 
-    public OrderLineRealm(OrderRealm order, ItemRealm item, Float quantity, Float price) {
+    public OrderLineRealm(OrderRealm order, ItemRealm item, Float quantity, Float price, Float priceRequest) {
         this.order = order;
         this.item = item;
         this.quantity = quantity;
         this.price = price;
-        this.lineId = order.getId()+"#"+item.getItemId();
+        this.priceRequest = priceRequest;
+        this.lineId = order.getId() + "#" + item.getItemId();
     }
 
     //region ===================== Getters =========================
@@ -43,6 +45,10 @@ public class OrderLineRealm extends RealmObject implements Serializable {
         return price;
     }
 
+    public Float getPriceRequest() {
+        return priceRequest;
+    }
+
     public OrderRealm getOrder() {
         return order;
     }
@@ -57,6 +63,10 @@ public class OrderLineRealm extends RealmObject implements Serializable {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    public void setPriceRequest(Float price) {
+        this.priceRequest = price;
     }
 
     //endregion ================== Getters =========================

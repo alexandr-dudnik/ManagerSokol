@@ -79,9 +79,8 @@ public class App extends Application {
         final RealmConfiguration configuration = new RealmConfiguration.Builder()
                 .name("sokol.manager.realm")
                 .compactOnLaunch()
-                .schemaVersion(2)
+                .schemaVersion(3)
                 .migration(new RealmMigrations())
-                .deleteRealmIfMigrationNeeded()
                 .allowQueriesOnUiThread(true)
                 .allowWritesOnUiThread(true)
                 .build();

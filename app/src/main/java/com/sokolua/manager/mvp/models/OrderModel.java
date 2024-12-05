@@ -26,6 +26,10 @@ public class OrderModel extends AbstractModel {
         mDataManager.updateOrderItemPrice(order, item, value);
     }
 
+    public void updateOrderItemPriceRequest(String order, String item, Float value) {
+        mDataManager.updateOrderItemPriceRequest(order, item, value);
+    }
+
     public void updateOrderItemQty(String order, String item, Float value) {
         mDataManager.updateOrderItemQty(order, item, value);
     }
@@ -56,7 +60,7 @@ public class OrderModel extends AbstractModel {
         if (mOrder == null) return;
         mDataManager.updateOrderPayment(orderId, payment);
         TradeRealm custTrade;
-        switch (payment){
+        switch (payment) {
             case ConstantManager.ORDER_PAYMENT_OFFICIAL:
                 custTrade = mOrder.getCustomer().getTradeOfficial();
                 updateOrderCurrency(orderId, ConstantManager.MAIN_CURRENCY_CODE);
@@ -69,7 +73,7 @@ public class OrderModel extends AbstractModel {
                 custTrade = mOrder.getCustomer().getTradeCash();
         }
         if (custTrade != null) {
-            if (mOrder.isPayOnFact()){
+            if (mOrder.isPayOnFact()) {
                 custTrade = mDataManager.getFactTradeForTrade(custTrade.getTradeId());
             }
             updateOrderTrade(orderId, custTrade.getTradeId());
@@ -86,25 +90,26 @@ public class OrderModel extends AbstractModel {
                     OrderRealm mOrder = mDataManager.getOrderById(orderId);
                     TradeRealm trade = mDataManager.getTradeById(tradeId);
                     float price = mDataManager.getItemPrice(
-                                        line.getItem().getItemId(),
-                                        mOrder.getPriceList().getPriceId(),
-                                        tradeId,
-                                        mOrder.getCurrency().getCurrencyId(),
-                                        mOrder.getCustomer().getCustomerId(),
-                                        trade != null && trade.isLTD()
-                                );
+                            line.getItem().getItemId(),
+                            mOrder.getPriceList().getPriceId(),
+                            tradeId,
+                            mOrder.getCurrency().getCurrencyId(),
+                            mOrder.getCustomer().getCustomerId(),
+                            trade != null && trade.isLTD()
+                    );
                     updateOrderItemPrice(orderId, line.getItem().getItemId(), price);
                 })
                 .doOnComplete(() -> mDataManager.updateOrderTrade(orderId, tradeId))
-                .doOnError(throwable -> Log.e("ERROR","Update order trade", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Update order trade", throwable))
                 .subscribe();
 
     }
 
-    public void updateOrderFactFlag(String orderId, boolean fact){
+    public void updateOrderFactFlag(String orderId, boolean fact) {
         OrderRealm mOrder = mDataManager.getOrderById(orderId);
         if (mOrder == null) return;
-        if (fact) updateOrderTrade(orderId, mDataManager.getFactTradeForTrade(mOrder.getTrade().getTradeId()).getTradeId());
+        if (fact)
+            updateOrderTrade(orderId, mDataManager.getFactTradeForTrade(mOrder.getTrade().getTradeId()).getTradeId());
         mDataManager.updateOrderFactFlag(orderId, fact);
     }
 
@@ -117,10 +122,8 @@ public class OrderModel extends AbstractModel {
         if (oldCurrency.getCurrencyId().equals(currencyCode)) return;
 
         CurrencyRealm newCurrency = mDataManager.getCurrencyByCode(currencyCode);
-        if (oldCurrency.getRate() == newCurrency.getRate() || newCurrency.getRate()==0f) return;
+        if (oldCurrency.getRate() == newCurrency.getRate() || newCurrency.getRate() == 0f) return;
         float newRate = newCurrency.getRate();
-
-
 
 
         Observable.fromIterable(mDataManager.getCopyOfOrderLines(orderId))
@@ -134,13 +137,13 @@ public class OrderModel extends AbstractModel {
                     );
                 })
                 .doOnComplete(() -> mDataManager.updateOrderCurrency(orderId, currencyCode))
-                .doOnError(throwable -> Log.e("ERROR","Order lines", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Order lines", throwable))
                 .subscribe();
 
 
     }
 
-    public CurrencyRealm getCurrencyByName(String currencyName){
+    public CurrencyRealm getCurrencyByName(String currencyName) {
         return mDataManager.getCurrencyByName(currencyName);
     }
 
@@ -150,7 +153,7 @@ public class OrderModel extends AbstractModel {
                 .observeOn(Schedulers.computation())
                 .unsubscribeOn(Schedulers.computation())
                 .flatMap(id -> mDataManager.updateOrderFromRemote(orderId))
-                .doOnError(throwable -> Log.e("ERROR","Load order", throwable) )
+                .doOnError(throwable -> Log.e("ERROR", "Load order", throwable))
                 .subscribe();
     }
 
@@ -174,4 +177,5 @@ public class OrderModel extends AbstractModel {
     public TradeRealm getTradeByName(String tradeName) {
         return mDataManager.getTradeByName(tradeName);
     }
+
 }

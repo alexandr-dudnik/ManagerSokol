@@ -183,28 +183,28 @@ public class DebugManager {
         managedPhoneRealms.add(new CustomerPhoneRealm(temp, "123-23-12"));
 
         OrderRealm tmpOrder = new OrderRealm("ord00001", temp, dateFormat.parse("2018-08-01"), dateFormat.parse("2018-08-11"), ConstantManager.ORDER_STATUS_CART, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency,null,null, "Заказ взял, клиет должен уточнить по количеству");
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item1, 10f, 12.5f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item21, 1f, 500f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item3, 5f, 30f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item5, 25f, 29.8f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item1, 10f, 12.5f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item21, 1f, 500f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item3, 5f, 30f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item5, 25f, 29.8f, 0f));
         managedOrders.add(tmpOrder);
 
         tmpOrder = new OrderRealm("ord00002", temp, dateFormat.parse("2018-07-03"), dateFormat.parse("2018-07-04"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_CASH, mainCurrency, null,null,"Отгрузка на среду, платит по факту");
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 10f, 81.95f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 30f, 90f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 5f, 1300.2f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 10f, 81.95f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 30f, 90f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 5f, 1300.2f, 0f));
         managedOrders.add(tmpOrder);
 
         tmpOrder = new OrderRealm("ord00003", temp, dateFormat.parse("2018-07-23"), dateFormat.parse("2018-07-25"), ConstantManager.ORDER_STATUS_SENT, ConstantManager.ORDER_PAYMENT_CASH, mainCurrency, null,null, "Отгрузка на среду, оплата на месте по факту");
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item6, 1000f, 4.5f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item17, 35f, 43.25f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item6, 1000f, 4.5f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item17, 35f, 43.25f, 0f));
         managedOrders.add(tmpOrder);
 
         tmpOrder = new OrderRealm("ord00004", temp, dateFormat.parse("2018-08-05"), dateFormat.parse("2018-08-17"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency, null,null, "Нужно привезти в пятницу, берет под клиента.");
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 1500f, 9.5f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 2000f, 20f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 1500f, 9.5f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 2000f, 20f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f, 0f));
         managedOrders.add(tmpOrder);
 
         //--------------------------
@@ -224,9 +224,9 @@ public class DebugManager {
         managedPhoneRealms.add(new CustomerPhoneRealm(temp, "222-77-55"));
 
         tmpOrder = new OrderRealm("ord00005", temp, dateFormat.parse("2018-06-15"), dateFormat.parse("2018-06-20"), ConstantManager.ORDER_STATUS_DELIVERED, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency, null,null, "");
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 3f, 90f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item11, 1f, 81.95f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item16, 3f, 90f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item22, 1f, 1300.2f, 0f));
         managedOrders.add(tmpOrder);
 
         //--------------------------
@@ -274,10 +274,10 @@ public class DebugManager {
         managedCustomers.add(temp);
 
         tmpOrder = new OrderRealm("ord00006", temp, dateFormat.parse("2018-08-07"), dateFormat.parse("2018-08-25"), ConstantManager.ORDER_STATUS_IN_PROGRESS, ConstantManager.ORDER_PAYMENT_OFFICIAL, mainCurrency, null,null, "плановый заказ");
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 200f, 20f));
-        managedOrderLines.add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item10, 150f, 9.5f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item18, 20f, 54f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item2, 200f, 20f, 0f));
+        managedOrderLines.add(new OrderLineRealm(tmpOrder, item7, 200f, 12.2f, 0f));
         managedOrders.add(tmpOrder);
 
 
@@ -299,7 +299,7 @@ public class DebugManager {
         });
         realm.close();
 
-        
+
     }
 
     static UserRes loginUser(String userName, String password) {

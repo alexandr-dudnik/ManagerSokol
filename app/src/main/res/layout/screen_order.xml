@@ -102,7 +102,7 @@
                         android:id="@+id/order_trade_spin"
                         tools:listitem="@layout/simple_item"
                         style="@style/order_header_value"
-                        
+
                         />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -131,7 +131,7 @@
                     android:translationY="-5dp"
                     android:focusableInTouchMode="false"
                     android:focusable="false"
-                    
+
                     />
             </androidx.appcompat.widget.LinearLayoutCompat>
             <!--Currency -->
@@ -153,7 +153,7 @@
                         android:id="@+id/order_currency_spin"
                         style="@style/order_header_value"
                         tools:listitem="@layout/simple_item"
-                        
+
                         />
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/order_currency_text"
@@ -254,6 +254,18 @@
                     android:text="@string/order_items_header_name"
                     android:textSize="12sp"/>
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/good_request_price_column"
+                    android:background="@drawable/rectangle_shape"
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="2dp"
+                    android:paddingVertical="2dp"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/ic_price"
+                    app:tint="@color/color_gray"
+                    />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -268,7 +280,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.6"
                     android:background="@drawable/rectangle_shape"
                     android:textColor="@color/color_gray"
                     android:gravity="end"
