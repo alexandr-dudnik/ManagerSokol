@@ -179,6 +179,7 @@ public class OrderView extends AbstractView<OrderScreen.Presenter, ScreenOrderBi
     private void updateVisibility() {
         boolean isCart = (mStatus == ConstantManager.ORDER_STATUS_CART);
 
+        binding.goodRequestPriceColumn.setVisibility(isCart ? VISIBLE : GONE);
         binding.orderTypeSpin.setVisibility(isCart ? VISIBLE : GONE);
         binding.orderTypeText.setVisibility(!isCart ? VISIBLE : GONE);
         binding.orderCommentEdit.setVisibility(isCart ? VISIBLE : GONE);
