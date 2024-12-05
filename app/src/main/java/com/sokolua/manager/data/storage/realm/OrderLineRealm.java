@@ -27,7 +27,7 @@ public class OrderLineRealm extends RealmObject implements Serializable {
         this.item = item;
         this.quantity = quantity;
         this.price = price;
-        this.price = priceRequest;
+        this.priceRequest = priceRequest;
         this.lineId = order.getId() + "#" + item.getItemId();
     }
 
