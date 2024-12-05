@@ -40,6 +40,7 @@
     <string name="default_manager_name">Mr. Who</string>
     <string name="button_yes_text">Yes</string>
     <string name="button_no_text">No</string>
+    <string name="button_reset_text">Reset</string>
 
     <!-- Login -->
     <string name="user_name_hint">Login</string>
@@ -121,6 +122,7 @@
     <string name="order_price_title">Price list</string>
     <string name="order_trade_title">Trade cond.</string>
     <string name="order_fact_title">Pay by fact</string>
+    <string name="order_items_header_price_request">Request price for</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">Str</string>
@@ -169,5 +171,4 @@
     <string name="service_stop_update">Stop update</string>
     <string name="configuration_error">Configuration fetch error!</string>
     <string name="retry">Retry</string>
-
 </resources>

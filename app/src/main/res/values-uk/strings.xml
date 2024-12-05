@@ -34,6 +34,7 @@
     <string name="default_manager_name">Василь Наливайко</string>
     <string name="button_yes_text">Так</string>
     <string name="button_no_text">Ні</string>
+    <string name="button_reset_text">Скинути</string>
 
     <!-- Login -->
     <string name="login_form_caption">Ваші облікові дані</string>
@@ -114,6 +115,7 @@
     <string name="order_price_title">Прайс</string>
     <string name="order_trade_title">Умови</string>
     <string name="order_fact_title">Оплата по факту</string>
+    <string name="order_items_header_price_request">Запит на ціну для</string>
 
     <!-- Goods screen -->
     <string name="item_wh_rest_label">СФ</string>
