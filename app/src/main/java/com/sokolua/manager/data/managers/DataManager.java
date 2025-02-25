@@ -1189,17 +1189,16 @@ public class DataManager {
         final float tradePercent;
         final float rate;
         final float price;
+        tradePercent = mRealmManager.getTradePercent(tradeId, (mItem.getCategory() == null) ? "" : mItem.getCategory().getCategoryId());
         if (personalPrice != null && personalPrice.first != null && personalPrice.second != null && personalPrice.second > 0) {
             priceCurrency = personalPrice.first;
             discount = 0;
-            tradePercent = 0;
             rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate() / mCurrency.getRate();
             price = personalPrice.second;
         } else {
             priceCurrency = mItemPrice.getCurrency();
             if (priceCurrency == null || priceCurrency.getRate() == 0) return 0;
             discount = getCustomerDiscount(customerId, itemId);
-            tradePercent = mRealmManager.getTradePercent(tradeId, (mItem.getCategory() == null) ? "" : mItem.getCategory().getCategoryId());
             rate = (priceCurrency.getCurrencyId().equals(mCurrency.getCurrencyId())) ? 1f : priceCurrency.getRate() / mCurrency.getRate();
             price = mItemPrice.getPrice();
         }
